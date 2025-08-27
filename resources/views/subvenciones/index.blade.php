@@ -1,17 +1,25 @@
 <x-app title="Subvenciones">
 
     <x-header />
-
-
     <!-- Primer encabezado -->
     <div class="container justify-content-center py-3 mt-3">
         <div class="shadow-sm p-3 mb-5 bg-body rounded">
             <h5 class="mb-5">
                 Subvenciones
-                <a class="btn mb-1 font-weight-bold btn-app float-end" id="btnModal" type="button">
-                    <i class="fa-solid fa-plus"> </i>
-                    Agregar Subvenciones
-                </a>
+                <!-- <div class="dropdown">
+                    <a class="btn dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="true">
+                        <i class="mb-1 font-weight-bold btn-app float-end | fa-solid fa-plus"></i>
+                        Agregar Subvenciones
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="#">Action</a></li>
+                        <li><a class="dropdown-item" href="#">Another action</a></li>
+                    </ul>
+                </div> -->
+                <select name="" id="">
+                    <option value="">Agregar</option>
+                    <option value="">Subir archivo</option>
+                </select>
             </h5>
             <div class="table-responsive">
                 <table class="table table-striped mx-auto" id="table_id">

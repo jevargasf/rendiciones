@@ -1,5 +1,5 @@
 <x-app title="Estadísticas">
-    @vite(['resources/js/inicio.js'])
+
     <x-header />
 
     <div class="container justify-content-center py-3 mt-5">
@@ -28,42 +28,31 @@
                     </div>
                 @endif
 
+                <!-- Menú tabs estadísticas -->
                 <div class="mb-2">
-                    <div class="row g-3 align-items-end">
-                        <div class="col-md-5">
-                            <label for="pilar" class="form-label fw-bold">Pilar</label>
-                            <select name="pilar" id="pilar" class="chosen-select form-select shadow-sm">
-                                <option value="" selected disabled>Seleccione...</option>
-                                @foreach ($pilares as $item)
-                                    <option value="{{ $item->id }}">{{ $item->titulo }}</option>
-                                @endforeach
-                            </select>
+                    <div class="row g-3 align-items-center" role="tablist">
+                        <div class="col-md-4" style="height: 10rem;" role="presentation">
+                                <button type="button" class="btn btn-light w-100 h-100 active" data-bs-toggle="pill" data-bs-target="#subvenciones" role="tab" aria-pressed="true" aria-controls="subvenciones" id="subvenciones-tab">
+                                    Subvenciones <span class="badge text-bg-secondary">{{ $subvenciones }}</span>
+                                </button>
                         </div>
-
-                        <div class="col-md-5">
-                            <label for="medida" class="form-label fw-bold">Medida</label>
-                            <select name="medida" id="medida" class="chosen-select form-select shadow-sm ">
-                                <option value="" selected disabled>Seleccione...</option>
-                            </select>
+                        <div class="col-md-4" style="height: 10rem;">
+                                <button type="button" class="btn btn-light w-100 h-100" data-bs-toggle="pill" data-bs-target="#rendiciones" role="tab"  aria-pressed="false" aria-controls="rendiciones" id="rendiciones-tab">
+                                    Rendiciones <span class="badge text-bg-secondary">{{ $rendiciones }}</span>
+                                </button>
                         </div>
-
-                        <div class="col-md-2">
-                            <label for="periodo" class="form-label fw-bold">Periodo</label>
-                            <select name="periodo" id="periodo" class="chosen-select form-select shadow-sm ">
-                                <option selected value="all">Todos</option>
-                                @foreach ($years as $year)
-                                    <option value="{{ $year }}" {{ $year == date('Y') ? 'selected' : '' }}>
-                                        {{ $year }}
-                                    </option>
-                                @endforeach
-                            </select>
+                        <div class="col-md-4" style="height: 10rem;">
+                                <button type="button" class="btn btn-light w-100 h-100" data-bs-toggle="pill" data-bs-target="#usuarios" role="tab"  aria-pressed="false" aria-controls="usuarios" id="usuarios-tab">
+                                    Usuarios <span class="badge text-bg-secondary">{{ $usuarios }}</span>
+                                </button>
                         </div>
-
                     </div>
                 </div>
-
-                <div class="mb-5">
-                    <div id="container" class="shadow-sm border rounded mm-5" style="height: 450px"></div>
+                <!-- Container estadísticas -->
+                <div class="tab-content mb-5" id="tabContent">
+                    <div class="shadow-sm border rounded mm-5 tab-pane show active" id="subvenciones" style="height: 450px" role="tabpanel" aria-labelledby="pills-subvenciones-tab" tabindex="0">Subvenciones</div>
+                    <div class="shadow-sm border rounded mm-5 tab-pane" id="rendiciones" style="height: 450px" role="tabpanel" aria-labelledby="pills-rendiciones-tab" tabindex="0">Rendiciones</div>
+                    <div class="shadow-sm border rounded mm-5 tab-pane" id="usuarios" style="height: 450px" role="tabpanel" aria-labelledby="pills-usuarios-tab" tabindex="0">Usuarios</div>
                 </div>
 
 

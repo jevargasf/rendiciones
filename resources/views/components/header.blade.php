@@ -1,11 +1,11 @@
 <header>
     <nav class="navbar navbar-expand-lg bg-app" style="background-color: var(--app-color);">
         <div class="container">
-            <!-- brand -->
+            <!-- logo -->
             <div class="navbar-header">
                 <a class="navbar-brand text-brand" href="{{ route('estadisticas') }}">
-                    <i class="fa-solid fa-seedling"></i>
-                    PACCC
+                    <i class="fa-solid fa-chart-simple"></i>
+                    DAF
                 </a>
             </div>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse">
@@ -16,6 +16,12 @@
 
                     <li class="nav-item">
                         <a class="nav-link" href="{{ route('estadisticas') }}">Inicio</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ route('subvenciones') }}">Subvenciones</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ route('rendiciones') }}">Rendiciones</a>
                     </li>
 
                    

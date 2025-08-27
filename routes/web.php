@@ -3,8 +3,8 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\InicioController;
-use App\Http\Controllers\SubvencionesController;
-use App\Http\Controllers\RendicionesController;
+use App\Http\Controllers\SubvencionController;
+use App\Http\Controllers\RendicionController;
 use App\Http\Controllers\Rendiciones2Controller;
 use App\Http\Controllers\RendicionesDosController;
 
@@ -27,16 +27,16 @@ Route::prefix('estadisticas')->group(function () {
 
 Route::prefix('subvenciones')->group(function () {
 
-    Route::get('/', [SubvencionesController::class, 'index'])->name('subvenciones');
+    Route::get('/', [SubvencionController::class, 'index'])->name('subvenciones');
 
-    Route::post('crear', [SubvencionesController::class, 'crear'])->name('subvenciones.crear');
+    Route::post('crear', [SubvencionController::class, 'crear'])->name('subvenciones.crear');
 
 
 });
 
 Route::prefix('rendiciones')->group(function () {
 
-    Route::get('/', [RendicionesController::class, 'index'])->name('rendiciones');
+    Route::get('/', [RendicionController::class, 'index'])->name('rendiciones');
 
     
 });

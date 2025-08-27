@@ -3,15 +3,15 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\Subvenciones;
+use App\Models\Subvencion;
 
-class SubvencionesController extends Controller
+class SubvencionController extends Controller
 {
 
 
     public function index()
     {
-        $subvenciones = Subvenciones::leftjoin('organizaciones', 'subvenciones.organizacion_id', 'organizaciones.id')
+        $subvenciones = Subvencion::leftjoin('organizaciones', 'subvenciones.organizacion_id', 'organizaciones.id')
             ->select(
                 'subvenciones.*',
                 'organizaciones.nombre AS nombreOrganizacion',
@@ -27,7 +27,7 @@ class SubvencionesController extends Controller
 
             compact('subvenciones')
 
-        );
+        );  
     }
 
     public function crear(Request $request)
@@ -41,7 +41,8 @@ class SubvencionesController extends Controller
                 'numero_decreto' => 'required'
 
             ]);
-            $subvenciones = Subvenciones::create([
+            
+            $subvenciones = Subvencion::create([
             'organizacion_id'=>'1',
             'decreto'=>$request->numero_decreto,
             'monto'=>'1',

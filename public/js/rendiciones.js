@@ -2,6 +2,8 @@
 /*Busca en la página el elemento con id="modalDetalleRendicion" y lo guarda en la variable modalRendidas
 */
 
+const { default: laravel } = require("laravel-vite-plugin");
+
 
 var modalRendidas = document.getElementById("modalDetalleRendicion"); 
 var modalR = modalRendidas ? new bootstrap.Modal(modalRendidas) : null;
@@ -341,3 +343,6 @@ document.querySelector("#table_rechazadas")?.addEventListener("click", async fun
 
     }
 });  
+
+
+

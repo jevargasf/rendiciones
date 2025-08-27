@@ -816,6 +816,13 @@ button.btn.btn-app.btn-eliminar:focus {
   font-weight: bold;
   font-size: 90%;
 }
+
+/* PÁGINA INICIO */
+
+.badges-container{
+  height: 10rem!important;
+}
+
                                             /* PAGINA SUBVENCIONES*/
 
 /* Modal Editar Subvención */
@@ -987,7 +994,7 @@ button.btn.btn-app.btn-eliminar:focus {
 #modalVer .tab-content { height:260px; min-height:260px; overflow-y:auto; }
 #modalVer .table { margin-bottom: 0; } 
 
-
+/* */
 
 
 

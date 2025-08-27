@@ -80,6 +80,7 @@ class RendicionesDosController extends Controller
         );
     }
 
+   
     public function detalleRendicion(Request $request, Acciones $idAccion) /** detalleRendicion es el mismo nombre de la ruta, Así Laravel sabe qué método ejecutar cuando llega una petición a esa ruta*/
     {
         $acciones = Acciones:: leftjoin ('tipos_acciones', 'acciones.tipo_accion_id', 'tipos_acciones.id')

@@ -3,15 +3,15 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\Rendiciones;
+use App\Models\Rendicion;
 
-class RendicionesController extends Controller
+class RendicionController extends Controller
 {
 
 
     public function index(Request $request)
     {
-        $rendiciones = Rendiciones::leftjoin('subvenciones', 'rendiciones.subvencion_id', 'subvenciones.id')
+        $rendiciones = Rendicion::leftjoin('subvenciones', 'rendiciones.subvencion_id', 'subvenciones.id')
         ->leftJoin('organizaciones', 'subvenciones.organizacion_id', 'organizaciones.id')
         ->select(
             'rendiciones.*',
