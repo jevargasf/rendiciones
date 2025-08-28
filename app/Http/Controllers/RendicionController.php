@@ -6,6 +6,7 @@ use App\Models\Rendicion;
 use App\Models\Accion;
 use Illuminate\Http\Request;
 use App\Models\Subvencion;
+use App\Models\Notificacion;
 use Exception;
 
 class RendicionController extends Controller
@@ -85,31 +86,45 @@ class RendicionController extends Controller
     public function detalleRendicion(Request $request) /** detalleRendicion es el mismo nombre de la ruta, Así Laravel sabe qué método ejecutar cuando llega una petición a esa ruta*/
     {
         try{
-            $acciones = Accion:: leftjoin ('tipos_acciones', 'acciones.tipo_accion_id', 'tipos_acciones.id')
-            ->leftjoin ('usuarios', 'acciones.usuario_id', 'usuarios.id')
-        
-        
-            -> select( /**Referido al modal acciones al ingresar a Detalle de rendición*/
+            $acciones = Accion::leftjoin('tipos_acciones', 'acciones.tipo_accion_id', 'tipos_acciones.id')
+                ->leftjoin('usuarios', 'acciones.usuario_id', 'usuarios.id')
+
+
+                ->select(
+                    /**Referido al modal acciones al ingresar a Detalle de rendición*/
                     'acciones.*',
                     'tipos_acciones.descripcion AS descripcion',
                     'usuarios.nombre AS usuario',
 
-            /**Se crea una consulta de Base de Datos, guardando el resultado en la variable $acciones */
-                )       
-                ->where('acciones.estado', 1)           /**Traer solo los registros de la tabla acciones donde la columna estado sea igual a 1*/
-                ->where('acciones.rendicion_id', $request->id) /**“Además, solo quiero las acciones que tengan en la columna rendicion_id el mismo valor que el id que recibí en la petición*/
+                    /**Se crea una consulta de Base de Datos, guardando el resultado en la variable $acciones */
+                )
+                ->where('acciones.estado', 1)
+                /**Traer solo los registros de la tabla acciones donde la columna estado sea igual a 1*/
+                ->where('acciones.rendicion_id', $request->id)
+                /**“Además, solo quiero las acciones que tengan en la columna rendicion_id el mismo valor que el id que recibí en la petición*/
                 ->get();
 
-            return response() ->json([ /**Devuelve todas las acciones que encontró la consulta en formato JSON */
-                'acciones'=>$acciones,
+            $notificaciones = Notificacion::leftjoin('subvenciones', 'notificaciones.subvencion_id','subvenciones.id')
+
+
+                ->select(
+                    'notificaciones.*',
+                    'subvenciones.destino As destinoSubvenciones',
+
+                )
+                //->where('notificaciones.estado', 1)
+                // revisar acá porque se está pidiendo subvencion_id, y el id que viene en el body es rendicion_id
+                ->where('notificaciones.subvencion_id', $request->subvencion_id)
+                ->get();
+
+            return response()->json([
+                /**Devuelve todas las acciones que encontró la consulta en formato JSON */
+                'acciones' => $acciones,
+                'notificaciones' => $notificaciones,
             ]);
         } catch(Exception $e) {
             print($e);
         }
-
-
-        
-
     }
     
     

@@ -135,6 +135,44 @@ document.querySelector("#table_pendientes")?.addEventListener("click", async fun
                 fila.appendChild(celdaTdUsuario);
                 tablaAcciones.appendChild(fila);
             });
+
+          var tablaNotificaciones = document.getElementById("tablaNotificaciones"); 
+          const tbodyNot = tablaNotificaciones.getElementsByTagName ('tbody')[0];
+
+          tbodyNot.innerHTML = '';
+
+
+          notificaciones = data.notificaciones;
+
+          notificaciones.forEach((item) => {
+
+
+            const fila = document.createElement('tr');
+
+            const celdaTd = document.createElement('td');
+            celdaTd.textContent = item.id || 'S/D';
+            fila.appendChild(celdaTd);
+
+            const celdaTdFecha = document.createElement('td');
+            celdaTdFecha.textContent = item.fecha || 'S/D';
+            fila.appendChild(celdaTdFecha);
+ 
+            const celdaTdHora = document.createElement('td');
+            celdaTdHora.textContent = item.fecha || 'S/D';
+            fila.appendChild(celdaTdHora);                          
+
+            const celdaTdDestino = document.createElement('td');
+            celdaTdDestino.textContent = item.destino || 'S/D';
+            fila.appendChild(celdaTdDestino);
+
+            const celdaTdEstado = document.createElement('td');
+            celdaTdEstado.textContent = item.estado || 'S/D';
+            fila.appendChild(celdaTdEstado);
+
+            tablaNotificaciones.appendChild(fila);
+
+          });                    
+
             modalP.show();
         } catch (error) {
             console.error('Error:', error);
@@ -179,6 +217,42 @@ document.querySelector("#table_observadas")?.addEventListener("click", async fun
                 fila.appendChild(celdaTdUsuario);
                 tablaAcciones.appendChild(fila);
             });
+
+          var tablaNotificaciones = document.getElementById("tablaNotificaciones"); 
+          const tbodyNot = tablaNotificaciones.getElementsByTagName ('tbody')[0];
+
+          tbodyNot.innerHTML = '';
+
+
+          notificaciones = data.notificaciones;
+
+          notificaciones.forEach((item) => {
+
+
+            const fila = document.createElement('tr');
+
+            const celdaTd = document.createElement('td');
+            celdaTd.textContent = item.id || 'S/D';
+            fila.appendChild(celdaTd);
+
+            const celdaTdFecha = document.createElement('td');
+            celdaTdFecha.textContent = item.fecha || 'S/D';
+            fila.appendChild(celdaTdFecha);
+ 
+            const celdaTdHora = document.createElement('td');
+            celdaTdHora.textContent = item.fecha || 'S/D';
+            fila.appendChild(celdaTdHora);                          
+
+            const celdaTdDestino = document.createElement('td');
+            celdaTdDestino.textContent = item.destino || 'S/D';
+            fila.appendChild(celdaTdDestino);
+
+            const celdaTdEstado = document.createElement('td');
+            celdaTdEstado.textContent = item.estado || 'S/D';
+            fila.appendChild(celdaTdEstado);
+
+            tablaNotificaciones.appendChild(fila);
+          });                    
             console.log('hola');
             modalO.show();
         } catch (error) {
@@ -225,6 +299,42 @@ document.querySelector("#table_rechazadas")?.addEventListener("click", async fun
                 fila.appendChild(celdaTdUsuario);
                 tablaAcciones.appendChild(fila);
             });
+
+          var tablaNotificaciones = document.getElementById("tablaNotificaciones"); 
+          const tbodyNot = tablaNotificaciones.getElementsByTagName ('tbody')[0];
+
+          tbodyNot.innerHTML = '';
+
+
+          notificaciones = data.notificaciones;
+
+          notificaciones.forEach((item) => {
+
+
+            const fila = document.createElement('tr');
+
+            const celdaTd = document.createElement('td');
+            celdaTd.textContent = item.id || 'S/D';
+            fila.appendChild(celdaTd);
+
+            const celdaTdFecha = document.createElement('td');
+            celdaTdFecha.textContent = item.fecha || 'S/D';
+            fila.appendChild(celdaTdFecha);
+ 
+            const celdaTdHora = document.createElement('td');
+            celdaTdHora.textContent = item.fecha || 'S/D';
+            fila.appendChild(celdaTdHora);                          
+
+            const celdaTdDestino = document.createElement('td');
+            celdaTdDestino.textContent = item.destino || 'S/D';
+            fila.appendChild(celdaTdDestino);
+
+            const celdaTdEstado = document.createElement('td');
+            celdaTdEstado.textContent = item.estado || 'S/D';
+            fila.appendChild(celdaTdEstado);
+
+            tablaNotificaciones.appendChild(fila);
+          });                    
             modalRe.show();
         } catch (error) {
             console.error('Error:', error);
