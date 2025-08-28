@@ -80,7 +80,7 @@
                                             <div class="d-flex justify-content-center align-items-center">
                                                 <button type="button" class="btn btn-accion btn-link align-baseline">
                                                     <i class="fas fa-search" data-id="{{ $item->id }}"
-
+                                                        data-subvencion="{{ $item->subvencion_id }}"
                                                 
                                                         {{-- Guarda el ID del registro para usarlo en JavaScript --}}></i>
 
