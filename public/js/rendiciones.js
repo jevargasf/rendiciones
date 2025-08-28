@@ -50,6 +50,47 @@ document.querySelector("#table_id")?.addEventListener("click", async function (e
                 fila.appendChild(celdaTdUsuario);
                 tablaAcciones.appendChild(fila);
             });
+
+            var tablaNotificaciones = document.getElementById("tablaNotificaciones"); 
+            const tbodyNot = tablaNotificaciones.getElementsByTagName ('tbody')[0];
+
+            tbodyNot.innerHTML = '';
+
+
+            notificaciones = data.notificaciones;
+
+            notificaciones.forEach((item) => {
+
+
+              const fila = document.createElement('tr');
+
+              const celdaTd = document.createElement('td');
+              celdaTd.textContent = item.id || 'S/D';
+              fila.appendChild(celdaTd);
+
+              const celdaTdFecha = document.createElement('td');
+              celdaTdFecha.textContent = item.fecha || 'S/D';
+              fila.appendChild(celdaTdFecha);
+  
+              const celdaTdHora = document.createElement('td');
+              celdaTdHora.textContent = item.fecha || 'S/D';
+              fila.appendChild(celdaTdHora);                          
+
+              const celdaTdDestino = document.createElement('td');
+              celdaTdDestino.textContent = item.destino || 'S/D';
+              fila.appendChild(celdaTdDestino);
+
+              const celdaTdEstado = document.createElement('td');
+              celdaTdEstado.textContent = item.estado || 'S/D';
+              fila.appendChild(celdaTdEstado);
+
+              tablaNotificaciones.appendChild(fila);
+
+
+
+
+            });          
+
             modalR.show();
         } catch (error) {
             console.error('Error:', error);
