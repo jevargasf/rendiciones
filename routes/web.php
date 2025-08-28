@@ -5,8 +5,6 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\InicioController;
 use App\Http\Controllers\SubvencionController;
 use App\Http\Controllers\RendicionController;
-use App\Http\Controllers\Rendiciones2Controller;
-use App\Http\Controllers\RendicionesDosController;
 
 Route::get('/', [AuthController::class, 'index'])->name('login');
 Route::post('/', [AuthController::class, 'index']);
@@ -34,18 +32,12 @@ Route::prefix('subvenciones')->group(function () {
 
 });
 
+
 Route::prefix('rendiciones')->group(function () {
 
     Route::get('/', [RendicionController::class, 'index'])->name('rendiciones');
 
-    
-});
-
-Route::prefix('rendicionesDos')->group(function () {
-
-    Route::get('/', [RendicionesDosController::class, 'index'])->name('rendicionesDos');
-
-    Route::post('detalleRendicion/{id}',[RendicionesDosController::class, 'detalleRendicion'])->name('rendicionesDos.detalleRendicion'); 
+    Route::post('/detalleRendicion',[RendicionController::class, 'detalleRendicion'])->name('rendiciones.detalleRendicion'); 
 
 });
 

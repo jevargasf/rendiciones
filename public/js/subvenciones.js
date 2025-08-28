@@ -56,7 +56,7 @@ document.querySelector("#form").addEventListener("submit", async function(event)
    
 
     } catch(error){
-
+        console.log(error.message)
     }
 
 }); 

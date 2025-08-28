@@ -33,7 +33,7 @@
                     <div class="row g-3 align-items-center" role="tablist">
                         <div class="col-md-4" style="height: 10rem;" role="presentation">
                                 <button type="button" class="btn btn-light w-100 h-100 active" data-bs-toggle="pill" data-bs-target="#subvenciones" role="tab" aria-pressed="true" aria-controls="subvenciones" id="subvenciones-tab">
-                                    Subvenciones <span class="badge text-bg-secondary">{{ $subvenciones }}</span>
+                                    Subvenciones<span class="badge text-bg-secondary">{{ $subvenciones }}</span>
                                 </button>
                         </div>
                         <div class="col-md-4" style="height: 10rem;">
