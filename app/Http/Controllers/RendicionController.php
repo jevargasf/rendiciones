@@ -8,8 +8,9 @@ use Illuminate\Http\Request;
 use App\Models\Subvencion;
 use App\Models\Notificacion;
 use Exception;
+use Illuminate\Routing\Controller as BaseController;
 
-class RendicionController extends Controller
+class RendicionController extends BaseController
 {
 
 

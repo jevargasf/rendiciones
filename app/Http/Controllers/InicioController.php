@@ -6,8 +6,9 @@ use App\Models\Rendicion;
 use App\Models\Subvencion;
 use App\Models\Usuario;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Controller as BaseController;
 
-class InicioController extends Controller
+class InicioController extends BaseController
 {
 
 

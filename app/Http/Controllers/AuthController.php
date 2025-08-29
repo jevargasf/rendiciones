@@ -9,9 +9,9 @@ use Tymon\JWTAuth\Facades\JWTAuth;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Routing\Controller as BaseController;
 
-
-class AuthController extends Controller
+class AuthController extends BaseController
 {
     public function index(Request $request)
     {

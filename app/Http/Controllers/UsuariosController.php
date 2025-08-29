@@ -6,8 +6,9 @@ use App\Models\Detalle_unidad_usuario;
 use App\Models\Unidades;
 use App\Models\Usuarios;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Controller as BaseController;
 
-class UsuariosController extends Controller
+class UsuariosController extends BaseController
 {
     public function index()
     {

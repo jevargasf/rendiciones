@@ -13,8 +13,9 @@ use App\Models\Usuarios;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Str;
+use Illuminate\Routing\Controller as BaseController;
 
-class UnidadesController extends Controller
+class UnidadesController extends BaseController
 {
     public function index()
     {

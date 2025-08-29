@@ -7,8 +7,9 @@ use App\Models\Subvencion;
 use Exception;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rules\File;
+use Illuminate\Routing\Controller as BaseController;
 
-class SubvencionController extends Controller
+class SubvencionController extends BaseController
 {
 
 
