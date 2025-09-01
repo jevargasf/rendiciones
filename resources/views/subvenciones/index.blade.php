@@ -10,6 +10,8 @@
                     <i class="fa-solid fa-plus"></i> Agregar subvención
                 </a>
             </h5>
+
+            <!-- Tabla con datos -->
             <div class="table-responsive">
                 <table class="table table-striped mx-auto" id="table_id">
                     <thead>
@@ -90,6 +92,8 @@
                     </tbody>
                 </table>
             </div>
+
+            
             <!-- Módulo para "Ver Detalles" con pestañas -->
             <div class="modal fade" id="modalVerDetalles" tabindex="-1" aria-hidden="true">
                 <div class="modal-dialog modal-dialog-centered" style="max-width: 900px">
