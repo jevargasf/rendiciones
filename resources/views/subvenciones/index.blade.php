@@ -16,43 +16,42 @@
                 <table class="table table-striped mx-auto" id="table_id">
                     <thead>
                         <tr>
-                            <th class="text-center">
+                            <th class="text-center fw-normal">
                                 <i class="fas fa-sort me-1"> </i>
                                 #
                             </th>
-                            <th>
+                            <th class="fw-normal">
                                 <i class="fas fa-sort me-1"> </i>
                                 Fecha
                             </th>
-                            <th>
+                            <th class="fw-normal">
                                 <i class="fas fa-sort me-1"> </i>
                                 R.U.T
                             </th>
-                            <th>
+                            <th class="fw-normal">
                                 <i class="fas fa-sort me-1"> </i>
                                 Organización
                             </th>
-                            <th>
+                            <th class="fw-normal">
                                 <i class="fas fa-sort me-1"> </i>
                                 Decreto
                             </th>
-                            <th>
+                            <th class="fw-normal">
                                 <i class="fas fa-sort me-1"> </i>
                                 Monto
                             </th>
-                            <th>
+                            <th class="fw-normal">
                                 <i class="fas fa-sort me-1"> </i>
                                 Destino
                             </th>
-                            <th class="text-center">
+                            <th class="text-center fw-normal">
                                 <i class="fas fa-sort me-1"> </i>
                                 Opciones
                             </th>
                         </tr>
                     </thead>
                     <tbody>
-                        <!-- Fila 1 -->
-                        @foreach ($subvenciones as $item)
+                        @forelse ($subvenciones as $item)
                             <tr>
                                 <td class="text-center">{{ $item->id }}</td>
                                 <td>{{ $item->fecha }}</td>
@@ -87,8 +86,16 @@
                                     </div>
                                 </td>
                             </tr>
-                        @endforeach
-
+                        @empty
+                            <tr>
+                                <td colspan="8" class="text-center py-4">
+                                    <div class="text-muted">
+                                        <i class="fas fa-inbox fa-2x mb-2"></i>
+                                        <p class="mb-0">No hay subvenciones</p>
+                                    </div>
+                                </td>
+                            </tr>
+                        @endforelse
                     </tbody>
                 </table>
             </div>

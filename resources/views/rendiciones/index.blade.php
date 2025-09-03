@@ -50,22 +50,22 @@
                         <table id="table_id" class="table table-striped mx-auto">  <!-- nombre de tabla llamada en archivo JS document.querySelector("#table_id")?.addEventListener("click", async function (e)-->
                             <thead>
                                 <tr>
-                                    <th class="text-center">
-                                        <i class="fas fa-sort me-1"></i> #
-                                    </th>
-                                    <th><i class="fas fa-sort me-1"></i> Fecha</th>
-                                    <th><i class="fas fa-sort me-1"></i> R.U.T</th>
-                                    <th><i class="fas fa-sort me-1"></i> Organización</th>
-                                    <th><i class="fas fa-sort me-1"></i> Decreto</th>
-                                    <th><i class="fas fa-sort me-1"></i> Nro. Movimiento</th>
-                                    <th><i class="fas fa-sort me-1"></i> Monto</th>
-                                    <th class="text-center">
-                                        <i class="fas fa-sort me-1"></i> Opciones
-                                    </th>
+                                                        <th class="text-center fw-normal">
+                        <i class="fas fa-sort me-1"></i> #
+                    </th>
+                                    <th class="fw-normal"><i class="fas fa-sort me-1"></i> Fecha</th>
+                                    <th class="fw-normal"><i class="fas fa-sort me-1"></i> R.U.T</th>
+                                    <th class="fw-normal"><i class="fas fa-sort me-1"></i> Organización</th>
+                                    <th class="fw-normal"><i class="fas fa-sort me-1"></i> Decreto</th>
+                                    <th class="fw-normal"><i class="fas fa-sort me-1"></i> Nro. Movimiento</th>
+                                    <th class="fw-normal"><i class="fas fa-sort me-1"></i> Monto</th>
+                                                        <th class="text-center fw-normal">
+                        <i class="fas fa-sort me-1"></i> Opciones
+                    </th>
                                 </tr>
                             </thead> 
                             <tbody>
-                                @foreach ($rendiciones as $item)
+                                @forelse ($rendiciones as $item)
                                     <tr>
                                         <td class="td-5">{{ $item->id }}</td>
                                         <td class="fecha" data-order="2025-05-29">29/05/2025</td>
@@ -88,7 +88,16 @@
                                             </div>
                                         </td>
                                     </tr>
-                                @endforeach
+                                @empty
+                                    <tr>
+                                        <td colspan="8" class="text-center py-4">
+                                            <div class="text-muted">
+                                                <i class="fas fa-inbox fa-2x mb-2"></i>
+                                                <p class="mb-0">No hay rendiciones rendidas</p>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                @endforelse
                             </tbody>
                         </table>
                     </div>
@@ -101,22 +110,22 @@
                         <table id="table_pendientes" class="table table-striped mx-auto">
                             <thead>
                                 <tr>
-                                    <th class="text-center">
-                                        <i class="fas fa-sort me-1"></i> #
-                                    </th>
-                                    <th><i class="fas fa-sort me-1"></i> Fecha</th>
-                                    <th><i class="fas fa-sort me-1"></i> R.U.T</th>
-                                    <th><i class="fas fa-sort me-1"></i> Organización</th>
-                                    <th><i class="fas fa-sort me-1"></i> Decreto</th>
-                                    <th><i class="fas fa-sort me-1"></i> Nro. Movimiento</th>
-                                    <th><i class="fas fa-sort me-1"></i> Monto</th>
-                                    <th class="text-center">
-                                        <i class="fas fa-sort me-1"></i> Opciones
-                                    </th>
+                                                        <th class="text-center fw-normal">
+                        <i class="fas fa-sort me-1"></i> #
+                    </th>
+                                    <th class="fw-normal"><i class="fas fa-sort me-1"></i> Fecha</th>
+                                    <th class="fw-normal"><i class="fas fa-sort me-1"></i> R.U.T</th>
+                                    <th class="fw-normal"><i class="fas fa-sort me-1"></i> Organización</th>
+                                    <th class="fw-normal"><i class="fas fa-sort me-1"></i> Decreto</th>
+                                    <th class="fw-normal"><i class="fas fa-sort me-1"></i> Nro. Movimiento</th>
+                                    <th class="fw-normal"><i class="fas fa-sort me-1"></i> Monto</th>
+                                                        <th class="text-center fw-normal">
+                        <i class="fas fa-sort me-1"></i> Opciones
+                    </th>
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach ($pendientes as $item)
+                                @forelse ($pendientes as $item)
                                     <tr>
                                         <td class="td-5">{{ $item->id }}</td>
                                         <td class="fecha" data-order="2025-05-29">29/05/2025</td>
@@ -134,7 +143,16 @@
                                             </div>
                                         </td>
                                     </tr>
-                                @endforeach
+                                @empty
+                                    <tr>
+                                        <td colspan="8" class="text-center py-4">
+                                            <div class="text-muted">
+                                                <i class="fas fa-inbox fa-2x mb-2"></i>
+                                                <p class="mb-0">No hay rendiciones pendientes</p>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                @endforelse
                             </tbody>
                         </table>
                     </div>
@@ -150,17 +168,17 @@
                                     <th class="text-center">
                                         <i class="fas fa-sort me-1"></i>#
                                     </th>
-                                    <th><i class="fas fa-sort me-1"></i> Fecha</th>
-                                    <th><i class="fas fa-sort me-1"></i> R.U.T</th>
-                                    <th><i class="fas fa-sort me-1"></i> Organización</th>
-                                    <th><i class="fas fa-sort me-1"></i> Decreto</th>
-                                    <th><i class="fas fa-sort me-1"></i> Nro. Movimiento</th>
-                                    <th><i class="fas fa-sort me-1"></i> Monto</th>
-                                    <th><i class="fas fa-sort me-1"></i> Opciones</th>
+                                    <th class="fw-normal"><i class="fas fa-sort me-1"></i> Fecha</th>
+                                    <th class="fw-normal"><i class="fas fa-sort me-1"></i> R.U.T</th>
+                                    <th class="fw-normal"><i class="fas fa-sort me-1"></i> Organización</th>
+                                    <th class="fw-normal"><i class="fas fa-sort me-1"></i> Decreto</th>
+                                    <th class="fw-normal"><i class="fas fa-sort me-1"></i> Nro. Movimiento</th>
+                                    <th class="fw-normal"><i class="fas fa-sort me-1"></i> Monto</th>
+                                    <th class="fw-normal"><i class="fas fa-sort me-1"></i> Opciones</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach ($observadas as $item)
+                                @forelse ($observadas as $item)
                                     <tr>
                                         <td class="td-5">{{ $item->id }}</td>
                                         <td class="fecha" data-order="2025-05-29">29/05/2025</td>
@@ -183,7 +201,16 @@
                                             </div>
                                         </td>
                                     </tr>
-                                @endforeach
+                                @empty
+                                    <tr>
+                                        <td colspan="8" class="text-center py-4">
+                                            <div class="text-muted">
+                                                <i class="fas fa-inbox fa-2x mb-2"></i>
+                                                <p class="mb-0">No hay rendiciones observadas</p>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                @endforelse
                             </tbody>
                         </table>
                     </div>
@@ -200,17 +227,17 @@
                                     <th class="text-center">
                                         <i class="fas fa-sort me-1"></i>#
                                     </th>
-                                    <th><i class="fas fa-sort me-1"></i> Fecha</th>
-                                    <th><i class="fas fa-sort me-1"></i> R.U.T</th>
-                                    <th><i class="fas fa-sort me-1"></i> Organización</th>
-                                    <th><i class="fas fa-sort me-1"></i> Decreto</th>
-                                    <th><i class="fas fa-sort me-1"></i> Nro. Movimiento</th>
-                                    <th><i class="fas fa-sort me-1"></i> Monto</th>
-                                    <th><i class="fas fa-sort me-1"></i> Opciones</th>
+                                    <th class="fw-normal"><i class="fas fa-sort me-1"></i> Fecha</th>
+                                    <th class="fw-normal"><i class="fas fa-sort me-1"></i> R.U.T</th>
+                                    <th class="fw-normal"><i class="fas fa-sort me-1"></i> Organización</th>
+                                    <th class="fw-normal"><i class="fas fa-sort me-1"></i> Decreto</th>
+                                    <th class="fw-normal"><i class="fas fa-sort me-1"></i> Nro. Movimiento</th>
+                                    <th class="fw-normal"><i class="fas fa-sort me-1"></i> Monto</th>
+                                    <th class="fw-normal"><i class="fas fa-sort me-1"></i> Opciones</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach ($rechazadas as $item)
+                                @forelse ($rechazadas as $item)
                                     <tr>
                                         <td class="td-5">{{ $item->id }}</td>
                                         <td class="fecha" data-order="2025-05-29">29/05/2025</td>
@@ -227,7 +254,16 @@
                                             </div>
                                         </td>
                                     </tr>
-                                @endforeach
+                                @empty
+                                    <tr>
+                                        <td colspan="8" class="text-center py-4">
+                                            <div class="text-muted">
+                                                <i class="fas fa-inbox fa-2x mb-2"></i>
+                                                <p class="mb-0">No hay rendiciones rechazadas</p>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                @endforelse
                             </tbody>
                         </table>
                     </div>
@@ -300,7 +336,7 @@
                                         <thead>
                                             <tr>
                                                 <th><i class="fas fa-sort me-1"></i> #</th>
-                                                <th><i class="fas fa-sort me-1"></i> Fecha</th>
+                                                <th class="fw-normal"><i class="fas fa-sort me-1"></i> Fecha</th>
                                                 <th><i class="fas fa-sort me-1"></i> Hora</th>
                                                 <th><i class="fas fa-sort me-1"></i> Destino de recursos</th>
                                                 <th><i class="fas fa-sort me-1"></i> Estado</th>
@@ -413,7 +449,7 @@
                                         <thead>
                                             <tr>
                                                 <th><i class="fas fa-sort me-1"></i> #</th>
-                                                <th><i class="fas fa-sort me-1"></i> Fecha</th>
+                                                <th class="fw-normal"><i class="fas fa-sort me-1"></i> Fecha</th>
                                                 <th><i class="fas fa-sort me-1"></i> Hora</th>
                                                 <th><i class="fas fa-sort me-1"></i> Destino de recursos
                                                 </th>
@@ -517,7 +553,7 @@
                                         <thead>
                                             <tr>
                                                 <th><i class="fas fa-sort me-1"></i> #</th>
-                                                <th><i class="fas fa-sort me-1"></i> Fecha</th>
+                                                <th class="fw-normal"><i class="fas fa-sort me-1"></i> Fecha</th>
                                                 <th><i class="fas fa-sort me-1"></i> Hora</th>
                                                 <th><i class="fas fa-sort me-1"></i> Destino de recursos
                                                 </th>
@@ -619,7 +655,7 @@
                                             <thead>
                                                 <tr>
                                                     <th><i class="fas fa-sort me-1"></i> #</th>
-                                                    <th><i class="fas fa-sort me-1"></i> Fecha</th>
+                                                    <th class="fw-normal"><i class="fas fa-sort me-1"></i> Fecha</th>
                                                     <th><i class="fas fa-sort me-1"></i> Hora</th>
                                                     <th><i class="fas fa-sort me-1"></i> Destino de recursos
                                                     </th>
