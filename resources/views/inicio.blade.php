@@ -42,8 +42,8 @@
                                 </button>
                         </div>
                         <div class="col-md-4" style="height: 10rem;">
-                                <button type="button" class="btn btn-light w-100 h-100" data-bs-toggle="pill" data-bs-target="#usuarios" role="tab"  aria-pressed="false" aria-controls="usuarios" id="usuarios-tab">
-                                    Usuarios <span class="badge text-bg-secondary">{{ $usuarios }}</span>
+                                <button type="button" class="btn btn-light w-100 h-100" data-bs-toggle="pill" data-bs-target="#personas" role="tab"  aria-pressed="false" aria-controls="personas" id="personas-tab">
+                                    Personas <span class="badge text-bg-secondary">{{ $personas }}</span>
                                 </button>
                         </div>
                     </div>
@@ -52,7 +52,7 @@
                 <div class="tab-content mb-5" id="tabContent">
                     <div class="shadow-sm border rounded mm-5 tab-pane show active" id="subvenciones" style="height: 450px" role="tabpanel" aria-labelledby="pills-subvenciones-tab" tabindex="0">Subvenciones</div>
                     <div class="shadow-sm border rounded mm-5 tab-pane" id="rendiciones" style="height: 450px" role="tabpanel" aria-labelledby="pills-rendiciones-tab" tabindex="0">Rendiciones</div>
-                    <div class="shadow-sm border rounded mm-5 tab-pane" id="usuarios" style="height: 450px" role="tabpanel" aria-labelledby="pills-usuarios-tab" tabindex="0">Usuarios</div>
+                    <div class="shadow-sm border rounded mm-5 tab-pane" id="personas" style="height: 450px" role="tabpanel" aria-labelledby="pills-personas-tab" tabindex="0">Personas</div>
                 </div>
 
 

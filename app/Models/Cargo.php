@@ -5,19 +5,16 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Usuario extends Model
+class Cargo extends Model
 {
     use HasFactory;
     
-    protected $table = 'personas';
+    protected $table = 'cargos';
     
     public $timestamps = false;
     
     protected $fillable = [
-        'rut',
         'nombre',
-        'apellido',
-        'correo',
         'estado'
     ];
     
@@ -26,14 +23,6 @@ class Usuario extends Model
      */
     public function acciones()
     {
-        return $this->hasMany(Accion::class, 'persona_id');
-    }
-    
-    /**
-     * Accessor para obtener el nombre completo
-     */
-    public function getNombreCompletoAttribute()
-    {
-        return $this->nombre . ' ' . $this->apellido;
+        return $this->hasMany(Accion::class, 'cargo_id');
     }
 }

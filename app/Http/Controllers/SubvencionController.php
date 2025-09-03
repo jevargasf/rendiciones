@@ -18,13 +18,7 @@ class SubvencionController extends BaseController
 
     public function index()
     {
-        $subvenciones = Subvencion::leftjoin('organizaciones', 'subvenciones.organizacion_id', 'organizaciones.id')
-            ->select(
-                'subvenciones.*',
-                'organizaciones.nombre AS nombreOrganizacion',
-                'organizaciones.rut AS rutOrganizacion',
-            )
-            ->where('subvenciones.estado', 1)->get();
+        $subvenciones = Subvencion::where('estado', 1)->get();
 
         // dd($subvenciones);
 
@@ -86,11 +80,12 @@ class SubvencionController extends BaseController
 
                     // crear registro
                     Subvencion::create([
-                        'organizacion_id'=>$data['A'],
                         'decreto'=>$request->numero_decreto,
                         'monto'=>$data['C'],
                         'destino'=>$data['D'],
-                        'fecha'=>$data['E']
+                        'fecha_asignacion'=>$data['E'],
+                        'rut'=>$data['A'],
+                        'estado'=>1
                     ]);
                 }
 
