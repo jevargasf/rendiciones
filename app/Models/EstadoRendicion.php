@@ -5,26 +5,17 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Subvencion extends Model
+class EstadoRendicion extends Model
 {
     use HasFactory;
     
-    protected $table = 'subvenciones';
+    protected $table = 'estados_rendiciones';
     
     public $timestamps = false;
     
     protected $fillable = [
-        'decreto',
-        'monto',
-        'fecha_asignacion',
-        'destino',
-        'rut',
+        'nombre',
         'estado'
-    ];
-    
-    protected $casts = [
-        'fecha_asignacion' => 'datetime',
-        'monto' => 'integer'
     ];
     
     /**
@@ -32,6 +23,6 @@ class Subvencion extends Model
      */
     public function rendiciones()
     {
-        return $this->hasMany(Rendicion::class, 'subvencion_id');
+        return $this->hasMany(Rendicion::class, 'estado_rendicion_id');
     }
 }
