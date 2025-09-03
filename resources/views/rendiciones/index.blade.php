@@ -69,11 +69,11 @@
                                     <tr>
                                         <td class="td-5">{{ $item->id }}</td>
                                         <td class="fecha" data-order="2025-05-29">29/05/2025</td>
-                                        <td>{{ $item->rutOrganizaciones }}</td>
-                                        <td>{{ $item->nombreOrganizaciones }}</td>
-                                        <td>{{ $item->decretoSubvenciones }}</td>
+                                        <td>{{ $item->subvencion->rut_formateado }}</td>
+                                        <td>{{ $item->subvencion->organizacion }}</td>
+                                        <td>{{ $item->subvencion->decreto }}</td>
                                         <td>865501</td>
-                                        <td class="monto" data-valor="80000">{{ $item->montoSubvenciones }}</td>
+                                        <td class="monto" data-valor="{{ $item->subvencion->monto }}">${{ number_format($item->subvencion->monto, 0, ',', '.') }}</td>
                                         <td class="td-5">
 
                                         <!-- REVISAR ACÁ LA FUNCIONALIDAD DEL BOTÓN VER DETALLE -->
@@ -129,11 +129,11 @@
                                     <tr>
                                         <td class="td-5">{{ $item->id }}</td>
                                         <td class="fecha" data-order="2025-05-29">29/05/2025</td>
-                                        <td>{{ $item->rutOrganizaciones }}</td>
-                                        <td>{{ $item->nombreOrganizaciones }}</td>
-                                        <td>{{ $item->decretoSubvenciones }}</td>
+                                        <td>{{ $item->subvencion->rut_formateado }}</td>
+                                        <td>{{ $item->subvencion->organizacion }}</td>
+                                        <td>{{ $item->subvencion->decreto }}</td>
                                         <td>346544</td>
-                                        <td class="monto" data-valor="80000">{{ $item->montoSubvenciones }}</td>
+                                        <td class="monto" data-valor="{{ $item->subvencion->monto }}">${{ number_format($item->subvencion->monto, 0, ',', '.') }}</td>
                                         <td class="td-5">
                                             <div class="d-flex justify-content-center align-items-center">
                                                 <button type="button" class="btn btn-accion btn-link align-baseline">
@@ -182,11 +182,11 @@
                                     <tr>
                                         <td class="td-5">{{ $item->id }}</td>
                                         <td class="fecha" data-order="2025-05-29">29/05/2025</td>
-                                        <td>{{ $item->rutOrganizaciones }}</td>
-                                        <td>{{ $item->nombreOrganizaciones }}</td>
-                                        <td>{{ $item->decretoSubvenciones }}</td>
+                                        <td>{{ $item->subvencion->rut_formateado }}</td>
+                                        <td>{{ $item->subvencion->organizacion }}</td>
+                                        <td>{{ $item->subvencion->decreto }}</td>
                                         <td>346544</td>
-                                        <td class="monto" data-valor="80000">{{ $item->montoSubvenciones }}</td>
+                                        <td class="monto" data-valor="{{ $item->subvencion->monto }}">${{ number_format($item->subvencion->monto, 0, ',', '.') }}</td>
                                         <td class="td-5">
                                             <div class="d-flex justify-content-center align-items-center">
                                                 <button type="button" class="btn btn-accion btn-link align-baseline">
@@ -241,11 +241,11 @@
                                     <tr>
                                         <td class="td-5">{{ $item->id }}</td>
                                         <td class="fecha" data-order="2025-05-29">29/05/2025</td>
-                                        <td>{{ $item->rutOrganizaciones }}</td>
-                                        <td>{{ $item->nombreOrganizaciones }}</td>
-                                        <td>{{ $item->decretoSubvenciones }}</td>
+                                        <td>{{ $item->subvencion->rut_formateado }}</td>
+                                        <td>{{ $item->subvencion->organizacion }}</td>
+                                        <td>{{ $item->subvencion->decreto }}</td>
                                         <td>346544</td>
-                                        <td class="monto" data-valor="80000">{{ $item->montoSubvenciones }}</td>
+                                        <td class="monto" data-valor="{{ $item->subvencion->monto }}">${{ number_format($item->subvencion->monto, 0, ',', '.') }}</td>
                                         <td class="td-5">
                                             <div class="d-flex justify-content-center align-items-center">
                                                 <button type="button" class="btn btn-accion btn-link align-baseline">

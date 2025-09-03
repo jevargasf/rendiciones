@@ -54,12 +54,12 @@
                         @forelse ($subvenciones as $item)
                             <tr>
                                 <td class="text-center">{{ $item->id }}</td>
-                                <td>{{ $item->fecha }}</td>
-                                <td>{{ $item->rutOrganizacion }}</td>
-                                <td>{{ $item->nombreOrganizacion }}</td>
+                                <td>{{ $item->fecha_asignacion ? \Carbon\Carbon::parse($item->fecha_asignacion)->format('d/m/Y') : '-' }}</td>
+                                <td>{{ $item->rut }}</td>
+                                <td>{{ $item->organizacion }}</td>
                                 <td>{{ $item->decreto }}</td>
-                                <td>{{ $item->monto }}</td>
-                                <td></td>
+                                <td>${{ number_format($item->monto, 0, ',', '.') }}</td>
+                                <td>{{ $item->destino }}</td>
                                 <td class="text-center" style="white-space: nowrap">
                                     <div class="d-flex justify-content-center align-items-center gap-1 flex-wrap">
                                         <!-- Ver detalles -->
