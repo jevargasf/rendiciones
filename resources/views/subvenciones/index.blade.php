@@ -11,6 +11,18 @@
                 </a>
             </h5>
 
+            <!-- Buscador -->
+            <div class="row mb-3">
+                <div class="col-12">
+                    <div class="position-relative">
+                        <i class="fas fa-search position-absolute" style="left: 15px; top: 50%; transform: translateY(-50%); color: #6c757d; z-index: 10;"></i>
+                        <input type="text" class="form-control ps-5" id="buscadorSubvenciones" 
+                               placeholder="Buscar en subvenciones (RUT, organización, decreto, destino, monto...)" 
+                               autocomplete="off" style="padding-left: 45px;">
+                    </div>
+                </div>
+            </div>
+
             <!-- Tabla con datos -->
             <div class="table-responsive">
                 <table class="table table-striped mx-auto" id="table_id">
@@ -783,8 +795,50 @@ Lorem ipsum is simply dummy text of the typesetting industry.</textarea>
 
     <script src="{{ asset('js/subvenciones.js') }}" defer></script>
 
-
     <script>
+        // Funcionalidad del buscador
+        document.addEventListener('DOMContentLoaded', function() {
+            const buscador = document.getElementById('buscadorSubvenciones');
+            const tabla = document.getElementById('table_id');
+            const filas = tabla.querySelectorAll('tbody tr');
+
+            // Función para filtrar filas
+            function filtrarFilas(termino) {
+                const terminoLower = termino.toLowerCase();
+                
+                filas.forEach(fila => {
+                    const celdas = fila.querySelectorAll('td');
+                    let coincide = false;
+                    
+                    // Buscar en todas las celdas excepto la última (opciones)
+                    for (let i = 0; i < celdas.length - 1; i++) {
+                        const texto = celdas[i].textContent.toLowerCase();
+                        if (texto.includes(terminoLower)) {
+                            coincide = true;
+                            break;
+                        }
+                    }
+                    
+                    // Mostrar u ocultar fila
+                    fila.style.display = coincide ? '' : 'none';
+                });
+            }
+
+            // Evento de búsqueda en tiempo real
+            buscador.addEventListener('input', function() {
+                const termino = this.value.trim();
+                filtrarFilas(termino);
+            });
+
+            // Limpiar búsqueda con Escape
+            buscador.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') {
+                    this.value = '';
+                    filtrarFilas('');
+                }
+            });
+        });
+
         /*
                           var table;
                           var modalElement = document.getElementById("modalForm");
