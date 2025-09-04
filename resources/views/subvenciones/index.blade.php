@@ -80,8 +80,9 @@
                                             <i class="fas fa-search"> </i>
                                         </button>
                                         <!-- Editar -->
-                                        <button class="btn btn-succes btn-accion" data-bs-target="#modalEditar"
-                                            data-bs-toggle="modal" title="Editar" type="button">
+                                        <button class="btn btn-succes btn-accion" 
+                                            title="Editar" type="button" 
+                                            onclick="abrirModalEditar({{ $item->id }})">
                                             <i class="fas fa-file-signature"> </i>
                                         </button>
                                         <!-- Rendir subvención -->

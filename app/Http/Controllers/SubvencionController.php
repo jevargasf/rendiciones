@@ -302,6 +302,88 @@ class SubvencionController extends BaseController
     }
 
     /**
+     * Obtener datos de una subvención específica para edición
+     */
+    public function obtener(Request $request)
+    {
+        try {
+            $request->validate([
+                'id' => 'required|integer|exists:subvenciones,id'
+            ]);
+
+            $subvencion = Subvencion::findOrFail($request->id);
+            
+            return response()->json([
+                'success' => true,
+                'data' => [
+                    'id' => $subvencion->id,
+                    'decreto' => $subvencion->decreto,
+                    'monto' => $subvencion->monto,
+                    'destino' => $subvencion->destino,
+                    'rut' => $subvencion->rut,
+                    'organizacion' => $subvencion->organizacion,
+                    'fecha_asignacion' => $subvencion->fecha_asignacion
+                ]
+            ]);
+
+        } catch (Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error al obtener la subvención: ' . $e->getMessage()
+            ]);
+        }
+    }
+
+    /**
+     * Actualizar una subvención existente
+     */
+    public function actualizar(Request $request)
+    {
+        try {
+            $request->validate([
+                'id' => 'required|integer|exists:subvenciones,id',
+                'decreto' => 'required|string|max:255',
+                'monto' => 'required|integer|min:1',
+                'destino' => 'required|string|max:1000',
+                'rut' => 'required|string|max:12',
+                'organizacion' => 'required|string|max:255'
+            ]);
+
+            $subvencion = Subvencion::findOrFail($request->id);
+            
+            // Normalizar RUT si es necesario
+            $rutNormalizado = $this->normalizarRut($request->rut);
+            if (!$rutNormalizado) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'RUT inválido'
+                ]);
+            }
+
+            // Actualizar la subvención
+            $subvencion->update([
+                'decreto' => $request->decreto,
+                'monto' => $request->monto,
+                'destino' => $request->destino,
+                'rut' => $rutNormalizado,
+                'organizacion' => $request->organizacion
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Subvención actualizada correctamente',
+                'data' => $subvencion
+            ]);
+
+        } catch (Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error al actualizar la subvención: ' . $e->getMessage()
+            ]);
+        }
+    }
+
+    /**
      * Eliminar una subvención (soft delete cambiando estado a 9)
      */
     public function eliminar(Request $request)

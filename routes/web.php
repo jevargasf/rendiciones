@@ -29,6 +29,10 @@ Route::prefix('subvenciones')->group(function () {
 
     Route::post('crear', [SubvencionController::class, 'crear'])->name('subvenciones.crear');
 
+    Route::post('obtener', [SubvencionController::class, 'obtener'])->name('subvenciones.obtener');
+
+    Route::post('actualizar', [SubvencionController::class, 'actualizar'])->name('subvenciones.actualizar');
+
     Route::post('eliminar', [SubvencionController::class, 'eliminar'])->name('subvenciones.eliminar');
 
 });
