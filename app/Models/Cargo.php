@@ -25,4 +25,10 @@ class Cargo extends Model
     {
         return $this->hasMany(Accion::class, 'cargo_id');
     }
+    
+    // TODO: Implementar métodos para futuras funcionalidades
+    // - Método para obtener cargos activos
+    // - Método para buscar por nombre
+    // - Método para validar jerarquías de cargos
+    // - Método para asociar con acciones de rendiciones
 }

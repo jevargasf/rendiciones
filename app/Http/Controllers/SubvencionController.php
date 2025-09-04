@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Subvencion;
+use App\Models\Rendicion;
+use App\Models\Notificacion;
 use Exception;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rules\File;
@@ -130,7 +132,7 @@ class SubvencionController extends BaseController
                     }
 
                     // Crear registro de subvención
-                    Subvencion::create([
+                    $subvencion = Subvencion::create([
                         'decreto' => $request->numero_decreto,
                         'monto' => (int) $monto,
                         'destino' => $destino,
@@ -139,6 +141,37 @@ class SubvencionController extends BaseController
                         'organizacion' => $organizacion,
                         'estado' => 1
                     ]);
+
+                    // Crear automáticamente la rendición asociada con estado_rendicion_id = 1
+                    $rendicion = Rendicion::create([
+                        'subvencion_id' => $subvencion->id,
+                        'estado_rendicion_id' => 1, // Estado inicial
+                        'estado' => 1
+                    ]);
+                    
+                    // Crear notificación inicial de subvención creada
+                    Notificacion::create([
+                        'tipo_notificacion' => 1, // Tipo: Subvención Creada
+                        'fecha_envio' => now(),
+                        'fecha_lectura' => null,
+                        'estado_notificacion_id' => false, // No leída
+                        'rendicion_id' => $rendicion->id,
+                        'estado' => 1
+                    ]);
+                    
+                    // TODO: Implementar creación automática de acciones
+                    // cuando se implemente la funcionalidad de Persona y Cargo:
+                    // 
+                    // Accion::create([
+                    //     'fecha' => now(),
+                    //     'comentario' => 'Subvención creada desde archivo Excel',
+                    //     'km_rut' => $usuarioActual->rut,
+                    //     'km_nombre' => $usuarioActual->nombre_completo,
+                    //     'rendicion_id' => $rendicion->id,
+                    //     'persona_id' => $usuarioActual->id,
+                    //     'cargo_id' => $usuarioActual->cargo_id,
+                    //     'estado' => 1
+                    // ]);
 
                     $subvencionesCreadas++;
 

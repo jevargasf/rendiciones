@@ -36,4 +36,10 @@ class Persona extends Model
     {
         return $this->nombre . ' ' . $this->apellido;
     }
+    
+    // TODO: Implementar métodos para futuras funcionalidades
+    // - Método para validar RUT chileno
+    // - Método para buscar por RUT
+    // - Método para obtener personas activas
+    // - Método para asociar con acciones de rendiciones
 }
