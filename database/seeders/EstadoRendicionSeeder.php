@@ -16,7 +16,7 @@ class EstadoRendicionSeeder extends Seeder
         $estadosRendicion = [
             [
                 'id' => 1,
-                'nombre' => 'Pendiente',
+                'nombre' => 'Recepcionada',
                 'estado' => 1
             ],
             [
@@ -26,7 +26,7 @@ class EstadoRendicionSeeder extends Seeder
             ],
             [
                 'id' => 3,
-                'nombre' => 'Aprobada',
+                'nombre' => 'Objetada',
                 'estado' => 1
             ],
             [
@@ -36,7 +36,7 @@ class EstadoRendicionSeeder extends Seeder
             ],
             [
                 'id' => 5,
-                'nombre' => 'Completada',
+                'nombre' => 'Aprobada',
                 'estado' => 1
             ]
         ];
