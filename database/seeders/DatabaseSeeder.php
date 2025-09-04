@@ -23,6 +23,7 @@ class DatabaseSeeder extends Seeder
         $this->call([
             EstadoRendicionSeeder::class,
             TipoNotificacionSeeder::class,
+            CargoSeeder::class,
         ]);
     }
 }
