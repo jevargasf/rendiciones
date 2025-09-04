@@ -87,7 +87,7 @@
                                         </button>
                                         <!-- Rendir subvención -->
                                         <button class="btn btn-success btn-accion"
-                                            data-bs-target="#modalRendirsubvencion" data-bs-toggle="modal"
+                                            onclick="abrirModalRendir({{ $item->id }})"
                                             title="Rendir subvención" type="button">
                                             <i class="fas fa-clipboard-check icon-static-blue"></i>
                                         </button>

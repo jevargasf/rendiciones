@@ -6,6 +6,10 @@ use Illuminate\Http\Request;
 use App\Models\Subvencion;
 use App\Models\Rendicion;
 use App\Models\Notificacion;
+use App\Models\Cargo;
+use App\Models\Persona;
+use App\Models\EstadoRendicion;
+use App\Models\Accion;
 use Exception;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rules\File;
@@ -410,6 +414,149 @@ class SubvencionController extends BaseController
             return response()->json([
                 'success' => false,
                 'message' => 'Error al eliminar la subvención: ' . $e->getMessage()
+            ]);
+        }
+    }
+
+    /**
+     * Obtener datos para el modal de rendir subvención
+     */
+    public function obtenerDatosRendir(Request $request)
+    {
+        try {
+            $request->validate([
+                'id' => 'required|integer|exists:subvenciones,id'
+            ]);
+
+            $subvencion = Subvencion::findOrFail($request->id);
+            $cargos = Cargo::where('estado', 1)->get();
+            $personas = Persona::where('estado', 1)->get();
+            $estadosRendicion = EstadoRendicion::where('estado', 1)
+                ->where('id', '!=', 1) // Excluir estado con ID 1 (Recepcionada)
+                ->get();
+            
+            return response()->json([
+                'success' => true,
+                'data' => [
+                    'subvencion' => [
+                        'id' => $subvencion->id,
+                        'decreto' => $subvencion->decreto,
+                        'monto' => $subvencion->monto,
+                        'destino' => $subvencion->destino,
+                        'rut' => $subvencion->rut,
+                        'organizacion' => $subvencion->organizacion,
+                        'fecha_asignacion' => $subvencion->fecha_asignacion
+                    ],
+                    'cargos' => $cargos,
+                    'personas' => $personas,
+                    'estados_rendicion' => $estadosRendicion
+                ]
+            ]);
+
+        } catch (Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error al obtener los datos: ' . $e->getMessage()
+            ]);
+        }
+    }
+
+    /**
+     * Guardar rendición de subvención
+     */
+    public function guardarRendicion(Request $request)
+    {
+        try {
+            $request->validate([
+                'subvencion_id' => 'required|integer|exists:subvenciones,id',
+                'persona_rut' => 'required|string|max:12',
+                'persona_nombre' => 'required|string|max:255',
+                'persona_apellido' => 'required|string|max:255',
+                'persona_email' => 'required|email|max:255',
+                'persona_telefono' => 'required|string|max:20',
+                'persona_cargo_id' => 'required|integer|exists:cargos,id',
+                'estado_rendicion_id' => 'required|integer|exists:estados_rendiciones,id',
+                'destino' => 'required|string|max:1000',
+                'comentario' => 'required|string|max:1000'
+            ]);
+
+            // Normalizar RUT
+            $rutNormalizado = $this->normalizarRut($request->persona_rut);
+            if (!$rutNormalizado) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'RUT inválido'
+                ]);
+            }
+
+            // Buscar o crear persona
+            $persona = Persona::where('rut', $rutNormalizado)->first();
+            if (!$persona) {
+                $persona = Persona::create([
+                    'rut' => $rutNormalizado,
+                    'nombre' => $request->persona_nombre,
+                    'apellido' => $request->persona_apellido,
+                    'correo' => $request->persona_email,
+                    'telefono' => $request->persona_telefono,
+                    'estado' => 1
+                ]);
+            } else {
+                // Actualizar datos de la persona existente
+                $persona->update([
+                    'nombre' => $request->persona_nombre,
+                    'apellido' => $request->persona_apellido,
+                    'correo' => $request->persona_email,
+                    'telefono' => $request->persona_telefono
+                ]);
+            }
+
+            // Buscar la rendición existente o crear una nueva
+            $subvencion = Subvencion::findOrFail($request->subvencion_id);
+            $rendicion = $subvencion->rendiciones()->where('estado', 1)->first();
+            
+            if (!$rendicion) {
+                $rendicion = Rendicion::create([
+                    'subvencion_id' => $request->subvencion_id,
+                    'estado_rendicion_id' => $request->estado_rendicion_id,
+                    'estado' => 1
+                ]);
+            } else {
+                // Actualizar estado de rendición existente
+                $rendicion->update([
+                    'estado_rendicion_id' => $request->estado_rendicion_id
+                ]);
+            }
+
+            // Crear acción de rendición
+            Accion::create([
+                'fecha' => now(),
+                'comentario' => $request->comentario,
+                'km_rut' => $persona->rut,
+                'km_nombre' => $persona->nombre . ' ' . $persona->apellido,
+                'rendicion_id' => $rendicion->id,
+                'persona_id' => $persona->id,
+                'cargo_id' => $request->persona_cargo_id,
+                'estado' => 1
+            ]);
+
+            // Actualizar destino en la subvención
+            $subvencion->update([
+                'destino' => $request->destino
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Rendición guardada correctamente',
+                'data' => [
+                    'persona_id' => $persona->id,
+                    'rendicion_id' => $rendicion->id
+                ]
+            ]);
+
+        } catch (Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error al guardar la rendición: ' . $e->getMessage()
             ]);
         }
     }
