@@ -46,6 +46,16 @@
                         <p class="ms-4 mb-0" id="monto_rendir">-</p>
                     </div>
                 </div>
+                
+                <div class="row mb-3">
+                    <div class="col-md-12">
+                        <div class="d-flex align-items-center mb-2">
+                            <i class="bi bi-bullseye me-2 text-primary"></i>
+                            <span class="fw-bold small">Destino de la Subvención:</span>
+                        </div>
+                        <p class="ms-4 mb-0" id="destino_subvencion_rendir">-</p>
+                    </div>
+                </div>
 
                 <p class="fw-bold medium">Datos de persona que rinde</p>
                 <!-- INDENTACIÓN -->
@@ -97,17 +107,6 @@
                 <p class="fw-bold medium mt-3">Datos de rendición</p>
                 <!-- INDENTACIÓN -->
                 <div class="ps-3 ps-sm-4 ps-md-5">
-                    <div class="row gy-2 gx-0 align-items-start mt-2">
-                        <div class="col-12 col-sm-2 col-form-label fw-bold small mb-0">
-                            <label for="comentario_rendicion"
-                                class="col-form-label fw-bold small mb-0">Destino</label>
-                        </div>
-                        <div class="col-12 col-sm-10 ps-0 pull-left-sm pull-left-md">
-                            <textarea id="comentario_rendicion" class="form-control form-control-sm shadow-sm" rows="3" 
-                                placeholder="Detalle en extenso del uso de los fondos" required></textarea>
-                        </div>
-                    </div>
-
                     <div class="row gy-2 gx-0 align-items-start mt-2">
                         <label for="comentario_detalle"
                             class="col-12 col-sm-2 col-form-label fw-bold small mb-0">
