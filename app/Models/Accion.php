@@ -10,12 +10,45 @@ class Accion extends Model
     use HasFactory;
     
     protected $table = 'acciones';
-
+    
     public $timestamps = false;
-
-    protected $guarded = ['token'];
-
-    protected $attributes = [
-        'estado' => '1',
+    
+    protected $fillable = [
+        'fecha',
+        'comentario',
+        'km_rut',
+        'km_nombre',
+        'rendicion_id',
+        'persona_id',
+        'cargo_id',
+        'estado'
     ];
+    
+    protected $casts = [
+        'fecha' => 'datetime'
+    ];
+    
+    /**
+     * Relación con rendición
+     */
+    public function rendicion()
+    {
+        return $this->belongsTo(Rendicion::class, 'rendicion_id');
+    }
+    
+    /**
+     * Relación con persona
+     */
+    public function persona()
+    {
+        return $this->belongsTo(Persona::class, 'persona_id');
+    }
+    
+    /**
+     * Relación con cargo
+     */
+    public function cargo()
+    {
+        return $this->belongsTo(Cargo::class, 'cargo_id');
+    }
 }

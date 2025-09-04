@@ -9,13 +9,31 @@ class Usuarios extends Model
 {
     use HasFactory;
     
-    protected $table = 'usuarios';
-
+    protected $table = 'personas';
+    
     public $timestamps = false;
-
-    protected $guarded = ['token'];
-
-    protected $attributes = [
-        'estado' => '1',
+    
+    protected $fillable = [
+        'rut',
+        'nombre',
+        'apellido',
+        'correo',
+        'estado'
     ];
+    
+    /**
+     * Relación con acciones
+     */
+    public function acciones()
+    {
+        return $this->hasMany(Accion::class, 'persona_id');
+    }
+    
+    /**
+     * Accessor para obtener el nombre completo
+     */
+    public function getNombreCompletoAttribute()
+    {
+        return $this->nombre . ' ' . $this->apellido;
+    }
 }
