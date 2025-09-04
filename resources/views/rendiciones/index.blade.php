@@ -7,9 +7,6 @@
         <div class="shadow-sm p-3 mb-5 bg-body rounded">
             <h5 class="mb-5">
                 Rendiciones
-                <a class="btn mb-1 font-weight-bold btn-app float-end" id="btnModal">
-                    <i class="fa-solid fa-plus"></i> Registrar Rendición
-                </a>
             </h5>
 
             <!-- Tablas -->
