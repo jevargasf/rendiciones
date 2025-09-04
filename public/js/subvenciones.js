@@ -293,6 +293,7 @@ function abrirModalRendir(subvencionId) {
             document.getElementById('nombre_organizacion_rendir').textContent = data.data.subvencion.organizacion;
             document.getElementById('decreto_rendir').textContent = data.data.subvencion.decreto;
             document.getElementById('monto_rendir').textContent = '$' + data.data.subvencion.monto.toLocaleString('es-CL');
+            document.getElementById('destino_subvencion_rendir').textContent = data.data.subvencion.destino;
             
             // Llenar opciones de cargos
             const cargoSelect = document.getElementById('persona_cargo');
@@ -452,7 +453,6 @@ document.getElementById('btnFormRendir').addEventListener('click', async functio
         'persona_telefono',
         'persona_cargo',
         'Estado',
-        'comentario_rendicion',
         'comentario_detalle'
     ];
     
@@ -506,7 +506,6 @@ document.getElementById('btnFormRendir').addEventListener('click', async functio
         persona_telefono: document.getElementById('persona_telefono').value,
         persona_cargo_id: document.getElementById('persona_cargo').value,
         estado_rendicion_id: document.getElementById('Estado').value,
-        destino: document.getElementById('comentario_rendicion').value,
         comentario: document.getElementById('comentario_detalle').value
     };
     

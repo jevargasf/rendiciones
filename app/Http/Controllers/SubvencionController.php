@@ -474,7 +474,6 @@ class SubvencionController extends BaseController
                 'persona_telefono' => 'required|string|max:20',
                 'persona_cargo_id' => 'required|integer|exists:cargos,id',
                 'estado_rendicion_id' => 'required|integer|exists:estados_rendiciones,id',
-                'destino' => 'required|string|max:1000',
                 'comentario' => 'required|string|max:1000'
             ]);
 
@@ -537,10 +536,7 @@ class SubvencionController extends BaseController
                 'estado' => 1
             ]);
 
-            // Actualizar destino en la subvención
-            $subvencion->update([
-                'destino' => $request->destino
-            ]);
+            // No se actualiza el destino de la subvención ya que es información original
 
             return response()->json([
                 'success' => true,
