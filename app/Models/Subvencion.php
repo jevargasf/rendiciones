@@ -19,6 +19,7 @@ class Subvencion extends Model
         'fecha_asignacion',
         'destino',
         'rut',
+        'organizacion',
         'estado'
     ];
     

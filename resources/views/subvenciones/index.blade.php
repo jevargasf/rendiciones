@@ -11,56 +11,67 @@
                 </a>
             </h5>
 
+            <!-- Buscador -->
+            <div class="row mb-3">
+                <div class="col-12">
+                    <div class="position-relative">
+                        <i class="fas fa-search position-absolute" style="left: 15px; top: 50%; transform: translateY(-50%); color: #6c757d; z-index: 10;"></i>
+                        <input type="text" class="form-control ps-5" id="buscadorSubvenciones" 
+                               placeholder="Buscar en subvenciones (RUT, organización, decreto, destino, monto...)" 
+                               autocomplete="off" style="padding-left: 45px;">
+                    </div>
+                </div>
+            </div>
+
             <!-- Tabla con datos -->
             <div class="table-responsive">
                 <table class="table table-striped mx-auto" id="table_id">
                     <thead>
                         <tr>
-                            <th class="text-center">
+                            <th class="text-center fw-normal">
                                 <i class="fas fa-sort me-1"> </i>
                                 #
                             </th>
-                            <th>
+                            <th class="fw-normal">
                                 <i class="fas fa-sort me-1"> </i>
                                 Fecha
                             </th>
-                            <th>
+                            <th class="fw-normal">
                                 <i class="fas fa-sort me-1"> </i>
                                 R.U.T
                             </th>
-                            <th>
+                            <th class="fw-normal">
                                 <i class="fas fa-sort me-1"> </i>
                                 Organización
                             </th>
-                            <th>
+                            <th class="fw-normal">
                                 <i class="fas fa-sort me-1"> </i>
                                 Decreto
                             </th>
-                            <th>
+                            <th class="fw-normal">
                                 <i class="fas fa-sort me-1"> </i>
                                 Monto
                             </th>
-                            <th>
+                            <th class="fw-normal">
                                 <i class="fas fa-sort me-1"> </i>
                                 Destino
                             </th>
-                            <th class="text-center">
+                            <th class="text-center fw-normal">
                                 <i class="fas fa-sort me-1"> </i>
                                 Opciones
                             </th>
                         </tr>
                     </thead>
                     <tbody>
-                        <!-- Fila 1 -->
-                        @foreach ($subvenciones as $item)
+                        @forelse ($subvenciones as $item)
                             <tr>
                                 <td class="text-center">{{ $item->id }}</td>
-                                <td>{{ $item->fecha }}</td>
-                                <td>{{ $item->rutOrganizacion }}</td>
-                                <td>{{ $item->nombreOrganizacion }}</td>
+                                <td>{{ $item->fecha_asignacion ? \Carbon\Carbon::parse($item->fecha_asignacion)->format('d/m/Y') : '-' }}</td>
+                                <td>{{ $item->rut }}</td>
+                                <td>{{ $item->organizacion }}</td>
                                 <td>{{ $item->decreto }}</td>
-                                <td>{{ $item->monto }}</td>
-                                <td></td>
+                                <td>${{ number_format($item->monto, 0, ',', '.') }}</td>
+                                <td>{{ $item->destino }}</td>
                                 <td class="text-center" style="white-space: nowrap">
                                     <div class="d-flex justify-content-center align-items-center gap-1 flex-wrap">
                                         <!-- Ver detalles -->
@@ -80,15 +91,23 @@
                                             <i class="fas fa-clipboard-check icon-static-blue"></i>
                                         </button>
                                         <!-- Eliminar -->
-                                        <button class="btn btn-success btn-accion" data-bs-target="#modalEliminar"
-                                            data-bs-toggle="modal" title="Eliminar" type="button">
+                                        <button class="btn btn-success btn-accion btn-eliminar-subvencion" 
+                                            title="Eliminar" type="button" data-subvencion-id="{{ $item->id }}">
                                             <i class="fas fa-times-circle"> </i>
                                         </button>
                                     </div>
                                 </td>
                             </tr>
-                        @endforeach
-
+                        @empty
+                            <tr>
+                                <td colspan="8" class="text-center py-4">
+                                    <div class="text-muted">
+                                        <i class="fas fa-inbox fa-2x mb-2"></i>
+                                        <p class="mb-0">No hay subvenciones</p>
+                                    </div>
+                                </td>
+                            </tr>
+                        @endforelse
                     </tbody>
                 </table>
             </div>
@@ -659,35 +678,6 @@ Lorem ipsum is simply dummy text of the typesetting industry.</textarea>
                     </div>
                 </div>
             </div>
-            <!-- Módulo para "Eliminar" con pestañas -->
-            <div class="modal fade" id="modalEliminar" tabindex="-1" aria-labelledby="modalEliminarLabel"
-                aria-hidden="true">
-                <div class="modal-dialog modal-dialog-centered" style="max-width: 500px">
-                    <div class="modal-content shadow-md rounded-4 overflow-hidden">
-                        <div class="modal-header modal-header-app">
-                            <h6 class="modal-title fw-bold" id="modalEliminarLabel">
-                                Eliminar subvención
-                            </h6>
-                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
-                                aria-label="Cerrar"></button>
-                        </div>
-                        <div class="modal-body text-center">
-                            <p class="mb-0">¿Está seguro/a de eliminar esta subvención?</p>
-                        </div>
-                        <div class="modal-footer border-0">
-                            <button type="button" data-bs-dismiss="modal"
-                                style="background: none; border: none; padding: 10px">
-                                Cancelar
-                            </button>
-
-                            <button id="btnConfirmarEliminar"
-                                class="btn btn-app btn-eliminar px-4 py-2 rounded-pill shadow-sm" type="button">
-                                Sí, eliminar
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
 
 
             <!-- FIN Opciones de cuadro subvenciones en tabla -->
@@ -763,7 +753,7 @@ Lorem ipsum is simply dummy text of the typesetting industry.</textarea>
     <script>
         document.addEventListener('show.bs.modal', function(e) {
 
-            const idsQueMuevo = ['modalEliminar', 'modalRendirsubvencion'];
+            const idsQueMuevo = ['modalRendirsubvencion'];
 
             if (idsQueMuevo.includes(e.target.id)) {
 
@@ -776,8 +766,137 @@ Lorem ipsum is simply dummy text of the typesetting industry.</textarea>
 
     <script src="{{ asset('js/subvenciones.js') }}" defer></script>
 
-
     <script>
+        // Funcionalidad del buscador
+        document.addEventListener('DOMContentLoaded', function() {
+            const buscador = document.getElementById('buscadorSubvenciones');
+            const tabla = document.getElementById('table_id');
+            const filas = tabla.querySelectorAll('tbody tr');
+
+            // Función para filtrar filas
+            function filtrarFilas(termino) {
+                const terminoLower = termino.toLowerCase();
+                
+                filas.forEach(fila => {
+                    const celdas = fila.querySelectorAll('td');
+                    let coincide = false;
+                    
+                    // Buscar en todas las celdas excepto la última (opciones)
+                    for (let i = 0; i < celdas.length - 1; i++) {
+                        const texto = celdas[i].textContent.toLowerCase();
+                        if (texto.includes(terminoLower)) {
+                            coincide = true;
+                            break;
+                        }
+                    }
+                    
+                    // Mostrar u ocultar fila
+                    fila.style.display = coincide ? '' : 'none';
+                });
+            }
+
+            // Evento de búsqueda en tiempo real
+            buscador.addEventListener('input', function() {
+                const termino = this.value.trim();
+                filtrarFilas(termino);
+            });
+
+            // Limpiar búsqueda con Escape
+            buscador.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') {
+                    this.value = '';
+                    filtrarFilas('');
+                }
+            });
+        });
+
+        // Funcionalidad para eliminar subvenciones
+        document.addEventListener('click', function(e) {
+            if (e.target.closest('.btn-eliminar-subvencion')) {
+                const button = e.target.closest('.btn-eliminar-subvencion');
+                const subvencionId = button.getAttribute('data-subvencion-id');
+                
+                // Mostrar SweetAlert de confirmación
+                Swal.fire({
+                    title: '¿Eliminar subvención?',
+                    text: 'Esta acción no se puede deshacer',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#3085d6',
+                    confirmButtonText: 'Sí, eliminar',
+                    cancelButtonText: 'Cancelar',
+                    reverseButtons: true
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        eliminarSubvencion(subvencionId);
+                    }
+                });
+            }
+        });
+
+        // Función para eliminar subvención
+        function eliminarSubvencion(id) {
+            // Mostrar SweetAlert de carga
+            Swal.fire({
+                title: 'Eliminando...',
+                text: 'Por favor espere',
+                icon: 'info',
+                allowOutsideClick: false,
+                allowEscapeKey: false,
+                showConfirmButton: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+
+            // Realizar petición AJAX
+            fetch('{{ route("subvenciones.eliminar") }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || 
+                                   document.querySelector('input[name="_token"]')?.value
+                },
+                body: JSON.stringify({
+                    id: id
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Mostrar mensaje de éxito
+                    Swal.fire({
+                        title: '¡Eliminado!',
+                        text: data.message,
+                        icon: 'success',
+                        confirmButtonText: 'Aceptar'
+                    }).then(() => {
+                        // Recargar la página para actualizar la tabla
+                        window.location.reload();
+                    });
+                } else {
+                    // Mostrar mensaje de error
+                    Swal.fire({
+                        title: 'Error',
+                        text: data.message,
+                        icon: 'error',
+                        confirmButtonText: 'Aceptar'
+                    });
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                Swal.fire({
+                    title: 'Error',
+                    text: 'Error al eliminar la subvención',
+                    icon: 'error',
+                    confirmButtonText: 'Aceptar'
+                });
+            });
+        }
+
+
         /*
                           var table;
                           var modalElement = document.getElementById("modalForm");

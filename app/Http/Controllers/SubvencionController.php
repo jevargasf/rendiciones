@@ -33,76 +33,271 @@ class SubvencionController extends BaseController
 
     public function crear(Request $request)
     {
-        //dd('prueba');
-        try{
-            // validar formulario
+        try {
+            // Validar formulario
             $request->validate([
-
-                'fecha_decreto' => 'required',
-                'numero_decreto' => 'required'
-
+                'fecha_decreto' => 'required|date',
+                'numero_decreto' => 'required|string|max:255',
+                'seleccionar_archivo' => 'required|file|mimes:xls,xlsx|max:10240' // 10MB máximo
             ]);
-            // validar xls
-            $file_extension = File::types(['xls', 'xlsx']);
-            // se almacena si es válido
-            if($file_extension){
-                // almacenar el archivo en storage de la aplicación
-                $xls_saved = Storage::disk('local')->put('xls', $request->seleccionar_archivo);
-                
-                // mejora: identificar extensión para crear el lector xls o xlsx
-                
-                // leer archivo subido
-                $file = $request->seleccionar_archivo;
-                $xls_reader = new Xlsx();
-                $xls_reader->setReadDataOnly(true);
-                $spreadsheet = $xls_reader->load($file);
 
-                // mejora: 1) ver si vienen varias hojas y 2) cargar la data por cada hoja
-                $worksheet_collection = $spreadsheet->getAllSheets();
-                // contar la cantidad de hojas que trae el archivo
-                count($worksheet_collection);
-                $hoja = $worksheet_collection[0];
-                // dimensiones de columna y fila del archivo
-                $columna_max = $hoja->getHighestDataColumn();
-                $fila_max = $hoja->getHighestDataRow();
-                // mejora ¿y si alguien sube un archivo con la data en otra fila o columna?
-                // colección de celdas (la data certera)
-                $xls_headers = $hoja->rangeToArray("A1:$columna_max".'1');
-                $xls_data = $hoja->rangeToArray("A2:$columna_max$fila_max", null, true, true, true);
-
-                // crear registros de subvenciones
-                foreach($xls_data as $data){
-                    //dd($data);
-                    // validar data para cada fila
-
-                    
-                    // buscar o crear registro de rut organización
-
-                    // crear registro
-                    Subvencion::create([
-                        'decreto'=>$request->numero_decreto,
-                        'monto'=>$data['C'],
-                        'destino'=>$data['D'],
-                        'fecha_asignacion'=>$data['E'],
-                        'rut'=>$data['A'],
-                        'estado'=>1
-                    ]);
-                }
-
-                // retornar repsuesta
-                return response()->json(['success'=>true,'message'=>'Subvenciones registradas con éxito']);
-
-            } else {
+            // Validar que el archivo sea Excel
+            $file = $request->file('seleccionar_archivo');
+            $extension = $file->getClientOriginalExtension();
+            
+            if (!in_array($extension, ['xls', 'xlsx'])) {
                 return response()->json([
-                    'success'=>false,
-                    'message'=>'La extensión del archivo es inválida'
+                    'success' => false,
+                    'message' => 'Solo se permiten archivos Excel (.xls o .xlsx)'
                 ]);
             }
 
-        } catch (Exception $e){
-            return response()-> json([
-                'success'=>false,
-                'message'=>$e->getMessage()
+            // Almacenar el archivo temporalmente
+            $filePath = $file->getRealPath();
+            
+            // Crear el lector apropiado según la extensión
+            if ($extension === 'xlsx') {
+                $reader = new Xlsx();
+            } else {
+                $reader = \PhpOffice\PhpSpreadsheet\IOFactory::createReader('Xls');
+            }
+            
+            $reader->setReadDataOnly(true);
+            $spreadsheet = $reader->load($filePath);
+
+            // Obtener la primera hoja
+            $worksheet = $spreadsheet->getActiveSheet();
+            $highestRow = $worksheet->getHighestDataRow();
+            $highestColumn = $worksheet->getHighestDataColumn();
+
+            // Validar que el archivo tenga datos
+            if ($highestRow < 2) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'El archivo no contiene datos válidos'
+                ]);
+            }
+
+            // Obtener encabezados para validar formato
+            $headers = $worksheet->rangeToArray('A1:' . $highestColumn . '1', null, true, true, true);
+            $expectedHeaders = ['Rut Organización', 'Organización', 'Monto', 'Destino', 'Fecha'];
+            
+            // Validar que los encabezados sean correctos
+            $headerRow = array_values($headers[1]);
+            if (count($headerRow) < 5) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'El archivo debe tener al menos 5 columnas: RUT Organización, Organización, Monto, Destino, Fecha'
+                ]);
+            }
+
+            $subvencionesCreadas = 0;
+            $errores = [];
+
+            // Procesar cada fila de datos
+            for ($row = 2; $row <= $highestRow; $row++) {
+                try {
+                    $rut = $worksheet->getCell('A' . $row)->getValue();
+                    $organizacion = $worksheet->getCell('B' . $row)->getValue();
+                    $monto = $worksheet->getCell('C' . $row)->getValue();
+                    $destino = $worksheet->getCell('D' . $row)->getValue();
+                    $fecha = $worksheet->getCell('E' . $row)->getValue();
+
+                    // Validar datos de la fila
+                    if (empty($rut) || empty($organizacion) || empty($monto) || empty($destino) || empty($fecha)) {
+                        $errores[] = "Fila $row: Todos los campos son obligatorios";
+                        continue;
+                    }
+
+                    // Normalizar y validar RUT
+                    $rutNormalizado = $this->normalizarRut($rut);
+                    if (!$rutNormalizado) {
+                        $errores[] = "Fila $row: RUT inválido ($rut)";
+                        continue;
+                    }
+
+                    // Validar monto
+                    if (!is_numeric($monto) || $monto <= 0) {
+                        $errores[] = "Fila $row: Monto inválido ($monto)";
+                        continue;
+                    }
+
+                    // Convertir fecha si es necesario
+                    $fechaAsignacion = $this->convertirFecha($fecha);
+                    if (!$fechaAsignacion) {
+                        $errores[] = "Fila $row: Fecha inválida ($fecha)";
+                        continue;
+                    }
+
+                    // Crear registro de subvención
+                    Subvencion::create([
+                        'decreto' => $request->numero_decreto,
+                        'monto' => (int) $monto,
+                        'destino' => $destino,
+                        'fecha_asignacion' => $fechaAsignacion,
+                        'rut' => $rutNormalizado,
+                        'organizacion' => $organizacion,
+                        'estado' => 1
+                    ]);
+
+                    $subvencionesCreadas++;
+
+                } catch (Exception $e) {
+                    $errores[] = "Fila $row: Error al procesar - " . $e->getMessage();
+                }
+            }
+
+            // Preparar respuesta
+            $mensaje = "Se procesaron $subvencionesCreadas subvenciones correctamente";
+            if (!empty($errores)) {
+                $mensaje .= ". Errores encontrados: " . implode('; ', array_slice($errores, 0, 5));
+                if (count($errores) > 5) {
+                    $mensaje .= " y " . (count($errores) - 5) . " errores más";
+                }
+            }
+
+            return response()->json([
+                'success' => true,
+                'message' => $mensaje,
+                'subvenciones_creadas' => $subvencionesCreadas,
+                'errores' => $errores
+            ]);
+
+        } catch (Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error al procesar el archivo: ' . $e->getMessage()
+            ]);
+        }
+    }
+
+    /**
+     * Normalizar RUT chileno a formato estándar (12345678-9)
+     * Acepta cualquier formato de entrada y lo convierte al formato estándar
+     */
+    private function normalizarRut($rut)
+    {
+        // Limpiar el RUT, mantener solo números y K
+        $rutLimpio = preg_replace('/[^0-9kK]/', '', $rut);
+        
+        // Validar longitud mínima y máxima
+        if (strlen($rutLimpio) < 7 || strlen($rutLimpio) > 9) {
+            return false;
+        }
+
+        $dv = strtoupper(substr($rutLimpio, -1));
+        $numero = substr($rutLimpio, 0, -1);
+
+        // Validar que el dígito verificador sea válido (0-9 o K)
+        if (!in_array($dv, ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'K'])) {
+            return false;
+        }
+
+        // Validar que el número solo contenga dígitos
+        if (!ctype_digit($numero)) {
+            return false;
+        }
+
+        // Calcular dígito verificador para validar
+        $suma = 0;
+        $multiplicador = 2;
+
+        for ($i = strlen($numero) - 1; $i >= 0; $i--) {
+            $suma += $numero[$i] * $multiplicador;
+            $multiplicador = $multiplicador == 7 ? 2 : $multiplicador + 1;
+        }
+
+        $resto = $suma % 11;
+        $dvCalculado = 11 - $resto;
+
+        if ($dvCalculado == 11) {
+            $dvCalculado = '0';
+        } elseif ($dvCalculado == 10) {
+            $dvCalculado = 'K';
+        } else {
+            $dvCalculado = (string) $dvCalculado;
+        }
+
+        // Si el dígito verificador es correcto, retornar en formato estándar
+        if ($dv === $dvCalculado) {
+            return $numero . '-' . $dv;
+        }
+
+        return false;
+    }
+
+    /**
+     * Convertir fecha desde diferentes formatos
+     */
+    private function convertirFecha($fecha)
+    {
+        try {
+            // Si es un objeto DateTime de PhpSpreadsheet
+            if ($fecha instanceof \DateTime) {
+                return $fecha->format('Y-m-d');
+            }
+
+            // Si es un número (fecha serial de Excel)
+            if (is_numeric($fecha)) {
+                $timestamp = \PhpOffice\PhpSpreadsheet\Shared\Date::excelToTimestamp($fecha);
+                return date('Y-m-d', $timestamp);
+            }
+
+            // Si es string, intentar parsear diferentes formatos
+            $formatos = [
+                'd-m-Y',
+                'd/m/Y',
+                'Y-m-d',
+                'Y/m/d',
+                'd-m-y',
+                'd/m/y'
+            ];
+
+            foreach ($formatos as $formato) {
+                $fechaObj = \DateTime::createFromFormat($formato, $fecha);
+                if ($fechaObj !== false) {
+                    return $fechaObj->format('Y-m-d');
+                }
+            }
+
+            return false;
+        } catch (Exception $e) {
+            return false;
+        }
+    }
+
+    /**
+     * Eliminar una subvención (soft delete cambiando estado a 0)
+     */
+    public function eliminar(Request $request)
+    {
+        try {
+            $request->validate([
+                'id' => 'required|integer|exists:subvenciones,id'
+            ]);
+
+            $subvencion = Subvencion::findOrFail($request->id);
+            
+            // Verificar si la subvención tiene rendiciones asociadas
+            if ($subvencion->rendiciones()->exists()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'No se puede eliminar la subvención porque tiene rendiciones asociadas'
+                ]);
+            }
+
+            // Cambiar estado a 0 (soft delete)
+            $subvencion->update(['estado' => 0]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Subvención eliminada correctamente'
+            ]);
+
+        } catch (Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error al eliminar la subvención: ' . $e->getMessage()
             ]);
         }
     }
