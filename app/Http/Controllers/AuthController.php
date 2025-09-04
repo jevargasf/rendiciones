@@ -71,42 +71,27 @@ class AuthController extends BaseController
                         // ///////////////////////////////////////////////////////
                         // // LOGICA PROPIA DE LA APLICACIÓN
                         // ///////////////////////////////////////////////////////
-                        $userApp = Usuarios::where('id_km', $data['usuario']['usuario_id'])->first();
-                    
-                        $usuario = $data["usuario"];
-                        
-                        if (!$userApp) {
+                        // $usuarioMesaDeAyuda = Usuarios::where('rut', $data['usuario']['run'])->first();
+                        // $usuario = $data["usuario"];
+                        // if (!$usuarioMesaDeAyuda) {
+                        //     $usuarioCreate = Usuarios::create([
+                        //         'tipo_usuario' => 1,
+                        //         'rut' => $data['usuario']['run'],
+                        //         'nombres' => $data['usuario']['nombres'],
+                        //         'apellidos' => $data['usuario']['apellido_paterno'],
+                        //         'email' => $data['usuario']['email'],
+                        //         'cargo' => $data['usuario']['cargo'],
+                        //         'profesion' => $data['usuario']['profesion'],
+                        //         'direccion_id' => 20,
+                        //         'fecha_registro' => date('Y-m-d H:i:s'),
+                        //         'estado' => 1
+                        //     ]);
+                        //     $usuario = $usuarioCreate->toArray();
+                        // } else
+                        //     $usuario = $usuarioMesaDeAyuda->toArray();
 
-                            $id_perfil_km = null;
-
-                            foreach ($data["aplicacion"]["perfiles"] as $perfil) {
-                                if ($perfil["perfil_id_km"] == 1) {
-                                    $id_perfil_km = $perfil["perfil_id_km"];
-                                    break; // Si encuentra el 1, tiene perfil de admin
-                                }
-                                if ($id_perfil_km === null) {
-                                    $id_perfil_km = $perfil["perfil_id_km"]; // Guarda el primer perfil encontrado
-                                }
-                            }    
-
-                            $usuarioCreate = Usuarios::create([
-                                'run' => $data['usuario']['run'],
-                                'nombres' => $data['usuario']['nombres'],
-                                'apellido_paterno' => $data['usuario']['apellido_paterno'],
-                                'apellido_materno' => $data['usuario']['apellido_materno'],
-                                'telefono' => $data['usuario']['telefono'],
-                                'email' => $data['usuario']['email'],
-                                'fk_unidad_id' => 1, // valor por defecto
-                                'id_km' => $data['usuario']['usuario_id'],
-                                'id_perfil_km' => $id_perfil_km,
-                            ]);
-
-                            $usuario = $usuarioCreate->toArray();
-
-                        } else
-                            $usuario = $userApp->toArray();
-
-                        $data["usuario"] = $usuario;
+                        // $data["usuario"] = $usuario;
+                        // /* ----------------------------------------------*/
 
                         ///////////////////////////////////////////////////////
                         // INICIAR SESIÓN Y REDIRECCIONAR AL PERFIL POR DEFECTO

@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Subvencion;
+use App\Models\Rendicion;
+use App\Models\Notificacion;
 use Exception;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rules\File;
@@ -16,7 +18,9 @@ class SubvencionController extends BaseController
 
     public function index()
     {
-        $subvenciones = Subvencion::where('estado', 1)->get();
+        $subvenciones = Subvencion::where('estado', 1)
+            ->where('estado', '!=', 9) // Excluir subvenciones eliminadas (estado = 9)
+            ->get();
 
         // dd($subvenciones);
 
@@ -128,7 +132,7 @@ class SubvencionController extends BaseController
                     }
 
                     // Crear registro de subvención
-                    Subvencion::create([
+                    $subvencion = Subvencion::create([
                         'decreto' => $request->numero_decreto,
                         'monto' => (int) $monto,
                         'destino' => $destino,
@@ -137,6 +141,37 @@ class SubvencionController extends BaseController
                         'organizacion' => $organizacion,
                         'estado' => 1
                     ]);
+
+                    // Crear automáticamente la rendición asociada con estado_rendicion_id = 1
+                    $rendicion = Rendicion::create([
+                        'subvencion_id' => $subvencion->id,
+                        'estado_rendicion_id' => 1, // Estado inicial
+                        'estado' => 1
+                    ]);
+                    
+                    // Crear notificación inicial de subvención creada
+                    Notificacion::create([
+                        'tipo_notificacion' => 1, // Tipo: Subvención Creada
+                        'fecha_envio' => now(),
+                        'fecha_lectura' => null,
+                        'estado_notificacion_id' => false, // No leída
+                        'rendicion_id' => $rendicion->id,
+                        'estado' => 1
+                    ]);
+                    
+                    // TODO: Implementar creación automática de acciones
+                    // cuando se implemente la funcionalidad de Persona y Cargo:
+                    // 
+                    // Accion::create([
+                    //     'fecha' => now(),
+                    //     'comentario' => 'Subvención creada desde archivo Excel',
+                    //     'km_rut' => $usuarioActual->rut,
+                    //     'km_nombre' => $usuarioActual->nombre_completo,
+                    //     'rendicion_id' => $rendicion->id,
+                    //     'persona_id' => $usuarioActual->id,
+                    //     'cargo_id' => $usuarioActual->cargo_id,
+                    //     'estado' => 1
+                    // ]);
 
                     $subvencionesCreadas++;
 
@@ -265,7 +300,7 @@ class SubvencionController extends BaseController
     }
 
     /**
-     * Eliminar una subvención (soft delete cambiando estado a 0)
+     * Eliminar una subvención (soft delete cambiando estado a 9)
      */
     public function eliminar(Request $request)
     {
@@ -276,20 +311,15 @@ class SubvencionController extends BaseController
 
             $subvencion = Subvencion::findOrFail($request->id);
             
-            // Verificar si la subvención tiene rendiciones asociadas
-            if ($subvencion->rendiciones()->exists()) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'No se puede eliminar la subvención porque tiene rendiciones asociadas'
-                ]);
-            }
+            // Cambiar estado de la subvención a 9 (eliminada)
+            $subvencion->update(['estado' => 9]);
 
-            // Cambiar estado a 0 (soft delete)
-            $subvencion->update(['estado' => 0]);
+            // Cambiar estado de todas las rendiciones asociadas a 9 (eliminadas)
+            $subvencion->rendiciones()->update(['estado' => 9]);
 
             return response()->json([
                 'success' => true,
-                'message' => 'Subvención eliminada correctamente'
+                'message' => 'Subvención y rendiciones asociadas eliminadas correctamente'
             ]);
 
         } catch (Exception $e) {
