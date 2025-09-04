@@ -91,8 +91,8 @@
                                             <i class="fas fa-clipboard-check icon-static-blue"></i>
                                         </button>
                                         <!-- Eliminar -->
-                                        <button class="btn btn-success btn-accion" data-bs-target="#modalEliminar"
-                                            data-bs-toggle="modal" title="Eliminar" type="button">
+                                        <button class="btn btn-success btn-accion btn-eliminar-subvencion" 
+                                            title="Eliminar" type="button" data-subvencion-id="{{ $item->id }}">
                                             <i class="fas fa-times-circle"> </i>
                                         </button>
                                     </div>
@@ -678,35 +678,6 @@ Lorem ipsum is simply dummy text of the typesetting industry.</textarea>
                     </div>
                 </div>
             </div>
-            <!-- Módulo para "Eliminar" con pestañas -->
-            <div class="modal fade" id="modalEliminar" tabindex="-1" aria-labelledby="modalEliminarLabel"
-                aria-hidden="true">
-                <div class="modal-dialog modal-dialog-centered" style="max-width: 500px">
-                    <div class="modal-content shadow-md rounded-4 overflow-hidden">
-                        <div class="modal-header modal-header-app">
-                            <h6 class="modal-title fw-bold" id="modalEliminarLabel">
-                                Eliminar subvención
-                            </h6>
-                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
-                                aria-label="Cerrar"></button>
-                        </div>
-                        <div class="modal-body text-center">
-                            <p class="mb-0">¿Está seguro/a de eliminar esta subvención?</p>
-                        </div>
-                        <div class="modal-footer border-0">
-                            <button type="button" data-bs-dismiss="modal"
-                                style="background: none; border: none; padding: 10px">
-                                Cancelar
-                            </button>
-
-                            <button id="btnConfirmarEliminar"
-                                class="btn btn-app btn-eliminar px-4 py-2 rounded-pill shadow-sm" type="button">
-                                Sí, eliminar
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
 
 
             <!-- FIN Opciones de cuadro subvenciones en tabla -->
@@ -782,7 +753,7 @@ Lorem ipsum is simply dummy text of the typesetting industry.</textarea>
     <script>
         document.addEventListener('show.bs.modal', function(e) {
 
-            const idsQueMuevo = ['modalEliminar', 'modalRendirsubvencion'];
+            const idsQueMuevo = ['modalRendirsubvencion'];
 
             if (idsQueMuevo.includes(e.target.id)) {
 
@@ -838,6 +809,93 @@ Lorem ipsum is simply dummy text of the typesetting industry.</textarea>
                 }
             });
         });
+
+        // Funcionalidad para eliminar subvenciones
+        document.addEventListener('click', function(e) {
+            if (e.target.closest('.btn-eliminar-subvencion')) {
+                const button = e.target.closest('.btn-eliminar-subvencion');
+                const subvencionId = button.getAttribute('data-subvencion-id');
+                
+                // Mostrar SweetAlert de confirmación
+                Swal.fire({
+                    title: '¿Eliminar subvención?',
+                    text: 'Esta acción no se puede deshacer',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#3085d6',
+                    confirmButtonText: 'Sí, eliminar',
+                    cancelButtonText: 'Cancelar',
+                    reverseButtons: true
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        eliminarSubvencion(subvencionId);
+                    }
+                });
+            }
+        });
+
+        // Función para eliminar subvención
+        function eliminarSubvencion(id) {
+            // Mostrar SweetAlert de carga
+            Swal.fire({
+                title: 'Eliminando...',
+                text: 'Por favor espere',
+                icon: 'info',
+                allowOutsideClick: false,
+                allowEscapeKey: false,
+                showConfirmButton: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+
+            // Realizar petición AJAX
+            fetch('{{ route("subvenciones.eliminar") }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || 
+                                   document.querySelector('input[name="_token"]')?.value
+                },
+                body: JSON.stringify({
+                    id: id
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Mostrar mensaje de éxito
+                    Swal.fire({
+                        title: '¡Eliminado!',
+                        text: data.message,
+                        icon: 'success',
+                        confirmButtonText: 'Aceptar'
+                    }).then(() => {
+                        // Recargar la página para actualizar la tabla
+                        window.location.reload();
+                    });
+                } else {
+                    // Mostrar mensaje de error
+                    Swal.fire({
+                        title: 'Error',
+                        text: data.message,
+                        icon: 'error',
+                        confirmButtonText: 'Aceptar'
+                    });
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                Swal.fire({
+                    title: 'Error',
+                    text: 'Error al eliminar la subvención',
+                    icon: 'error',
+                    confirmButtonText: 'Aceptar'
+                });
+            });
+        }
+
 
         /*
                           var table;

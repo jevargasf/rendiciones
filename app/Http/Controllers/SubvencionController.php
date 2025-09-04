@@ -265,4 +265,40 @@ class SubvencionController extends BaseController
             return false;
         }
     }
+
+    /**
+     * Eliminar una subvención (soft delete cambiando estado a 0)
+     */
+    public function eliminar(Request $request)
+    {
+        try {
+            $request->validate([
+                'id' => 'required|integer|exists:subvenciones,id'
+            ]);
+
+            $subvencion = Subvencion::findOrFail($request->id);
+            
+            // Verificar si la subvención tiene rendiciones asociadas
+            if ($subvencion->rendiciones()->exists()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'No se puede eliminar la subvención porque tiene rendiciones asociadas'
+                ]);
+            }
+
+            // Cambiar estado a 0 (soft delete)
+            $subvencion->update(['estado' => 0]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Subvención eliminada correctamente'
+            ]);
+
+        } catch (Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error al eliminar la subvención: ' . $e->getMessage()
+            ]);
+        }
+    }
 }
