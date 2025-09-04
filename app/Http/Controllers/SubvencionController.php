@@ -20,7 +20,9 @@ class SubvencionController extends BaseController
 
     public function index()
     {
-        $subvenciones = Subvencion::where('estado', 1)->get();
+        $subvenciones = Subvencion::where('estado', 1)
+            ->where('estado', '!=', 9) // Excluir subvenciones eliminadas (estado = 9)
+            ->get();
 
         // dd($subvenciones);
 
@@ -300,7 +302,7 @@ class SubvencionController extends BaseController
     }
 
     /**
-     * Eliminar una subvención (soft delete cambiando estado a 0)
+     * Eliminar una subvención (soft delete cambiando estado a 9)
      */
     public function eliminar(Request $request)
     {
@@ -311,20 +313,15 @@ class SubvencionController extends BaseController
 
             $subvencion = Subvencion::findOrFail($request->id);
             
-            // Verificar si la subvención tiene rendiciones asociadas
-            if ($subvencion->rendiciones()->exists()) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'No se puede eliminar la subvención porque tiene rendiciones asociadas'
-                ]);
-            }
+            // Cambiar estado de la subvención a 9 (eliminada)
+            $subvencion->update(['estado' => 9]);
 
-            // Cambiar estado a 0 (soft delete)
-            $subvencion->update(['estado' => 0]);
+            // Cambiar estado de todas las rendiciones asociadas a 9 (eliminadas)
+            $subvencion->rendiciones()->update(['estado' => 9]);
 
             return response()->json([
                 'success' => true,
-                'message' => 'Subvención eliminada correctamente'
+                'message' => 'Subvención y rendiciones asociadas eliminadas correctamente'
             ]);
 
         } catch (Exception $e) {

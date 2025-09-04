@@ -17,16 +17,24 @@ class RendicionController extends BaseController
     public function index()
     {
         $rendiciones = Rendicion::with(['subvencion', 'estadoRendicion'])
-            ->where('estado', 1)->get();
+            ->where('estado', 1)
+            ->where('estado_rendicion_id', '!=', 1) // Excluir rendiciones con estado_rendicion_id = 1 (Pendiente)
+            ->get();
 
         $pendientes = Rendicion::with(['subvencion', 'estadoRendicion'])
-            ->where('estado', 2)->get();
+            ->where('estado', 2)
+            ->where('estado_rendicion_id', '!=', 1) // Excluir rendiciones con estado_rendicion_id = 1 (Pendiente)
+            ->get();
 
         $observadas = Rendicion::with(['subvencion', 'estadoRendicion'])
-            ->where('estado', 3)->get();
+            ->where('estado', 3)
+            ->where('estado_rendicion_id', '!=', 1) // Excluir rendiciones con estado_rendicion_id = 1 (Pendiente)
+            ->get();
 
         $rechazadas = Rendicion::with(['subvencion', 'estadoRendicion'])
-            ->where('estado', 4)->get();
+            ->where('estado', 4)
+            ->where('estado_rendicion_id', '!=', 1) // Excluir rendiciones con estado_rendicion_id = 1 (Pendiente)
+            ->get();
 
 
 

@@ -60,31 +60,9 @@
 
             <div class="tab-pane fade" id="historial" role="tabpanel" aria-labelledby="contact-tab">
                 @if (in_array(Session::get('perfil.perfil_id_km'), [1, 2]))
-                    <div class="table-responsive mb-5">
-                        <table id="table_id" class="table table-striped mx-auto">
-                            <thead>
-                                <tr>
-                                    <th class="td-5 text-center">#</th>
-                                    <th class="w-25">Accion</th>
-                                    <th class="w-50">Descripción</th>
-                                    <th class="w-25">Usuario</th>
-                                    <th class="text-center">Fecha</th>
-
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach ($log as $item)
-                                    <tr>
-                                        <td class="td-5"> {{ $item->id }} </td>
-                                        <td> {{ $item->accion }} </td>
-                                        <td> {{ $item->descripcion }} </td>
-                                        <td> {{ $item->nombre_completo }} </td>
-                                        <td class="td-10 text-center"> {{ $item->created_at }} </td>
-
-                                    </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
+                    <div class="alert alert-info text-center">
+                        <h5>Historial de Acciones</h5>
+                        <p class="mb-0">Esta funcionalidad estará disponible próximamente.</p>
                     </div>
                 @endif
 
