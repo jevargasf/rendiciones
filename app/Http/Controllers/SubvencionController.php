@@ -172,12 +172,12 @@ class SubvencionController extends BaseController
                         
                         Accion::create([
                             'fecha' => now(),
-                            'comentario' => 'Subvención creada desde archivo Excel',
+                            'comentario' => 'Creación de subvención',
                             'km_rut' => $usuarioAutenticado['run'] ?? '',
                             'km_nombre' => $nombreCompletoUsuario,
                             'rendicion_id' => $rendicion->id,
-                            'persona_id' => null, // No hay persona específica en la creación automática
-                            'cargo_id' => null, // Se puede obtener del usuario si es necesario
+                            'persona_id' => null,
+                            'cargo_id' => null,
                             'estado' => 1
                         ]);
                     }
