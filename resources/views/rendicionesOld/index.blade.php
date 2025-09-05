@@ -45,21 +45,17 @@
         <div class="tab-pane fade show active" id="nav-rendidas" role="tabpanel" aria-labelledby="nav-rendidas-tab"
           tabindex="0">
           <div class="table-responsive mt-3">
-            <table id="table_id" class="table table-striped mx-auto">
+            <table class="table table-striped mx-auto display" id="table_rendidas">
               <thead>
                 <tr>
-                  <th class="text-center">
-                    <i class="fas fa-sort me-1"></i> #
-                  </th>
-                  <th><i class="fas fa-sort me-1"></i> Fecha</th>
-                  <th><i class="fas fa-sort me-1"></i> R.U.T</th>
-                  <th><i class="fas fa-sort me-1"></i> Organización</th>
-                  <th><i class="fas fa-sort me-1"></i> Decreto</th>
-                  <th><i class="fas fa-sort me-1"></i> Nro. Movimiento</th>
-                  <th><i class="fas fa-sort me-1"></i> Monto</th>
-                  <th class="text-center">
-                    <i class="fas fa-sort me-1"></i> Opciones
-                  </th>
+                  <th class="text-center">#</th>
+                  <th>Fecha</th>
+                  <th>R.U.T</th>
+                  <th>Organización</th>
+                  <th>Decreto</th>
+                  <th>Nro. Movimiento</th>
+                  <th>Monto</th>
+                  <th class="text-center">Opciones</th>
                 </tr>
               </thead>
               <tbody>

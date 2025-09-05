@@ -824,7 +824,7 @@ button.btn.btn-app.btn-eliminar:focus {
   height: 10rem!important;
 }
 
-                                            /* PAGINA SUBVENCIONES*/
+                                                                         /* PAGINA SUBVENCIONES*/
 
 /* Modal Editar Subvención */
 #modalEditar .modal-dialog {
@@ -985,6 +985,8 @@ button.btn.btn-app.btn-eliminar:focus {
 @media (min-width:768px){ 
   .ind-rinde   { margin-inline-start: 2.1rem !important; } }
 
+  /*Alinear los componentes de Datatable de la página de subvenciones*/
+
 
 
                                           /* PAGINA RENDICIONES */ 
@@ -995,7 +997,6 @@ button.btn.btn-app.btn-eliminar:focus {
 #modalVer .tab-content { height:260px; min-height:260px; overflow-y:auto; }
 #modalVer .table { margin-bottom: 0; } 
 
-/* */
 
 
 

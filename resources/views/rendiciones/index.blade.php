@@ -56,7 +56,8 @@
                 <div class="tab-pane fade show active" id="nav-rendidas" role="tabpanel"
                     aria-labelledby="nav-rendidas-tab" tabindex="0">
                     <div class="table-responsive mt-3">
-                        <table id="table_id" class="table table-striped mx-auto">  <!-- nombre de tabla llamada en archivo JS document.querySelector("#table_id")?.addEventListener("click", async function (e)-->
+                        <table class="table table-striped mx-auto display" id="table_rendidas">
+                            <!-- nombre de tabla llamada en archivo JS document.querySelector("#table_id")?.addEventListener("click", async function (e)-->
                             <thead>
                                 <tr>
                                                         <th class="text-center fw-normal">
@@ -72,7 +73,7 @@
                         <i class="fas fa-sort me-1"></i> Opciones
                     </th>
                                 </tr>
-                            </thead> 
+                            </thead>
                             <tbody>
                                 @forelse ($rendiciones as $item)
                                     <tr>
@@ -85,12 +86,11 @@
                                         <td class="monto" data-valor="{{ $item->subvencion->monto }}">${{ number_format($item->subvencion->monto, 0, ',', '.') }}</td>
                                         <td class="td-5">
 
-                                        <!-- REVISAR ACÁ LA FUNCIONALIDAD DEL BOTÓN VER DETALLE -->
+                                            <!-- REVISAR ACÁ LA FUNCIONALIDAD DEL BOTÓN VER DETALLE -->
                                             <div class="d-flex justify-content-center align-items-center">
                                                 <button type="button" class="btn btn-accion btn-link align-baseline">
                                                     <i class="fas fa-search" data-id="{{ $item->id }}"
                                                         data-subvencion="{{ $item->subvencion_id }}"
-                                                
                                                         {{-- Guarda el ID del registro para usarlo en JavaScript --}}></i>
 
                                                 </button>
@@ -116,7 +116,7 @@
                 <div class="tab-pane fade" id="nav-pendientes" role="tabpanel" aria-labelledby="nav-pendientes-tab"
                     tabindex="0">
                     <div class="table-responsive mt-3">
-                        <table id="table_pendientes" class="table table-striped mx-auto">
+                        <table class="table table-striped mx-auto display" id="table_pendientes">
                             <thead>
                                 <tr>
                                                         <th class="text-center fw-normal">
@@ -171,7 +171,8 @@
                 <div class="tab-pane fade" id="nav-observadas" role="tabpanel" aria-labelledby="nav-observadas-tab"
                     tabindex="0">
                     <div class="table-responsive mt-3">
-                        <table id="table_observadas" class="table table-striped mx-auto"> <!-- nombre de tabla llamada en archivo JS document.querySelector("#table_observadas")?.addEventListener("click", async function (e)-->
+                        <table class="table table-striped mx-auto display" id="table_observadas">
+                            <!-- nombre de tabla llamada en archivo JS document.querySelector("#table_observadas")?.addEventListener("click", async function (e)-->
                             <thead>
                                 <tr>
                                     <th class="text-center">
@@ -230,7 +231,8 @@
                 <div class="tab-pane fade" id="nav-rechazadas" role="tabpanel" aria-labelledby="nav-rechazadas-tab"
                     tabindex="0">
                     <div class="table-responsive mt-3">
-                        <table id="table_rechazadas" class="table table-striped mx-auto"> <!-- nombre de tabla llamada en archivo JS document.querySelector("#table_rechazadas")?.addEventListener("click", async function (e)-->
+                        <table class="table table-striped mx-auto display" id="table_rechazadas">
+                            <!-- nombre de tabla llamada en archivo JS document.querySelector("#table_rechazadas")?.addEventListener("click", async function (e)-->
                             <thead>
                                 <tr>
                                     <th class="text-center">
@@ -395,15 +397,14 @@
 
     <!-- Modal “Ver detalle” con dos pestañas internas -->
     <!--Importante: para verificar que tome esta tabla de detalle de rendiciones es necesario cambiar el id y en aria-labelledby debe ir lo mismo de id: modalDetallePendientes  -->
-    <div class="modal fade" id="modalDetallePendientes" tabindex="-1"
-        aria-labelledby="modalDetallePendientesLabel" aria-hidden="true">
+    <div class="modal fade" id="modalDetallePendientes" tabindex="-1" aria-labelledby="modalDetallePendientesLabel"
+        aria-hidden="true">
         <!--se corrige el nombre del modal de acuerdo a JS para que funcione, antes tenia nombre "VER DETALLE"-->
         <div class="modal-dialog modal-lg modal-dialog-centered">
             <div class="modal-content rounded-4">
                 <div class="modal-header modal-header-app">
                     <h5 class="modal-title" id="modalDetalleRendicionLabel">Detalle de rendición</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"
-                        aria-label="Cerrar"></button>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
                 </div>
 
                 <!-- Módulos de pestañas -->
@@ -411,15 +412,15 @@
                     <ul class="nav nav-tabs" id="innerTabs" role="tablist">
                         <li class="nav-item" role="presentation">
                             <button class="nav-link active w-100" id="tab1-tab" data-bs-toggle="tab"
-                                data-bs-target="#tab1" type="button" role="tab"
-                                aria-controls="tab1" aria-selected="true">
+                                data-bs-target="#tab1" type="button" role="tab" aria-controls="tab1"
+                                aria-selected="true">
                                 Acciones
                             </button>
                         </li>
                         <li class="nav-item" role="presentation">
                             <button class="nav-link w-100" id="tab2-tab" data-bs-toggle="tab"
-                                data-bs-target="#tab2" type="button" role="tab"
-                                aria-controls="tab2" aria-selected="false">
+                                data-bs-target="#tab2" type="button" role="tab" aria-controls="tab2"
+                                aria-selected="false">
                                 Notificaciones
                             </button>
                         </li>
@@ -451,8 +452,7 @@
                             </div>
 
                             <!-- Notificaciones -->
-                            <div class="tab-pane fade" id="tab2" role="tabpanel"
-                                aria-labelledby="tab2-tab">
+                            <div class="tab-pane fade" id="tab2" role="tabpanel" aria-labelledby="tab2-tab">
                                 <div class="table-responsive mt-2">
                                     <table class="table table-striped table-sm mb-0">
                                         <thead>
@@ -499,15 +499,14 @@
 
     <!-- Modal “Ver detalle” con dos pestañas internas -->
     <!--Importante: para verificar que tome esta tabla de detalle de rendiciones es necesario cambiar el id y en aria-labelledby debe ir lo mismo de id: modalDetallePendientes  -->
-    <div class="modal fade" id="modalDetalleObservadas" tabindex="-1"
-        aria-labelledby="modalDetalleObservadasLabel" aria-hidden="true">
+    <div class="modal fade" id="modalDetalleObservadas" tabindex="-1" aria-labelledby="modalDetalleObservadasLabel"
+        aria-hidden="true">
         <!--se corrige el nombre del modal de acuerdo a JS para que funcione, antes tenia nombre "VER DETALLE"-->
         <div class="modal-dialog modal-lg modal-dialog-centered">
             <div class="modal-content rounded-4">
                 <div class="modal-header modal-header-app">
                     <h5 class="modal-title" id="modalDetalleRendicionLabel">Detalle de rendición</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"
-                        aria-label="Cerrar"></button>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
                 </div>
 
                 <!-- Módulos de pestañas -->
@@ -515,15 +514,15 @@
                     <ul class="nav nav-tabs" id="innerTabs" role="tablist">
                         <li class="nav-item" role="presentation">
                             <button class="nav-link active w-100" id="tab1-tab" data-bs-toggle="tab"
-                                data-bs-target="#tab1" type="button" role="tab"
-                                aria-controls="tab1" aria-selected="true">
+                                data-bs-target="#tab1" type="button" role="tab" aria-controls="tab1"
+                                aria-selected="true">
                                 Acciones
                             </button>
                         </li>
                         <li class="nav-item" role="presentation">
                             <button class="nav-link w-100" id="tab2-tab" data-bs-toggle="tab"
-                                data-bs-target="#tab2" type="button" role="tab"
-                                aria-controls="tab2" aria-selected="false">
+                                data-bs-target="#tab2" type="button" role="tab" aria-controls="tab2"
+                                aria-selected="false">
                                 Notificaciones
                             </button>
                         </li>
@@ -555,8 +554,7 @@
                             </div>
 
                             <!-- Notificaciones -->
-                            <div class="tab-pane fade" id="tab2" role="tabpanel"
-                                aria-labelledby="tab2-tab">
+                            <div class="tab-pane fade" id="tab2" role="tabpanel" aria-labelledby="tab2-tab">
                                 <div class="table-responsive mt-2">
                                     <table class="table table-striped table-sm mb-0">
                                         <thead>
@@ -595,66 +593,65 @@
         </div>
     </div>
 
-        <!-- /modal-body -->
+    <!-- /modal-body -->
 
-        <!-- Se crea modal para ver Detalles de Rendición en pestaña Rechazadas -->
+    <!-- Se crea modal para ver Detalles de Rendición en pestaña Rechazadas -->
 
-        <!-- Modal “Ver detalle” con dos pestañas internas -->
-        <!--Importante: para verificar que tome esta tabla de detalle de rendiciones es necesario cambiar el id y en aria-labelledby debe ir lo mismo de id: modalDetallePendientes  -->
-        <div class="modal fade" id="modalDetalleRechazadas" tabindex="-1"
-            aria-labelledby="modalDetalleRechazadasLabel" aria-hidden="true">
-            <!--se corrige el nombre del modal de acuerdo a JS para que funcione, antes tenia nombre "VER DETALLE"-->
-            <div class="modal-dialog modal-lg modal-dialog-centered">
-                <div class="modal-content rounded-4">
-                    <div class="modal-header modal-header-app">
-                        <h5 class="modal-title" id="modalDetalleRendicionLabel">Detalle de rendición</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal"
-                            aria-label="Cerrar"></button>
-                    </div>
+    <!-- Modal “Ver detalle” con dos pestañas internas -->
+    <!--Importante: para verificar que tome esta tabla de detalle de rendiciones es necesario cambiar el id y en aria-labelledby debe ir lo mismo de id: modalDetallePendientes  -->
+    <div class="modal fade" id="modalDetalleRechazadas" tabindex="-1" aria-labelledby="modalDetalleRechazadasLabel"
+        aria-hidden="true">
+        <!--se corrige el nombre del modal de acuerdo a JS para que funcione, antes tenia nombre "VER DETALLE"-->
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content rounded-4">
+                <div class="modal-header modal-header-app">
+                    <h5 class="modal-title" id="modalDetalleRendicionLabel">Detalle de rendición</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
 
-                    <!-- Módulos de pestañas -->
-                    <div class="modal-body pb-0">
-                        <ul class="nav nav-tabs" id="innerTabs" role="tablist">
-                            <li class="nav-item" role="presentation">
-                                <button class="nav-link active w-100" id="tab1-tab" data-bs-toggle="tab"
-                                    data-bs-target="#tab1" type="button" role="tab"
-                                    aria-controls="tab1" aria-selected="true">
-                                    Acciones
-                                </button>
-                            </li>
-                            <li class="nav-item" role="presentation">
-                                <button class="nav-link w-100" id="tab2-tab" data-bs-toggle="tab"
-                                    data-bs-target="#tab2" type="button" role="tab"
-                                    aria-controls="tab2" aria-selected="false">
-                                    Notificaciones
-                                </button>
-                            </li>
-                        </ul>
+                <!-- Módulos de pestañas -->
+                <div class="modal-body pb-0">
+                    <ul class="nav nav-tabs" id="innerTabs" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active w-100" id="tab1-tab" data-bs-toggle="tab"
+                                data-bs-target="#tab1" type="button" role="tab" aria-controls="tab1"
+                                aria-selected="true">
+                                Acciones
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link w-100" id="tab2-tab" data-bs-toggle="tab"
+                                data-bs-target="#tab2" type="button" role="tab" aria-controls="tab2"
+                                aria-selected="false">
+                                Notificaciones
+                            </button>
+                        </li>
+                    </ul>
 
-                        <!-- Contenido de tabs -->
-                        <div class="bg-white border rounded-4 p-3 shadow-sm" id="tabsBox">
-                            <div class="tab-content" id="innerTabsContent">
-                                <!-- Acciones -->
-                                <div class="tab-pane fade show active" id="tab1" role="tabpanel"
-                                    aria-labelledby="tab1-tab">
-                                    <div class="table-responsive mt-2">
-                                        <table class="table table-striped table-sm mb-0" id="tablaAcciones">
-                                            <thead>
-                                                <tr>
-                                                    <th>#</th>
-                                                    <th>Fecha</th>
-                                                    <th>Hora</th>
-                                                    <th>Acción realizada</th>
-                                                    <th>Usuario</th>
-                                                </tr>
-                                            </thead>
+                    <!-- Contenido de tabs -->
+                    <div class="bg-white border rounded-4 p-3 shadow-sm" id="tabsBox">
+                        <div class="tab-content" id="innerTabsContent">
+                            <!-- Acciones -->
+                            <div class="tab-pane fade show active" id="tab1" role="tabpanel"
+                                aria-labelledby="tab1-tab">
+                                <div class="table-responsive mt-2">
+                                    <table class="table table-striped table-sm mb-0" id="tablaAcciones">
+                                        <thead>
+                                            <tr>
+                                                <th>#</th>
+                                                <th>Fecha</th>
+                                                <th>Hora</th>
+                                                <th>Acción realizada</th>
+                                                <th>Usuario</th>
+                                            </tr>
+                                        </thead>
 
-                                            <tbody>
+                                        <tbody>
 
-                                            </tbody>
-                                        </table>
-                                    </div>
+                                        </tbody>
+                                    </table>
                                 </div>
+                            </div>
 
                                 <!-- Notificaciones -->
                                 <div class="tab-pane fade" id="tab2" role="tabpanel"
@@ -825,3 +822,5 @@
 
     <x-footer />
 </x-app>
+
+
