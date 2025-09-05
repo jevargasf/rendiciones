@@ -42,8 +42,8 @@
                                 </button>
                         </div>
                         <div class="col-md-4" style="height: 10rem;">
-                                <button type="button" class="btn btn-light w-100 h-100" data-bs-toggle="pill" data-bs-target="#usuarios" role="tab"  aria-pressed="false" aria-controls="usuarios" id="usuarios-tab">
-                                    Usuarios <span class="badge text-bg-secondary">{{ $usuarios }}</span>
+                                <button type="button" class="btn btn-light w-100 h-100" data-bs-toggle="pill" data-bs-target="#personas" role="tab"  aria-pressed="false" aria-controls="personas" id="personas-tab">
+                                    Personas <span class="badge text-bg-secondary">{{ $personas }}</span>
                                 </button>
                         </div>
                     </div>
@@ -52,7 +52,7 @@
                 <div class="tab-content mb-5" id="tabContent">
                     <div class="shadow-sm border rounded mm-5 tab-pane show active" id="subvenciones" style="height: 450px" role="tabpanel" aria-labelledby="pills-subvenciones-tab" tabindex="0">Subvenciones</div>
                     <div class="shadow-sm border rounded mm-5 tab-pane" id="rendiciones" style="height: 450px" role="tabpanel" aria-labelledby="pills-rendiciones-tab" tabindex="0">Rendiciones</div>
-                    <div class="shadow-sm border rounded mm-5 tab-pane" id="usuarios" style="height: 450px" role="tabpanel" aria-labelledby="pills-usuarios-tab" tabindex="0">Usuarios</div>
+                    <div class="shadow-sm border rounded mm-5 tab-pane" id="personas" style="height: 450px" role="tabpanel" aria-labelledby="pills-personas-tab" tabindex="0">Personas</div>
                 </div>
 
 
@@ -60,31 +60,9 @@
 
             <div class="tab-pane fade" id="historial" role="tabpanel" aria-labelledby="contact-tab">
                 @if (in_array(Session::get('perfil.perfil_id_km'), [1, 2]))
-                    <div class="table-responsive mb-5">
-                        <table id="table_id" class="table table-striped mx-auto">
-                            <thead>
-                                <tr>
-                                    <th class="td-5 text-center">#</th>
-                                    <th class="w-25">Accion</th>
-                                    <th class="w-50">Descripción</th>
-                                    <th class="w-25">Usuario</th>
-                                    <th class="text-center">Fecha</th>
-
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach ($log as $item)
-                                    <tr>
-                                        <td class="td-5"> {{ $item->id }} </td>
-                                        <td> {{ $item->accion }} </td>
-                                        <td> {{ $item->descripcion }} </td>
-                                        <td> {{ $item->nombre_completo }} </td>
-                                        <td class="td-10 text-center"> {{ $item->created_at }} </td>
-
-                                    </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
+                    <div class="alert alert-info text-center">
+                        <h5>Historial de Acciones</h5>
+                        <p class="mb-0">Esta funcionalidad estará disponible próximamente.</p>
                     </div>
                 @endif
 

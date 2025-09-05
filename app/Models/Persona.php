@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Usuario extends Model
+class Persona extends Model
 {
     use HasFactory;
     
@@ -18,6 +18,7 @@ class Usuario extends Model
         'nombre',
         'apellido',
         'correo',
+        'telefono',
         'estado'
     ];
     
@@ -36,4 +37,10 @@ class Usuario extends Model
     {
         return $this->nombre . ' ' . $this->apellido;
     }
+    
+    // TODO: Implementar métodos para futuras funcionalidades
+    // - Método para validar RUT chileno
+    // - Método para buscar por RUT
+    // - Método para obtener personas activas
+    // - Método para asociar con acciones de rendiciones
 }

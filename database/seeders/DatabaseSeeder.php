@@ -18,5 +18,12 @@ class DatabaseSeeder extends Seeder
         //     'name' => 'Test User',
         //     'email' => 'test@example.com',
         // ]);
+        
+        // Seeders para datos de configuración del sistema
+        $this->call([
+            EstadoRendicionSeeder::class,
+            TipoNotificacionSeeder::class,
+            CargoSeeder::class,
+        ]);
     }
 }
