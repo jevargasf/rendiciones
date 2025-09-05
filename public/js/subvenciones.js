@@ -320,7 +320,6 @@ function abrirModalRendir(subvencionId) {
             document.getElementById('persona_nombre').value = '';
             document.getElementById('persona_apellido').value = '';
             document.getElementById('persona_email').value = '';
-            document.getElementById('persona_telefono').value = '';
             
             // Mostrar el modal
             const modalRendir = new bootstrap.Modal(document.getElementById('modalRendirsubvencion'));
