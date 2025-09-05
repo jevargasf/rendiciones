@@ -469,45 +469,14 @@ class SubvencionController extends BaseController
         try {
             $request->validate([
                 'subvencion_id' => 'required|integer|exists:subvenciones,id',
-                'persona_rut' => 'required|string|max:12',
-                'persona_nombre' => 'required|string|max:255',
-                'persona_apellido' => 'required|string|max:255',
-                'persona_email' => 'required|email|max:255',
-                'persona_telefono' => 'required|string|max:20',
+                'persona_id' => 'required|integer|exists:personas,id',
                 'persona_cargo_id' => 'required|integer|exists:cargos,id',
                 'estado_rendicion_id' => 'required|integer|exists:estados_rendiciones,id',
                 'comentario' => 'required|string|max:1000'
             ]);
 
-            // Normalizar RUT
-            $rutNormalizado = $this->normalizarRut($request->persona_rut);
-            if (!$rutNormalizado) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'RUT inválido'
-                ]);
-            }
-
-            // Buscar o crear persona
-            $persona = Persona::where('rut', $rutNormalizado)->first();
-            if (!$persona) {
-                $persona = Persona::create([
-                    'rut' => $rutNormalizado,
-                    'nombre' => $request->persona_nombre,
-                    'apellido' => $request->persona_apellido,
-                    'correo' => $request->persona_email,
-                    'telefono' => $request->persona_telefono,
-                    'estado' => 1
-                ]);
-            } else {
-                // Actualizar datos de la persona existente
-                $persona->update([
-                    'nombre' => $request->persona_nombre,
-                    'apellido' => $request->persona_apellido,
-                    'correo' => $request->persona_email,
-                    'telefono' => $request->persona_telefono
-                ]);
-            }
+            // Buscar la persona
+            $persona = Persona::findOrFail($request->persona_id);
 
             // Buscar la rendición existente o crear una nueva
             $subvencion = Subvencion::findOrFail($request->subvencion_id);

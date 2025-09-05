@@ -18,7 +18,6 @@ class Persona extends Model
         'nombre',
         'apellido',
         'correo',
-        'telefono',
         'estado'
     ];
     

@@ -3,6 +3,54 @@ var modal = new bootstrap.Modal(document.getElementById("modalForm"));
 
 console.log('Funcionó');
 
+// Función para normalizar RUT chileno
+function normalizarRut(rut) {
+    // Limpiar el RUT (quitar puntos, guiones y espacios)
+    let rutLimpio = rut.replace(/[^0-9kK]/g, '');
+    
+    // Un RUT válido debe tener entre 7 y 9 caracteres
+    if (rutLimpio.length < 7 || rutLimpio.length > 9) {
+        return null;
+    }
+    
+    // Separar número y dígito verificador
+    let numero = rutLimpio.slice(0, -1);
+    let dv = rutLimpio.slice(-1).toUpperCase();
+    
+    // Validar que el dígito verificador sea válido
+    if (!validarDigitoVerificador(numero, dv)) {
+        return null;
+    }
+    
+    // Formatear con guión
+    return numero + '-' + dv;
+}
+
+// Función para validar dígito verificador
+function validarDigitoVerificador(numero, dv) {
+    let suma = 0;
+    let multiplicador = 2;
+    
+    // Calcular desde el final hacia el principio
+    for (let i = numero.length - 1; i >= 0; i--) {
+        suma += parseInt(numero[i]) * multiplicador;
+        multiplicador = multiplicador === 7 ? 2 : multiplicador + 1;
+    }
+    
+    let resto = suma % 11;
+    let dvCalculado = 11 - resto;
+    
+    if (dvCalculado === 11) {
+        dvCalculado = '0';
+    } else if (dvCalculado === 10) {
+        dvCalculado = 'K';
+    } else {
+        dvCalculado = dvCalculado.toString();
+    }
+    
+    return dv === dvCalculado;
+}
+
 
 /*Formulario*/
 
@@ -350,6 +398,15 @@ function buscarPersonas(query) {
         ocultarSugerencias();
         return;
     }
+    
+    // Solo normalizar si el RUT tiene al menos 7 caracteres
+    if (query.length >= 7) {
+        const rutNormalizado = normalizarRut(query);
+        if (rutNormalizado) {
+            // Si el RUT es válido, actualizar el campo con el formato correcto
+            document.getElementById('persona_rut').value = rutNormalizado;
+        }
+    }
 
     // Obtener token CSRF
     let csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
@@ -433,10 +490,12 @@ function seleccionarPersona(persona) {
     document.getElementById('persona_nombre').value = persona.nombre;
     document.getElementById('persona_apellido').value = persona.apellido;
     document.getElementById('persona_email').value = persona.correo || '';
-    document.getElementById('persona_telefono').value = persona.telefono || '';
     
     // Ocultar sugerencias
     ocultarSugerencias();
+    
+    // Marcar que el RUT ya está validado para evitar validación en blur
+    document.getElementById('persona_rut').setAttribute('data-validated', 'true');
 }
 
 // Event listener para el botón de guardar rendición
@@ -449,7 +508,6 @@ document.getElementById('btnFormRendir').addEventListener('click', async functio
         'persona_nombre', 
         'persona_apellido',
         'persona_email',
-        'persona_telefono',
         'persona_cargo',
         'Estado',
         'comentario_detalle'
@@ -495,21 +553,16 @@ document.getElementById('btnFormRendir').addEventListener('click', async functio
         return;
     }
     
-    // Preparar datos para enviar
-    const datos = {
-        subvencion_id: document.getElementById('subvencion_id').value,
-        persona_rut: document.getElementById('persona_rut').value,
-        persona_nombre: document.getElementById('persona_nombre').value,
-        persona_apellido: document.getElementById('persona_apellido').value,
-        persona_email: document.getElementById('persona_email').value,
-        persona_telefono: document.getElementById('persona_telefono').value,
-        persona_cargo_id: document.getElementById('persona_cargo').value,
-        estado_rendicion_id: document.getElementById('Estado').value,
-        comentario: document.getElementById('comentario_detalle').value
-    };
-    
     try {
-        const response = await fetch(`${window.apiBaseUrl}subvenciones/guardar-rendicion`, {
+        // Primero guardar/actualizar la persona
+        const datosPersona = {
+            rut: document.getElementById('persona_rut').value,
+            nombre: document.getElementById('persona_nombre').value,
+            apellido: document.getElementById('persona_apellido').value,
+            correo: document.getElementById('persona_email').value
+        };
+        
+        const responsePersona = await fetch(`${window.apiBaseUrl}personas/guardar`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -517,22 +570,54 @@ document.getElementById('btnFormRendir').addEventListener('click', async functio
                 'Accept': 'application/json',
                 'X-CSRF-TOKEN': csrfToken
             },
-            body: JSON.stringify(datos)
+            body: JSON.stringify(datosPersona)
         });
         
-        const result = await response.json();
+        const resultPersona = await responsePersona.json();
         
-        if (!response.ok || !result.success) {
+        if (!responsePersona.ok || !resultPersona.success) {
             Swal.fire({
                 title: "Error",
-                text: result.message || "Error al guardar la rendición",
+                text: resultPersona.message || "Error al guardar los datos de la persona",
+                icon: "error",
+                confirmButtonText: "Aceptar"
+            });
+            return;
+        }
+        
+        // Si la persona se guardó correctamente, proceder con la rendición
+        const datosRendicion = {
+            subvencion_id: document.getElementById('subvencion_id').value,
+            persona_id: resultPersona.data.id,
+            persona_cargo_id: document.getElementById('persona_cargo').value,
+            estado_rendicion_id: document.getElementById('Estado').value,
+            comentario: document.getElementById('comentario_detalle').value
+        };
+        
+        const responseRendicion = await fetch(`${window.apiBaseUrl}subvenciones/guardar-rendicion`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest',
+                'Accept': 'application/json',
+                'X-CSRF-TOKEN': csrfToken
+            },
+            body: JSON.stringify(datosRendicion)
+        });
+        
+        const resultRendicion = await responseRendicion.json();
+        
+        if (!responseRendicion.ok || !resultRendicion.success) {
+            Swal.fire({
+                title: "Error",
+                text: resultRendicion.message || "Error al guardar la rendición",
                 icon: "error",
                 confirmButtonText: "Aceptar"
             });
         } else {
             Swal.fire({
                 title: "Éxito",
-                text: result.message || "Rendición guardada correctamente",
+                text: "Persona y rendición guardadas correctamente",
                 icon: "success",
                 confirmButtonText: "Aceptar"
             }).then(() => {
@@ -546,10 +631,43 @@ document.getElementById('btnFormRendir').addEventListener('click', async functio
         console.error('Error:', error);
         Swal.fire({
             title: "Error",
-            text: "Error inesperado al guardar la rendición",
+            text: "Error inesperado al guardar los datos",
             icon: "error",
             confirmButtonText: "Aceptar"
         });
+    }
+});
+
+// Event listener para normalizar RUT cuando el usuario termine de escribir
+document.getElementById('persona_rut').addEventListener('blur', function(event) {
+    const rut = event.target.value.trim();
+    
+    // No validar si el RUT ya fue seleccionado de las sugerencias
+    if (event.target.getAttribute('data-validated') === 'true') {
+        event.target.removeAttribute('data-validated');
+        return;
+    }
+    
+    // Solo validar si el RUT tiene al menos 7 caracteres (mínimo para un RUT válido)
+    if (rut && rut.length >= 7) {
+        const rutNormalizado = normalizarRut(rut);
+        if (rutNormalizado) {
+            event.target.value = rutNormalizado;
+        } else {
+            // Mostrar error si el RUT no es válido
+            Swal.fire({
+                title: "RUT inválido",
+                text: "El RUT ingresado no es válido. Por favor, verifique el número y dígito verificador.",
+                icon: "warning",
+                confirmButtonText: "Aceptar",
+                allowOutsideClick: true,
+                allowEscapeKey: true
+            }).then((result) => {
+                if (result.isConfirmed || result.isDismissed) {
+                    event.target.focus();
+                }
+            });
+        }
     }
 });
 

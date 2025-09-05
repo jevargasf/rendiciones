@@ -54,6 +54,7 @@ Route::prefix('personas')->group(function () {
 
     Route::post('obtener', [PersonaController::class, 'obtener'])->name('personas.obtener');
     Route::post('buscar', [PersonaController::class, 'buscar'])->name('personas.buscar');
+    Route::post('guardar', [PersonaController::class, 'guardar'])->name('personas.guardar');
 
 });
 
