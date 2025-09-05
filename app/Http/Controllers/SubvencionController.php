@@ -165,19 +165,24 @@ class SubvencionController extends BaseController
                         'estado' => 1
                     ]);
                     
-                    // TODO: Implementar creación automática de acciones
-                    // cuando se implemente la funcionalidad de Persona y Cargo:
-                    // 
-                    // Accion::create([
-                    //     'fecha' => now(),
-                    //     'comentario' => 'Subvención creada desde archivo Excel',
-                    //     'km_rut' => $usuarioActual->rut,
-                    //     'km_nombre' => $usuarioActual->nombre_completo,
-                    //     'rendicion_id' => $rendicion->id,
-                    //     'persona_id' => $usuarioActual->id,
-                    //     'cargo_id' => $usuarioActual->cargo_id,
-                    //     'estado' => 1
-                    // ]);
+                    // Crear acción automática de subvención creada
+                    $usuarioAutenticado = session('usuario');
+                    if ($usuarioAutenticado) {
+                        $nombreCompletoUsuario = trim(($usuarioAutenticado['nombres'] ?? '') . ' ' . 
+                                               ($usuarioAutenticado['apellido_paterno'] ?? '') . ' ' . 
+                                               ($usuarioAutenticado['apellido_materno'] ?? ''));
+                        
+                        Accion::create([
+                            'fecha' => now(),
+                            'comentario' => 'Subvención creada desde archivo Excel',
+                            'km_rut' => $usuarioAutenticado['run'] ?? '',
+                            'km_nombre' => $nombreCompletoUsuario,
+                            'rendicion_id' => $rendicion->id,
+                            'persona_id' => null, // No hay persona específica en la creación automática
+                            'cargo_id' => null, // Se puede obtener del usuario si es necesario
+                            'estado' => 1
+                        ]);
+                    }
 
                     $subvencionesCreadas++;
 
@@ -495,12 +500,18 @@ class SubvencionController extends BaseController
                 ]);
             }
 
-            // Crear acción de rendición
+            // Obtener datos del usuario autenticado desde la sesión
+            $usuarioAutenticado = session('usuario');
+            $nombreCompletoUsuario = trim(($usuarioAutenticado['nombres'] ?? '') . ' ' . 
+                                   ($usuarioAutenticado['apellido_paterno'] ?? '') . ' ' . 
+                                   ($usuarioAutenticado['apellido_materno'] ?? ''));
+            
+            // Crear acción de rendición usando datos del usuario autenticado
             Accion::create([
                 'fecha' => now(),
                 'comentario' => $request->comentario,
-                'km_rut' => $persona->rut,
-                'km_nombre' => $persona->nombre . ' ' . $persona->apellido,
+                'km_rut' => $usuarioAutenticado['run'] ?? '',
+                'km_nombre' => $nombreCompletoUsuario,
                 'rendicion_id' => $rendicion->id,
                 'persona_id' => $persona->id,
                 'cargo_id' => $request->persona_cargo_id,
