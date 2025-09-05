@@ -16,7 +16,7 @@
                 <label for="informacion_organizacion" class="form-label fw-bold"></label>
                 <p id="informacion_organizacion" class="form-control shadow-sm" readonly rows="4">
                     <i class="bi bi-people-fill me-1"></i>
-                    (77.777.777-7) - JJVV. Diego Portales
+                    
                 </p>
             </div>
 
@@ -59,25 +59,25 @@
                                 <div class="col-md-6">
                                     <p class="mb-3">
                                         <strong>Fecha Decreto:</strong>
-                                        <span class="dato-subrayado">29/05/2025</span>
+                                        <span class="dato-subrayado" id="detalle_fecha_decreto"></span>
                                     </p>
                                     <p class="mb-3">
                                         <strong>N° Decreto:</strong>
-                                        <span class="dato-subrayado">2025-458</span>
+                                        <span class="dato-subrayado" id="detalle_decreto"></span>
                                     </p>
                                     <p class="mb-3">
                                         <strong>Monto:</strong>
-                                        <span class="dato-subrayado">$80.000</span>
+                                        <span class="dato-subrayado" id="detalle_monto"></span>
                                     </p>
                                 </div>
                                 <div class="col-md-6">
                                     <p class="mb-3">
                                         <strong>Fecha subida:</strong>
-                                        <span class="dato-subrayado">01/05/2025</span>
+                                        <span class="dato-subrayado" id="detalle_fecha_subida"></span>
                                     </p>
                                     <p class="mb-3">
                                         <strong>Usuario:</strong>
-                                        <span class="dato-subrayado">José Salgado</span>
+                                        <span class="dato-subrayado" id="detalle_usuario"></span>
                                     </p>
                                 </div>
                             </div>
@@ -86,8 +86,8 @@
                                 <label for="comentario_destino"
                                     class="col-sm-2 col-form-label fw-bold">Destino</label>
                                 <div class="col-sm-10">
-                                    <textarea id="comentario_destino" class="form-control shadow-sm" rows="4" readonly>
-                                        Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.</textarea>
+                                    <textarea id="detalle_destino" class="form-control shadow-sm" rows="4" readonly>
+                                    </textarea>
                                 </div>
                             </div>
                         </div>

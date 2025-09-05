@@ -95,11 +95,6 @@
                             <input class="form-control form-control-sm shadow-sm" id="persona_email"
                                 type="email" placeholder="Ingrese email..." style="min-width: 250px" required />
                         </div>
-                        <div class="col-md-6">
-                            <label class="fw-bold small mb-1" for="persona_telefono">Teléfono</label>
-                            <input class="form-control form-control-sm shadow-sm" id="persona_telefono" 
-                                placeholder="Ingrese teléfono..." style="min-width: 160px" required />
-                        </div>
                     </div>
                 </div>
                 <!-- /INDENTACIÓN -->

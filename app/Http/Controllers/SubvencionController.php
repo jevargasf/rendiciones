@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rules\File;
 use Illuminate\Routing\Controller as BaseController;
 use PhpOffice\PhpSpreadsheet\Reader\Xlsx;
+use Carbon\Carbon;
 
 class SubvencionController extends BaseController
 {
@@ -163,19 +164,24 @@ class SubvencionController extends BaseController
                         'estado' => 1
                     ]);
                     
-                    // TODO: Implementar creación automática de acciones
-                    // cuando se implemente la funcionalidad de Persona y Cargo:
-                    // 
-                    // Accion::create([
-                    //     'fecha' => now(),
-                    //     'comentario' => 'Subvención creada desde archivo Excel',
-                    //     'km_rut' => $usuarioActual->rut,
-                    //     'km_nombre' => $usuarioActual->nombre_completo,
-                    //     'rendicion_id' => $rendicion->id,
-                    //     'persona_id' => $usuarioActual->id,
-                    //     'cargo_id' => $usuarioActual->cargo_id,
-                    //     'estado' => 1
-                    // ]);
+                    // Crear acción automática de subvención creada
+                    $usuarioAutenticado = session('usuario');
+                    if ($usuarioAutenticado) {
+                        $nombreCompletoUsuario = trim(($usuarioAutenticado['nombres'] ?? '') . ' ' . 
+                                               ($usuarioAutenticado['apellido_paterno'] ?? '') . ' ' . 
+                                               ($usuarioAutenticado['apellido_materno'] ?? ''));
+                        
+                        Accion::create([
+                            'fecha' => now(),
+                            'comentario' => 'Creación de subvención',
+                            'km_rut' => $usuarioAutenticado['run'] ?? '',
+                            'km_nombre' => $nombreCompletoUsuario,
+                            'rendicion_id' => $rendicion->id,
+                            'persona_id' => null,
+                            'cargo_id' => null,
+                            'estado' => 1
+                        ]);
+                    }
 
                     $subvencionesCreadas++;
 
@@ -312,9 +318,10 @@ class SubvencionController extends BaseController
             $request->validate([
                 'id' => 'required|integer|exists:subvenciones,id'
             ]);
-
+            //dd($request->id);
             $subvencion = Subvencion::findOrFail($request->id);
-            
+
+            $fecha_formateada = \Carbon\Carbon::parse($subvencion->fecha_asignacion)->format('d/m/Y');
             return response()->json([
                 'success' => true,
                 'data' => [
@@ -324,7 +331,7 @@ class SubvencionController extends BaseController
                     'destino' => $subvencion->destino,
                     'rut' => $subvencion->rut,
                     'organizacion' => $subvencion->organizacion,
-                    'fecha_asignacion' => $subvencion->fecha_asignacion
+                    'fecha_asignacion' => $fecha_formateada
                 ]
             ]);
 
@@ -467,45 +474,14 @@ class SubvencionController extends BaseController
         try {
             $request->validate([
                 'subvencion_id' => 'required|integer|exists:subvenciones,id',
-                'persona_rut' => 'required|string|max:12',
-                'persona_nombre' => 'required|string|max:255',
-                'persona_apellido' => 'required|string|max:255',
-                'persona_email' => 'required|email|max:255',
-                'persona_telefono' => 'required|string|max:20',
+                'persona_id' => 'required|integer|exists:personas,id',
                 'persona_cargo_id' => 'required|integer|exists:cargos,id',
                 'estado_rendicion_id' => 'required|integer|exists:estados_rendiciones,id',
                 'comentario' => 'required|string|max:1000'
             ]);
 
-            // Normalizar RUT
-            $rutNormalizado = $this->normalizarRut($request->persona_rut);
-            if (!$rutNormalizado) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'RUT inválido'
-                ]);
-            }
-
-            // Buscar o crear persona
-            $persona = Persona::where('rut', $rutNormalizado)->first();
-            if (!$persona) {
-                $persona = Persona::create([
-                    'rut' => $rutNormalizado,
-                    'nombre' => $request->persona_nombre,
-                    'apellido' => $request->persona_apellido,
-                    'correo' => $request->persona_email,
-                    'telefono' => $request->persona_telefono,
-                    'estado' => 1
-                ]);
-            } else {
-                // Actualizar datos de la persona existente
-                $persona->update([
-                    'nombre' => $request->persona_nombre,
-                    'apellido' => $request->persona_apellido,
-                    'correo' => $request->persona_email,
-                    'telefono' => $request->persona_telefono
-                ]);
-            }
+            // Buscar la persona
+            $persona = Persona::findOrFail($request->persona_id);
 
             // Buscar la rendición existente o crear una nueva
             $subvencion = Subvencion::findOrFail($request->subvencion_id);
@@ -524,12 +500,18 @@ class SubvencionController extends BaseController
                 ]);
             }
 
-            // Crear acción de rendición
+            // Obtener datos del usuario autenticado desde la sesión
+            $usuarioAutenticado = session('usuario');
+            $nombreCompletoUsuario = trim(($usuarioAutenticado['nombres'] ?? '') . ' ' . 
+                                   ($usuarioAutenticado['apellido_paterno'] ?? '') . ' ' . 
+                                   ($usuarioAutenticado['apellido_materno'] ?? ''));
+            
+            // Crear acción de rendición usando datos del usuario autenticado
             Accion::create([
                 'fecha' => now(),
                 'comentario' => $request->comentario,
-                'km_rut' => $persona->rut,
-                'km_nombre' => $persona->nombre . ' ' . $persona->apellido,
+                'km_rut' => $usuarioAutenticado['run'] ?? '',
+                'km_nombre' => $nombreCompletoUsuario,
                 'rendicion_id' => $rendicion->id,
                 'persona_id' => $persona->id,
                 'cargo_id' => $request->persona_cargo_id,
