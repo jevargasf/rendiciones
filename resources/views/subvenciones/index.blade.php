@@ -76,11 +76,12 @@
                                     <div class="d-flex justify-content-center align-items-center gap-1 flex-wrap">
                                         <!-- Ver detalles -->
                                         <button class="btn btn-accion" data-bs-target="#modalVerDetalles"
+                                            onclick="verDetalleSubvencion({{ $item->id }})"
                                             data-bs-toggle="modal" title="Ver detalles" type="button">
                                             <i class="fas fa-search"> </i>
                                         </button>
                                         <!-- Editar -->
-                                        <button class="btn btn-succes btn-accion" 
+                                        <button class="btn btn-success btn-accion" 
                                             title="Editar" type="button" 
                                             onclick="abrirModalEditar({{ $item->id }})">
                                             <i class="fas fa-file-signature"> </i>

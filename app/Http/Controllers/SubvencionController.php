@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rules\File;
 use Illuminate\Routing\Controller as BaseController;
 use PhpOffice\PhpSpreadsheet\Reader\Xlsx;
+use Carbon\Carbon;
 
 class SubvencionController extends BaseController
 {
@@ -312,9 +313,10 @@ class SubvencionController extends BaseController
             $request->validate([
                 'id' => 'required|integer|exists:subvenciones,id'
             ]);
-
+            //dd($request->id);
             $subvencion = Subvencion::findOrFail($request->id);
-            
+
+            $fecha_formateada = \Carbon\Carbon::parse($subvencion->fecha_asignacion)->format('d/m/Y');
             return response()->json([
                 'success' => true,
                 'data' => [
@@ -324,7 +326,7 @@ class SubvencionController extends BaseController
                     'destino' => $subvencion->destino,
                     'rut' => $subvencion->rut,
                     'organizacion' => $subvencion->organizacion,
-                    'fecha_asignacion' => $subvencion->fecha_asignacion
+                    'fecha_asignacion' => $fecha_formateada
                 ]
             ]);
 
