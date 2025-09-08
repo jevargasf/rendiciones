@@ -102,7 +102,7 @@ function llenarTablaNotificaciones(notificaciones) {
                 <td class="text-center px-2">${notificacion.id}</td>
                 <td class="text-center px-2">${fechaFormateada}</td>
                 <td class="px-2">${horaFormateada}</td>
-                <td class="px-2">${notificacion.tipo_notificacion?.nombre || 'Notificación'}</td>
+                <td class="px-2">Notificación</td>
                 <td class="px-2">${estadoBadge}</td>
             </tr>
         `;

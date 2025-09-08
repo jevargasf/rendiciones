@@ -68,7 +68,7 @@
                                 <td class="text-center">{{ $item->id }}</td>
                                 <td>{{ $item->fecha_asignacion ? \Carbon\Carbon::parse($item->fecha_asignacion)->format('d/m/Y') : '-' }}</td>
                                 <td>{{ $item->rut_formateado }}</td>
-                                <td>{{ $item->organizacion }}</td>
+                                <td>{{ $item->nombre_organizacion }}</td>
                                 <td>{{ $item->decreto }}</td>
                                 <td>${{ number_format($item->monto, 0, ',', '.') }}</td>
                                 <td>{{ $item->destino }}</td>
@@ -123,6 +123,8 @@
         <x-subvenciones.modal-editar />
         <!-- Modal Rendir Subvención -->
         <x-subvenciones.modal-rendir />
+        <!-- Modal Eliminar Subvención -->
+        <x-subvenciones.modal-eliminar />
     </div>
     <!-- Modal Agregar Subvención -->
     <x-subvenciones.modal-agregar />
@@ -193,27 +195,62 @@
                 const button = e.target.closest('.btn-eliminar-subvencion');
                 const subvencionId = button.getAttribute('data-subvencion-id');
                 
-                // Mostrar SweetAlert de confirmación
-                Swal.fire({
-                    title: '¿Eliminar subvención?',
-                    text: 'Esta acción no se puede deshacer',
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonColor: '#d33',
-                    cancelButtonColor: '#3085d6',
-                    confirmButtonText: 'Sí, eliminar',
-                    cancelButtonText: 'Cancelar',
-                    reverseButtons: true
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        eliminarSubvencion(subvencionId);
-                    }
-                });
+                // Obtener datos de la subvención desde la fila
+                const fila = button.closest('tr');
+                const celdas = fila.querySelectorAll('td');
+                
+                // Llenar el modal con los datos de la subvención
+                document.getElementById('eliminarSubvencionId').textContent = celdas[0].textContent;
+                document.getElementById('eliminarSubvencionRut').textContent = celdas[2].textContent;
+                document.getElementById('eliminarSubvencionOrganizacion').textContent = celdas[3].textContent;
+                document.getElementById('eliminarSubvencionDecreto').textContent = celdas[4].textContent;
+                document.getElementById('eliminarSubvencionMonto').textContent = celdas[5].textContent;
+                document.getElementById('eliminarSubvencionDestino').textContent = celdas[6].textContent;
+                document.getElementById('confirmarDecreto').textContent = celdas[4].textContent;
+                
+                // Limpiar campos del modal
+                document.getElementById('motivoEliminacion').value = '';
+                document.getElementById('confirmarEliminacion').checked = false;
+                document.getElementById('btnConfirmarEliminacion').disabled = true;
+                
+                // Mostrar el modal
+                const modal = new bootstrap.Modal(document.getElementById('modalEliminarSubvencion'));
+                modal.show();
+                
+                // Guardar el ID para usar después
+                document.getElementById('btnConfirmarEliminacion').setAttribute('data-subvencion-id', subvencionId);
+            }
+        });
+
+        // Funcionalidad para habilitar/deshabilitar botón de confirmación
+        document.addEventListener('input', function(e) {
+            if (e.target.id === 'motivoEliminacion' || e.target.id === 'confirmarEliminacion') {
+                const motivo = document.getElementById('motivoEliminacion').value.trim();
+                const confirmado = document.getElementById('confirmarEliminacion').checked;
+                const btnConfirmar = document.getElementById('btnConfirmarEliminacion');
+                
+                btnConfirmar.disabled = !(motivo.length > 0 && confirmado);
+            }
+        });
+
+        // Funcionalidad para el botón de confirmación de eliminación
+        document.addEventListener('click', function(e) {
+            if (e.target.id === 'btnConfirmarEliminacion') {
+                const subvencionId = e.target.getAttribute('data-subvencion-id');
+                const motivo = document.getElementById('motivoEliminacion').value.trim();
+                
+                if (subvencionId && motivo) {
+                    eliminarSubvencion(subvencionId, motivo);
+                }
             }
         });
 
         // Función para eliminar subvención
-        function eliminarSubvencion(id) {
+        function eliminarSubvencion(id, motivo) {
+            // Cerrar el modal primero
+            const modal = bootstrap.Modal.getInstance(document.getElementById('modalEliminarSubvencion'));
+            modal.hide();
+            
             // Mostrar SweetAlert de carga
             Swal.fire({
                 title: 'Eliminando...',
@@ -236,7 +273,8 @@
                                    document.querySelector('input[name="_token"]')?.value
                 },
                 body: JSON.stringify({
-                    id: id
+                    id: id,
+                    motivo: motivo
                 })
             })
             .then(response => response.json())

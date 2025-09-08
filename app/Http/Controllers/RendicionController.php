@@ -68,9 +68,11 @@ class RendicionController extends BaseController
                 ->orderBy('fecha', 'desc')
                 ->get();
 
-            // Obtener notificaciones
-            $notificaciones = Notificacion::with(['tipoNotificacion'])
-                ->where('rendicion_id', $rendicionId)
+            // Obtener notificaciones a través de acciones
+            $notificaciones = Notificacion::with(['accion'])
+                ->whereHas('accion', function($query) use ($rendicionId) {
+                    $query->where('rendicion_id', $rendicionId);
+                })
                 ->orderBy('fecha_envio', 'desc')
                 ->get();
 

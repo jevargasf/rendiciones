@@ -28,7 +28,7 @@
                                     Organización
                                 </label>
                                 <div class="col-sm-8">
-                                    <input class="form-control form-control-sm shadow-sm" id="organizacion_editar" name="organizacion"
+                                    <input class="form-control form-control-sm shadow-sm" id="organizacion_editar" name="nombre_organizacion"
                                         type="text" placeholder="Nombre de la organización" required />
                                 </div>
                             </div>

@@ -19,8 +19,9 @@ class Subvencion extends Model
         'fecha_asignacion',
         'destino',
         'rut',
-        'organizacion',
-        'estado'
+        'nombre_organizacion',
+        'estado',
+        'motivo_eliminacion'
     ];
     
     protected $casts = [

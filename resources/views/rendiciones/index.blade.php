@@ -79,7 +79,7 @@
                                         <td class="td-5">{{ $item->id }}</td>
                                         <td class="fecha" data-order="2025-05-29">29/05/2025</td>
                                         <td>{{ $item->subvencion->rut_formateado }}</td>
-                                        <td>{{ $item->subvencion->organizacion }}</td>
+                                        <td>{{ $item->subvencion->nombre_organizacion }}</td>
                                         <td>{{ $item->subvencion->decreto }}</td>
                                         <td>865501</td>
                                         <td class="monto" data-valor="{{ $item->subvencion->monto }}">${{ number_format($item->subvencion->monto, 0, ',', '.') }}</td>
@@ -139,7 +139,7 @@
                                         <td class="td-5">{{ $item->id }}</td>
                                         <td class="fecha" data-order="2025-05-29">29/05/2025</td>
                                         <td>{{ $item->subvencion->rut_formateado }}</td>
-                                        <td>{{ $item->subvencion->organizacion }}</td>
+                                        <td>{{ $item->subvencion->nombre_organizacion }}</td>
                                         <td>{{ $item->subvencion->decreto }}</td>
                                         <td>346544</td>
                                         <td class="monto" data-valor="{{ $item->subvencion->monto }}">${{ number_format($item->subvencion->monto, 0, ',', '.') }}</td>
@@ -192,7 +192,7 @@
                                         <td class="td-5">{{ $item->id }}</td>
                                         <td class="fecha" data-order="2025-05-29">29/05/2025</td>
                                         <td>{{ $item->subvencion->rut_formateado }}</td>
-                                        <td>{{ $item->subvencion->organizacion }}</td>
+                                        <td>{{ $item->subvencion->nombre_organizacion }}</td>
                                         <td>{{ $item->subvencion->decreto }}</td>
                                         <td>346544</td>
                                         <td class="monto" data-valor="{{ $item->subvencion->monto }}">${{ number_format($item->subvencion->monto, 0, ',', '.') }}</td>
@@ -251,7 +251,7 @@
                                         <td class="td-5">{{ $item->id }}</td>
                                         <td class="fecha" data-order="2025-05-29">29/05/2025</td>
                                         <td>{{ $item->subvencion->rut_formateado }}</td>
-                                        <td>{{ $item->subvencion->organizacion }}</td>
+                                        <td>{{ $item->subvencion->nombre_organizacion }}</td>
                                         <td>{{ $item->subvencion->decreto }}</td>
                                         <td>346544</td>
                                         <td class="monto" data-valor="{{ $item->subvencion->monto }}">${{ number_format($item->subvencion->monto, 0, ',', '.') }}</td>

@@ -143,24 +143,15 @@ class SubvencionController extends BaseController
                         'destino' => $destino,
                         'fecha_asignacion' => $fechaAsignacion,
                         'rut' => $rutNormalizado,
-                        'organizacion' => $organizacion,
-                        'estado' => 1
+                        'nombre_organizacion' => $organizacion,
+                        'estado' => 1,
+                        'motivo_eliminacion' => null
                     ]);
 
                     // Crear automáticamente la rendición asociada con estado_rendicion_id = 1
                     $rendicion = Rendicion::create([
                         'subvencion_id' => $subvencion->id,
                         'estado_rendicion_id' => 1, // Estado inicial
-                        'estado' => 1
-                    ]);
-                    
-                    // Crear notificación inicial de subvención creada
-                    Notificacion::create([
-                        'tipo_notificacion' => 1, // Tipo: Subvención Creada
-                        'fecha_envio' => now(),
-                        'fecha_lectura' => null,
-                        'estado_notificacion_id' => false, // No leída
-                        'rendicion_id' => $rendicion->id,
                         'estado' => 1
                     ]);
                     
@@ -171,14 +162,40 @@ class SubvencionController extends BaseController
                                                ($usuarioAutenticado['apellido_paterno'] ?? '') . ' ' . 
                                                ($usuarioAutenticado['apellido_materno'] ?? ''));
                         
-                        Accion::create([
+                        // Obtener o crear una persona por defecto para el sistema
+                        $personaSistema = Persona::firstOrCreate(
+                            ['rut' => '00000000-0'],
+                            [
+                                'nombre' => 'Sistema',
+                                'apellido' => 'Interno',
+                                'correo' => 'sistema@interno.cl',
+                                'estado' => 1
+                            ]
+                        );
+                        
+                        // Obtener o crear un cargo por defecto para el sistema
+                        $cargoSistema = Cargo::firstOrCreate(
+                            ['nombre' => 'Sistema'],
+                            ['estado' => 1]
+                        );
+                        
+                        $accion = Accion::create([
                             'fecha' => now(),
                             'comentario' => 'Creación de subvención',
                             'km_rut' => $usuarioAutenticado['run'] ?? '',
                             'km_nombre' => $nombreCompletoUsuario,
                             'rendicion_id' => $rendicion->id,
-                            'persona_id' => null,
-                            'cargo_id' => null,
+                            'persona_id' => $personaSistema->id,
+                            'cargo_id' => $cargoSistema->id,
+                            'estado' => 1
+                        ]);
+                        
+                        // Crear notificación inicial de subvención creada
+                        Notificacion::create([
+                            'fecha_envio' => now(),
+                            'fecha_lectura' => null,
+                            'estado_notificacion' => false, // No leída
+                            'accion_id' => $accion->id,
                             'estado' => 1
                         ]);
                     }
@@ -330,7 +347,7 @@ class SubvencionController extends BaseController
                     'monto' => $subvencion->monto,
                     'destino' => $subvencion->destino,
                     'rut' => $subvencion->rut,
-                    'organizacion' => $subvencion->organizacion,
+                    'organizacion' => $subvencion->nombre_organizacion,
                     'fecha_asignacion' => $fecha_formateada
                 ]
             ]);
@@ -353,7 +370,7 @@ class SubvencionController extends BaseController
                 'id' => 'required|integer|exists:subvenciones,id',
                 'destino' => 'required|string|max:1000',
                 'rut' => 'required|string|max:12',
-                'organizacion' => 'required|string|max:255'
+                'nombre_organizacion' => 'required|string|max:255'
             ]);
 
             $subvencion = Subvencion::findOrFail($request->id);
@@ -371,7 +388,7 @@ class SubvencionController extends BaseController
             $subvencion->update([
                 'destino' => $request->destino,
                 'rut' => $rutNormalizado,
-                'organizacion' => $request->organizacion
+                'nombre_organizacion' => $request->nombre_organizacion
             ]);
 
             return response()->json([
@@ -390,25 +407,55 @@ class SubvencionController extends BaseController
 
     /**
      * Eliminar una subvención (soft delete cambiando estado a 9)
+     * Elimina todas las subvenciones con el mismo decreto
      */
     public function eliminar(Request $request)
     {
         try {
             $request->validate([
-                'id' => 'required|integer|exists:subvenciones,id'
+                'id' => 'required|integer|exists:subvenciones,id',
+                'motivo' => 'required|string|min:10|max:500'
             ]);
 
             $subvencion = Subvencion::findOrFail($request->id);
+            $decreto = $subvencion->decreto;
             
-            // Cambiar estado de la subvención a 9 (eliminada)
-            $subvencion->update(['estado' => 9]);
+            // Obtener todas las subvenciones con el mismo decreto
+            $subvencionesConMismoDecreto = Subvencion::where('decreto', $decreto)
+                ->where('estado', '!=', 9) // No incluir las ya eliminadas
+                ->get();
 
-            // Cambiar estado de todas las rendiciones asociadas a 9 (eliminadas)
-            $subvencion->rendiciones()->update(['estado' => 9]);
+            $subvencionesEliminadas = 0;
+            $rendicionesEliminadas = 0;
+
+            // Eliminar todas las subvenciones con el mismo decreto
+            foreach ($subvencionesConMismoDecreto as $subvencionAEliminar) {
+                // Cambiar estado de la subvención a 9 (eliminada)
+                $subvencionAEliminar->update([
+                    'estado' => 9,
+                    'motivo_eliminacion' => $request->motivo
+                ]);
+
+                // Cambiar estado de todas las rendiciones asociadas a 9 (eliminadas)
+                $rendicionesCount = $subvencionAEliminar->rendiciones()->update([
+                    'estado' => 9,
+                    'motivo_eliminacion' => $request->motivo
+                ]);
+                
+                $subvencionesEliminadas++;
+                $rendicionesEliminadas += $rendicionesCount;
+            }
+
+            $mensaje = "Se eliminaron {$subvencionesEliminadas} subvención(es) con el decreto '{$decreto}' y {$rendicionesEliminadas} rendición(es) asociada(s).";
 
             return response()->json([
                 'success' => true,
-                'message' => 'Subvención y rendiciones asociadas eliminadas correctamente'
+                'message' => $mensaje,
+                'data' => [
+                    'subvenciones_eliminadas' => $subvencionesEliminadas,
+                    'rendiciones_eliminadas' => $rendicionesEliminadas,
+                    'decreto' => $decreto
+                ]
             ]);
 
         } catch (Exception $e) {
@@ -445,7 +492,7 @@ class SubvencionController extends BaseController
                         'monto' => $subvencion->monto,
                         'destino' => $subvencion->destino,
                         'rut' => $subvencion->rut,
-                        'organizacion' => $subvencion->organizacion,
+                        'organizacion' => $subvencion->nombre_organizacion,
                         'fecha_asignacion' => $subvencion->fecha_asignacion
                     ],
                     'cargos' => $cargos,
@@ -503,7 +550,7 @@ class SubvencionController extends BaseController
                                    ($usuarioAutenticado['apellido_materno'] ?? ''));
             
             // Crear acción de rendición usando datos del usuario autenticado
-            Accion::create([
+            $accion = Accion::create([
                 'fecha' => now(),
                 'comentario' => $request->comentario,
                 'km_rut' => $usuarioAutenticado['run'] ?? '',
@@ -511,6 +558,15 @@ class SubvencionController extends BaseController
                 'rendicion_id' => $rendicion->id,
                 'persona_id' => $persona->id,
                 'cargo_id' => $request->persona_cargo_id,
+                'estado' => 1
+            ]);
+            
+            // Crear notificación para la acción de rendición
+            Notificacion::create([
+                'fecha_envio' => now(),
+                'fecha_lectura' => null,
+                'estado_notificacion' => false, // No leída
+                'accion_id' => $accion->id,
                 'estado' => 1
             ]);
 
