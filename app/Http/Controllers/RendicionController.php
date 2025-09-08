@@ -54,22 +54,36 @@ class RendicionController extends BaseController
     public function detalleRendicion(Request $request) /** detalleRendicion es el mismo nombre de la ruta, Así Laravel sabe qué método ejecutar cuando llega una petición a esa ruta*/
     {
         try{
+            // Obtener el ID de la rendición
+            $rendicionId = $request->input('id');
+            
+            if (!$rendicionId) {
+                return response()->json(['error' => 'ID de rendición requerido'], 400);
+            }
+
+            // Obtener acciones
             $acciones = Accion::with(['persona', 'cargo'])
                 ->where('estado', 1)
-                ->where('rendicion_id', $request->id)
+                ->where('rendicion_id', $rendicionId)
+                ->orderBy('fecha', 'desc')
                 ->get();
 
+            // Obtener notificaciones
             $notificaciones = Notificacion::with(['tipoNotificacion'])
-                ->where('rendicion_id', $request->id)
+                ->where('rendicion_id', $rendicionId)
+                ->orderBy('fecha_envio', 'desc')
                 ->get();
 
             return response()->json([
-                /**Devuelve todas las acciones que encontró la consulta en formato JSON */
                 'acciones' => $acciones,
                 'notificaciones' => $notificaciones,
             ]);
         } catch(Exception $e) {
-            print($e);
+            \Log::error('Error en detalleRendicion: ' . $e->getMessage());
+            return response()->json([
+                'error' => 'Error al obtener los detalles de la rendición',
+                'message' => $e->getMessage()
+            ], 500);
         }
     }
     

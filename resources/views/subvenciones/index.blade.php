@@ -67,7 +67,7 @@
                             <tr>
                                 <td class="text-center">{{ $item->id }}</td>
                                 <td>{{ $item->fecha_asignacion ? \Carbon\Carbon::parse($item->fecha_asignacion)->format('d/m/Y') : '-' }}</td>
-                                <td>{{ $item->rut }}</td>
+                                <td>{{ $item->rut_formateado }}</td>
                                 <td>{{ $item->organizacion }}</td>
                                 <td>{{ $item->decreto }}</td>
                                 <td>${{ number_format($item->monto, 0, ',', '.') }}</td>

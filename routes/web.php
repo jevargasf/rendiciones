@@ -46,7 +46,7 @@ Route::prefix('rendiciones')->group(function () {
 
     Route::get('/', [RendicionController::class, 'index'])->name('rendiciones');
 
-    Route::post('/detalleRendicion',[RendicionController::class, 'detalleRendicion'])->name('rendiciones.detalleRendicion'); 
+    Route::get('/detalleRendicion',[RendicionController::class, 'detalleRendicion'])->name('rendiciones.detalleRendicion'); 
 
 });
 

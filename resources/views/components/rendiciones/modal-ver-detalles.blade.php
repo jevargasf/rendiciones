@@ -67,28 +67,8 @@
                                             </th>
                                         </tr>
                                     </thead>
-                                    <tbody>
-                                        <tr>
-                                            <td class="text-center px-2">1</td>
-                                            <td class="text-center px-2">29/05/2025</td>
-                                            <td class="px-2">14:30</td>
-                                            <td class="px-2">Rendición aprobada</td>
-                                            <td class="px-2">Carlos Mendoza</td>
-                                        </tr>
-                                        <tr>
-                                            <td class="text-center px-2">2</td>
-                                            <td class="text-center px-2">28/05/2025</td>
-                                            <td class="px-2">10:15</td>
-                                            <td class="px-2">Rendición enviada</td>
-                                            <td class="px-2">María González</td>
-                                        </tr>
-                                        <tr>
-                                            <td class="text-center px-2">3</td>
-                                            <td class="text-center px-2">25/05/2025</td>
-                                            <td class="px-2">16:45</td>
-                                            <td class="px-2">Rendición creada</td>
-                                            <td class="px-2">Sistema</td>
-                                        </tr>
+                                    <tbody id="tbody_acciones_rendicion">
+                                        <!-- Los datos se cargarán dinámicamente aquí -->
                                     </tbody>
                                 </table>
                             </div>
@@ -119,34 +99,8 @@
                                             </th>
                                         </tr>
                                     </thead>
-                                    <tbody>
-                                        <tr>
-                                            <td class="text-center px-2">25951</td>
-                                            <td class="text-center px-2">20/04/2025</td>
-                                            <td class="px-2">8:00</td>
-                                            <td class="px-2">Hoy vence el plazo para rendición</td>
-                                            <td class="px-2">
-                                                <span class="badge bg-warning">No leído</span>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td class="text-center px-2">25810</td>
-                                            <td class="text-center px-2">15/04/2025</td>
-                                            <td class="px-2">8:30</td>
-                                            <td class="px-2">Recordatorio de plazo de vencimiento</td>
-                                            <td class="px-2">
-                                                <span class="badge bg-success">Leído</span>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td class="text-center px-2">25750</td>
-                                            <td class="text-center px-2">10/04/2025</td>
-                                            <td class="px-2">9:15</td>
-                                            <td class="px-2">Nueva rendición disponible</td>
-                                            <td class="px-2">
-                                                <span class="badge bg-success">Leído</span>
-                                            </td>
-                                        </tr>
+                                    <tbody id="tbody_notificaciones_rendicion">
+                                        <!-- Los datos se cargarán dinámicamente aquí -->
                                     </tbody>
                                 </table>
                             </div>
@@ -154,14 +108,14 @@
                     </div>
 
                 </div>
+            </div>
 
-                <!-- Footer -->
-                <div class="modal-footer bg-light d-flex justify-content-end py-2">
-                    <button type="button" class="btn btn-outline-secondary rounded-pill px-3 py-1"
-                        data-bs-dismiss="modal">
-                        <i class="fa-solid fa-xmark me-2"></i>Cerrar
-                    </button>
-                </div>
+            <!-- Footer -->
+            <div class="modal-footer bg-light d-flex justify-content-end py-2">
+                <button type="button" class="btn btn-outline-secondary rounded-pill px-3 py-1"
+                    data-bs-dismiss="modal">
+                    <i class="fa-solid fa-xmark me-2"></i>Cerrar
+                </button>
             </div>
         </div>
     </div>
