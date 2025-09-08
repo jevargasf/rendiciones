@@ -25,7 +25,7 @@
 
             <!-- Tabla con datos -->
             <div class="table-responsive">
-                <table class="table table-striped mx-auto display" id="table_subvenciones">
+                <table class="table table-striped mx-auto" id="table_id">
                     <thead>
                         <tr>
                             <th class="text-center fw-normal">
@@ -140,13 +140,6 @@
             }
         });
     </script>
-
-<!-- Links Datatables -->
-
-<link rel="stylesheet" href="https://cdn.datatables.net/2.0.8/css/dataTables.bootstrap5.css">
-<script src="https://cdn.datatables.net/2.0.8/js/dataTables.js" defer></script>
-<script src="https://cdn.datatables.net/2.0.8/js/dataTables.bootstrap5.js" defer></script>
-
 
     <script src="{{ asset('js/subvenciones.js') }}" defer></script>
 
@@ -306,7 +299,28 @@
         </div>
     </div>
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     <x-footer />
+
+
 </x-app>
-
-

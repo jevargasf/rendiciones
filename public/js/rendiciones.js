@@ -341,35 +341,3 @@ document.querySelector("#table_rechazadas")?.addEventListener("click", async fun
         }
     }
 });
-
-/* DataTable de la página de rendiciones modal "Rendidas" */
-new DataTable('#table_rendidas', {
-    order: [],
-    language: idioma ?? {},
-    deferRender: true,
-    responsive: true,
-});
-
-/* DataTable de la página de rendiciones modal "pendientes" */
-new DataTable('#table_pendientes', {
-    order: [],
-    language: idioma ?? {},
-    deferRender: true,
-    responsive: true,
-});
-
-/* DataTable de la página de rendiciones modal "observadas" */
-new DataTable('#table_observadas', {
-    order: [],
-    language: idioma ?? {},
-    deferRender: true,
-    responsive: true,
-});
-
-/* DataTable de la página de rendiciones modal "observadas" */
-new DataTable('#table_rechazadas', {
-    order: [],
-    language: idioma ?? {},
-    deferRender: true,
-    responsive: true,
-});

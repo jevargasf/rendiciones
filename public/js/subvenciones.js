@@ -1,7 +1,6 @@
 var modal = new bootstrap.Modal(document.getElementById("modalForm"));
 
 
-
 console.log('Funcionó');
 
 // Función para normalizar RUT chileno
@@ -750,21 +749,6 @@ document.addEventListener('click', function(event) {
         ocultarSugerencias();
     }
 });
-
-
-/* DataTable de la página de subvenciones */
-new DataTable('#table_subvenciones', {
-    order: [],
-    language: idioma ?? {},
-    deferRender: true,
-    responsive: true,
-});
-
-
-
-
-
-
 
 
 
