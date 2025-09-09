@@ -53,19 +53,17 @@
                                 Monto
                             </th>
                             <th class="fw-normal">
-                                <i class="fas fa-sort me-1"> </i>
                                 Destino
                             </th>
                             <th class="text-center fw-normal">
-                                <i class="fas fa-sort me-1"> </i>
                                 Opciones
                             </th>
                         </tr>
                     </thead>
                     <tbody>
-                        @forelse ($subvenciones as $item)
+                        @forelse ($subvenciones as $index => $item)
                             <tr>
-                                <td class="text-center">{{ $item->id }}</td>
+                                <td class="text-center">{{ $index + 1 }}</td>
                                 <td>{{ $item->fecha_asignacion ? \Carbon\Carbon::parse($item->fecha_asignacion)->format('d/m/Y') : '-' }}</td>
                                 <td>{{ $item->rut_formateado }}</td>
                                 <td>{{ $item->nombre_organizacion }}</td>
@@ -146,11 +144,16 @@
     <script src="{{ asset('js/subvenciones.js') }}" defer></script>
 
     <script>
-        // Funcionalidad del buscador
+        // Funcionalidad del buscador y ordenamiento
         document.addEventListener('DOMContentLoaded', function() {
             const buscador = document.getElementById('buscadorSubvenciones');
             const tabla = document.getElementById('table_id');
             const filas = tabla.querySelectorAll('tbody tr');
+            const headers = tabla.querySelectorAll('thead th');
+            
+            // Variables para el ordenamiento
+            let ordenActual = {};
+            let filasOriginales = Array.from(filas);
 
             // Función para filtrar filas
             function filtrarFilas(termino) {
@@ -174,10 +177,83 @@
                 });
             }
 
+            // Función para ordenar la tabla
+            function ordenarTabla(columna, direccion) {
+                const tbody = tabla.querySelector('tbody');
+                const filasArray = Array.from(filas).filter(fila => fila.style.display !== 'none');
+                
+                filasArray.sort((a, b) => {
+                    const valorA = a.cells[columna].textContent.trim();
+                    const valorB = b.cells[columna].textContent.trim();
+                    
+                    // Manejar diferentes tipos de datos
+                    let comparacion = 0;
+                    
+                    if (columna === 0) { // Columna # (números)
+                        comparacion = parseInt(valorA) - parseInt(valorB);
+                    } else if (columna === 1) { // Fecha
+                        const fechaA = new Date(valorA.split('/').reverse().join('-'));
+                        const fechaB = new Date(valorB.split('/').reverse().join('-'));
+                        comparacion = fechaA - fechaB;
+                    } else if (columna === 5) { // Monto
+                        const montoA = parseFloat(valorA.replace(/[^0-9]/g, ''));
+                        const montoB = parseFloat(valorB.replace(/[^0-9]/g, ''));
+                        comparacion = montoA - montoB;
+                    } else { // Texto
+                        comparacion = valorA.localeCompare(valorB, 'es', { numeric: true });
+                    }
+                    
+                    return direccion === 'asc' ? comparacion : -comparacion;
+                });
+                
+                // Reorganizar las filas en el DOM
+                filasArray.forEach(fila => tbody.appendChild(fila));
+                
+                // Actualizar numeración secuencial
+                actualizarNumeracion();
+            }
+
+            // Función para actualizar la numeración secuencial
+            function actualizarNumeracion() {
+                const filasVisibles = Array.from(filas).filter(fila => fila.style.display !== 'none');
+                filasVisibles.forEach((fila, index) => {
+                    fila.cells[0].textContent = index + 1;
+                });
+            }
+
+            // Función para actualizar iconos de ordenamiento
+            function actualizarIconos(columna, direccion) {
+                headers.forEach((header, index) => {
+                    const icono = header.querySelector('i.fas');
+                    if (icono) {
+                        if (index === columna) {
+                            icono.className = direccion === 'asc' ? 'fas fa-sort-up me-1' : 'fas fa-sort-down me-1';
+                        } else {
+                            icono.className = 'fas fa-sort me-1';
+                        }
+                    }
+                });
+            }
+
+            // Agregar event listeners a los headers (excepto Destino y Opciones)
+            headers.forEach((header, index) => {
+                // No agregar ordenamiento a Destino (índice 6) y Opciones (índice 7)
+                if (index < 6) {
+                    header.style.cursor = 'pointer';
+                    header.addEventListener('click', function() {
+                        const direccion = ordenActual[index] === 'asc' ? 'desc' : 'asc';
+                        ordenActual = { [index]: direccion };
+                        ordenarTabla(index, direccion);
+                        actualizarIconos(index, direccion);
+                    });
+                }
+            });
+
             // Evento de búsqueda en tiempo real
             buscador.addEventListener('input', function() {
                 const termino = this.value.trim();
                 filtrarFilas(termino);
+                actualizarNumeracion();
             });
 
             // Limpiar búsqueda con Escape
@@ -185,6 +261,7 @@
                 if (e.key === 'Escape') {
                     this.value = '';
                     filtrarFilas('');
+                    actualizarNumeracion();
                 }
             });
         });
