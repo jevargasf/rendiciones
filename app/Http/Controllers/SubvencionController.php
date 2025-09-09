@@ -479,9 +479,6 @@ class SubvencionController extends BaseController
             $subvencion = Subvencion::findOrFail($request->id);
             $cargos = Cargo::where('estado', 1)->get();
             $personas = Persona::where('estado', 1)->get();
-            $estadosRendicion = EstadoRendicion::where('estado', 1)
-                ->where('id', '!=', 1) // Excluir estado con ID 1 (Recepcionada)
-                ->get();
             
             return response()->json([
                 'success' => true,
@@ -496,8 +493,7 @@ class SubvencionController extends BaseController
                         'fecha_asignacion' => $subvencion->fecha_asignacion
                     ],
                     'cargos' => $cargos,
-                    'personas' => $personas,
-                    'estados_rendicion' => $estadosRendicion
+                    'personas' => $personas
                 ]
             ]);
 
@@ -519,7 +515,6 @@ class SubvencionController extends BaseController
                 'subvencion_id' => 'required|integer|exists:subvenciones,id',
                 'persona_id' => 'required|integer|exists:personas,id',
                 'persona_cargo_id' => 'required|integer|exists:cargos,id',
-                'estado_rendicion_id' => 'required|integer|exists:estados_rendiciones,id',
                 'comentario' => 'required|string|max:1000'
             ]);
 
@@ -533,13 +528,13 @@ class SubvencionController extends BaseController
             if (!$rendicion) {
                 $rendicion = Rendicion::create([
                     'subvencion_id' => $request->subvencion_id,
-                    'estado_rendicion_id' => $request->estado_rendicion_id,
+                    'estado_rendicion_id' => 2, // Estado "En Revisión" (ID 2)
                     'estado' => 1
                 ]);
             } else {
-                // Actualizar estado de rendición existente
+                // Actualizar estado de rendición existente a "En Revisión"
                 $rendicion->update([
-                    'estado_rendicion_id' => $request->estado_rendicion_id
+                    'estado_rendicion_id' => 2 // Estado "En Revisión" (ID 2)
                 ]);
             }
 

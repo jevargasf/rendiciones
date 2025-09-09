@@ -422,15 +422,6 @@ function abrirModalRendir(subvencionId) {
                 cargoSelect.appendChild(option);
             });
             
-            // Llenar opciones de estados de rendición
-            const estadoSelect = document.getElementById('Estado');
-            estadoSelect.innerHTML = '<option value="">Seleccione...</option>';
-            data.data.estados_rendicion.forEach(estado => {
-                const option = document.createElement('option');
-                option.value = estado.id;
-                option.textContent = estado.nombre;
-                estadoSelect.appendChild(option);
-            });
             
             // Limpiar campos de persona
             document.getElementById('persona_rut').value = '';
@@ -578,7 +569,6 @@ document.getElementById('btnFormRendir').addEventListener('click', async functio
         'persona_apellido',
         'persona_email',
         'persona_cargo',
-        'Estado',
         'comentario_detalle'
     ];
     
@@ -659,7 +649,6 @@ document.getElementById('btnFormRendir').addEventListener('click', async functio
             subvencion_id: document.getElementById('subvencion_id').value,
             persona_id: resultPersona.data.id,
             persona_cargo_id: document.getElementById('persona_cargo').value,
-            estado_rendicion_id: document.getElementById('Estado').value,
             comentario: document.getElementById('comentario_detalle').value
         };
         
