@@ -117,7 +117,7 @@ class RendicionController extends BaseController
                 'rendicion_id' => $rendicion->id,
                 'persona_id' => auth()->user()->persona_id ?? 1, // Usar ID de persona del usuario autenticado o 1 por defecto
                 'cargo_id' => 1, // Asumir cargo por defecto
-                'comentario' => 'eliminada momentaneamente',
+                'comentario' => 'eliminada',
                 'fecha' => now(),
                 'estado' => 1,
                 'km_rut' => session('usuario.rut'), // RUT del usuario de la sesión
