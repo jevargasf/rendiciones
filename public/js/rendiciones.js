@@ -2,8 +2,14 @@
 var modalVerDetallesRendicion = document.getElementById("modalVerDetallesRendicion");
 var modalRendicion = modalVerDetallesRendicion ? new bootstrap.Modal(modalVerDetallesRendicion) : null;
 
+/* Variable para almacenar el ID de la rendición actual */
+var rendicionActualId = null;
+
 /* Función para mostrar detalles de rendición */
 async function mostrarDetalleRendicion(id, subvencionId = null) {
+    // Guardar el ID de la rendición actual
+    rendicionActualId = id;
+    
     // Llenar información básica de la rendición
     document.getElementById('informacion_rendicion').innerHTML = 
         `<i class="bi bi-clipboard-check me-1"></i>Rendición #${id}`;
@@ -11,6 +17,10 @@ async function mostrarDetalleRendicion(id, subvencionId = null) {
     // Limpiar tablas
     document.getElementById('tbody_acciones_rendicion').innerHTML = '';
     document.getElementById('tbody_notificaciones_rendicion').innerHTML = '';
+    
+    // Limpiar formulario de edición
+    document.getElementById('estado_rendicion_edit').value = '';
+    document.getElementById('comentario_estado').value = '';
     
     try {
         // Obtener datos de la rendición
@@ -246,6 +256,119 @@ function eliminarRendicionTemporalmente(id) {
             Swal.fire({
                 title: 'Error',
                 text: data.message || 'Error al eliminar la rendición',
+                icon: 'error',
+                confirmButtonText: 'Aceptar',
+                allowOutsideClick: true,
+                allowEscapeKey: true
+            });
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        Swal.fire({
+            title: 'Error',
+            text: 'Error de conexión. Por favor, intente nuevamente.',
+            icon: 'error',
+            confirmButtonText: 'Aceptar',
+            allowOutsideClick: true,
+            allowEscapeKey: true
+        });
+    });
+}
+
+/* Event listener para el botón de guardar cambios */
+document.addEventListener('click', function(e) {
+    if (e.target.id === 'btn_guardar_cambios_rendicion') {
+        guardarCambiosRendicion();
+    }
+});
+
+/* Función para guardar cambios de la rendición */
+function guardarCambiosRendicion() {
+    const estadoSeleccionado = document.getElementById('estado_rendicion_edit').value;
+    const comentario = document.getElementById('comentario_estado').value;
+    
+    // Validar que se haya seleccionado un estado
+    if (!estadoSeleccionado) {
+        Swal.fire({
+            title: 'Error',
+            text: 'Por favor seleccione un estado para la rendición',
+            icon: 'warning',
+            confirmButtonText: 'Aceptar'
+        });
+        return;
+    }
+    
+    // Mostrar SweetAlert de confirmación
+    Swal.fire({
+        title: '¿Está seguro?',
+        text: '¿Desea cambiar el estado de esta rendición?',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Sí, cambiar estado',
+        cancelButtonText: 'Cancelar'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            actualizarEstadoRendicion(estadoSeleccionado, comentario);
+        }
+    });
+}
+
+/* Función para actualizar el estado de la rendición */
+function actualizarEstadoRendicion(estadoId, comentario) {
+    // Mostrar SweetAlert de carga
+    Swal.fire({
+        title: 'Actualizando...',
+        text: 'Por favor espere',
+        icon: 'info',
+        allowOutsideClick: false,
+        allowEscapeKey: false,
+        showConfirmButton: false,
+        didOpen: () => {
+            Swal.showLoading();
+        }
+    });
+
+    // Realizar petición AJAX
+    fetch('/rendiciones/actualizar-estado', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || 
+                           document.querySelector('input[name="_token"]')?.value
+        },
+        body: JSON.stringify({
+            id: rendicionActualId,
+            estado_rendicion_id: estadoId,
+            comentario: comentario
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Mostrar mensaje de éxito
+            Swal.fire({
+                title: '¡Actualizado correctamente!',
+                text: data.message,
+                icon: 'success',
+                confirmButtonText: 'Aceptar',
+                allowOutsideClick: false,
+                allowEscapeKey: false
+            }).then(() => {
+                // Cerrar el modal
+                if (modalRendicion) {
+                    modalRendicion.hide();
+                }
+                // Recargar la página para actualizar la tabla
+                window.location.reload();
+            });
+        } else {
+            // Mostrar mensaje de error
+            Swal.fire({
+                title: 'Error',
+                text: data.message || 'Error al actualizar el estado de la rendición',
                 icon: 'error',
                 confirmButtonText: 'Aceptar',
                 allowOutsideClick: true,

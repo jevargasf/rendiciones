@@ -50,6 +50,8 @@ Route::prefix('rendiciones')->group(function () {
 
     Route::post('/eliminar-temporalmente', [RendicionController::class, 'eliminarTemporalmente'])->name('rendiciones.eliminar-temporalmente');
 
+    Route::post('/actualizar-estado', [RendicionController::class, 'actualizarEstado'])->name('rendiciones.actualizar-estado');
+
 });
 
 Route::prefix('personas')->group(function () {
