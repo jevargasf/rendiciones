@@ -53,22 +53,20 @@
                                 Monto
                             </th>
                             <th class="fw-normal">
-                                <i class="fas fa-sort me-1"> </i>
                                 Destino
                             </th>
                             <th class="text-center fw-normal">
-                                <i class="fas fa-sort me-1"> </i>
                                 Opciones
                             </th>
                         </tr>
                     </thead>
                     <tbody>
-                        @forelse ($subvenciones as $item)
+                        @forelse ($subvenciones as $index => $item)
                             <tr>
-                                <td class="text-center">{{ $item->id }}</td>
+                                <td class="text-center">{{ $index + 1 }}</td>
                                 <td>{{ $item->fecha_asignacion ? \Carbon\Carbon::parse($item->fecha_asignacion)->format('d/m/Y') : '-' }}</td>
-                                <td>{{ $item->rut }}</td>
-                                <td>{{ $item->organizacion }}</td>
+                                <td>{{ $item->rut_formateado }}</td>
+                                <td>{{ $item->nombre_organizacion }}</td>
                                 <td>{{ $item->decreto }}</td>
                                 <td>${{ number_format($item->monto, 0, ',', '.') }}</td>
                                 <td>{{ $item->destino }}</td>
@@ -123,6 +121,8 @@
         <x-subvenciones.modal-editar />
         <!-- Modal Rendir Subvención -->
         <x-subvenciones.modal-rendir />
+        <!-- Modal Eliminar Subvención -->
+        <x-subvenciones.modal-eliminar />
     </div>
     <!-- Modal Agregar Subvención -->
     <x-subvenciones.modal-agregar />
@@ -144,11 +144,16 @@
     <script src="{{ asset('js/subvenciones.js') }}" defer></script>
 
     <script>
-        // Funcionalidad del buscador
+        // Funcionalidad del buscador y ordenamiento
         document.addEventListener('DOMContentLoaded', function() {
             const buscador = document.getElementById('buscadorSubvenciones');
             const tabla = document.getElementById('table_id');
             const filas = tabla.querySelectorAll('tbody tr');
+            const headers = tabla.querySelectorAll('thead th');
+            
+            // Variables para el ordenamiento
+            let ordenActual = {};
+            let filasOriginales = Array.from(filas);
 
             // Función para filtrar filas
             function filtrarFilas(termino) {
@@ -172,10 +177,83 @@
                 });
             }
 
+            // Función para ordenar la tabla
+            function ordenarTabla(columna, direccion) {
+                const tbody = tabla.querySelector('tbody');
+                const filasArray = Array.from(filas).filter(fila => fila.style.display !== 'none');
+                
+                filasArray.sort((a, b) => {
+                    const valorA = a.cells[columna].textContent.trim();
+                    const valorB = b.cells[columna].textContent.trim();
+                    
+                    // Manejar diferentes tipos de datos
+                    let comparacion = 0;
+                    
+                    if (columna === 0) { // Columna # (números)
+                        comparacion = parseInt(valorA) - parseInt(valorB);
+                    } else if (columna === 1) { // Fecha
+                        const fechaA = new Date(valorA.split('/').reverse().join('-'));
+                        const fechaB = new Date(valorB.split('/').reverse().join('-'));
+                        comparacion = fechaA - fechaB;
+                    } else if (columna === 5) { // Monto
+                        const montoA = parseFloat(valorA.replace(/[^0-9]/g, ''));
+                        const montoB = parseFloat(valorB.replace(/[^0-9]/g, ''));
+                        comparacion = montoA - montoB;
+                    } else { // Texto
+                        comparacion = valorA.localeCompare(valorB, 'es', { numeric: true });
+                    }
+                    
+                    return direccion === 'asc' ? comparacion : -comparacion;
+                });
+                
+                // Reorganizar las filas en el DOM
+                filasArray.forEach(fila => tbody.appendChild(fila));
+                
+                // Actualizar numeración secuencial
+                actualizarNumeracion();
+            }
+
+            // Función para actualizar la numeración secuencial
+            function actualizarNumeracion() {
+                const filasVisibles = Array.from(filas).filter(fila => fila.style.display !== 'none');
+                filasVisibles.forEach((fila, index) => {
+                    fila.cells[0].textContent = index + 1;
+                });
+            }
+
+            // Función para actualizar iconos de ordenamiento
+            function actualizarIconos(columna, direccion) {
+                headers.forEach((header, index) => {
+                    const icono = header.querySelector('i.fas');
+                    if (icono) {
+                        if (index === columna) {
+                            icono.className = direccion === 'asc' ? 'fas fa-sort-up me-1' : 'fas fa-sort-down me-1';
+                        } else {
+                            icono.className = 'fas fa-sort me-1';
+                        }
+                    }
+                });
+            }
+
+            // Agregar event listeners a los headers (excepto Destino y Opciones)
+            headers.forEach((header, index) => {
+                // No agregar ordenamiento a Destino (índice 6) y Opciones (índice 7)
+                if (index < 6) {
+                    header.style.cursor = 'pointer';
+                    header.addEventListener('click', function() {
+                        const direccion = ordenActual[index] === 'asc' ? 'desc' : 'asc';
+                        ordenActual = { [index]: direccion };
+                        ordenarTabla(index, direccion);
+                        actualizarIconos(index, direccion);
+                    });
+                }
+            });
+
             // Evento de búsqueda en tiempo real
             buscador.addEventListener('input', function() {
                 const termino = this.value.trim();
                 filtrarFilas(termino);
+                actualizarNumeracion();
             });
 
             // Limpiar búsqueda con Escape
@@ -183,6 +261,7 @@
                 if (e.key === 'Escape') {
                     this.value = '';
                     filtrarFilas('');
+                    actualizarNumeracion();
                 }
             });
         });
@@ -193,27 +272,62 @@
                 const button = e.target.closest('.btn-eliminar-subvencion');
                 const subvencionId = button.getAttribute('data-subvencion-id');
                 
-                // Mostrar SweetAlert de confirmación
-                Swal.fire({
-                    title: '¿Eliminar subvención?',
-                    text: 'Esta acción no se puede deshacer',
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonColor: '#d33',
-                    cancelButtonColor: '#3085d6',
-                    confirmButtonText: 'Sí, eliminar',
-                    cancelButtonText: 'Cancelar',
-                    reverseButtons: true
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        eliminarSubvencion(subvencionId);
-                    }
-                });
+                // Obtener datos de la subvención desde la fila
+                const fila = button.closest('tr');
+                const celdas = fila.querySelectorAll('td');
+                
+                // Llenar el modal con los datos de la subvención
+                document.getElementById('eliminarSubvencionId').textContent = celdas[0].textContent;
+                document.getElementById('eliminarSubvencionRut').textContent = celdas[2].textContent;
+                document.getElementById('eliminarSubvencionOrganizacion').textContent = celdas[3].textContent;
+                document.getElementById('eliminarSubvencionDecreto').textContent = celdas[4].textContent;
+                document.getElementById('eliminarSubvencionMonto').textContent = celdas[5].textContent;
+                document.getElementById('eliminarSubvencionDestino').textContent = celdas[6].textContent;
+                document.getElementById('confirmarDecreto').textContent = celdas[4].textContent;
+                
+                // Limpiar campos del modal
+                document.getElementById('motivoEliminacion').value = '';
+                document.getElementById('confirmarEliminacion').checked = false;
+                document.getElementById('btnConfirmarEliminacion').disabled = true;
+                
+                // Mostrar el modal
+                const modal = new bootstrap.Modal(document.getElementById('modalEliminarSubvencion'));
+                modal.show();
+                
+                // Guardar el ID para usar después
+                document.getElementById('btnConfirmarEliminacion').setAttribute('data-subvencion-id', subvencionId);
+            }
+        });
+
+        // Funcionalidad para habilitar/deshabilitar botón de confirmación
+        document.addEventListener('input', function(e) {
+            if (e.target.id === 'motivoEliminacion' || e.target.id === 'confirmarEliminacion') {
+                const motivo = document.getElementById('motivoEliminacion').value.trim();
+                const confirmado = document.getElementById('confirmarEliminacion').checked;
+                const btnConfirmar = document.getElementById('btnConfirmarEliminacion');
+                
+                btnConfirmar.disabled = !(motivo.length > 0 && confirmado);
+            }
+        });
+
+        // Funcionalidad para el botón de confirmación de eliminación
+        document.addEventListener('click', function(e) {
+            if (e.target.id === 'btnConfirmarEliminacion') {
+                const subvencionId = e.target.getAttribute('data-subvencion-id');
+                const motivo = document.getElementById('motivoEliminacion').value.trim();
+                
+                if (subvencionId && motivo) {
+                    eliminarSubvencion(subvencionId, motivo);
+                }
             }
         });
 
         // Función para eliminar subvención
-        function eliminarSubvencion(id) {
+        function eliminarSubvencion(id, motivo) {
+            // Cerrar el modal primero
+            const modal = bootstrap.Modal.getInstance(document.getElementById('modalEliminarSubvencion'));
+            modal.hide();
+            
             // Mostrar SweetAlert de carga
             Swal.fire({
                 title: 'Eliminando...',
@@ -236,7 +350,8 @@
                                    document.querySelector('input[name="_token"]')?.value
                 },
                 body: JSON.stringify({
-                    id: id
+                    id: id,
+                    motivo: motivo
                 })
             })
             .then(response => response.json())

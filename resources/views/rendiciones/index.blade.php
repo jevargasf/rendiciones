@@ -27,32 +27,32 @@
                     <button class="nav-link active" id="nav-rendidas-tab" data-bs-toggle="tab"
                         data-bs-target="#nav-rendidas" type="button" role="tab" aria-controls="nav-rendidas"
                         aria-selected="true">
-                        Rendidas
+                        En revisión
                     </button>
 
                     <button class="nav-link" id="nav-pendientes-tab" data-bs-toggle="tab"
                         data-bs-target="#nav-pendientes" type="button" role="tab" aria-controls="nav-pendientes"
                         aria-selected="false">
-                        Pendientes
+                        Objetada
                     </button>
 
                     <button class="nav-link" id="nav-observadas-tab" data-bs-toggle="tab"
                         data-bs-target="#nav-observadas" type="button" role="tab" aria-controls="nav-observadas"
                         aria-selected="false">
-                        Observadas
+                        Aprobada
                     </button>
 
                     <button class="nav-link" id="nav-rechazadas-tab" data-bs-toggle="tab"
                         data-bs-target="#nav-rechazadas" type="button" role="tab" aria-controls="nav-rechazadas"
                         aria-selected="false">
-                        Rechazadas
+                        Rechazada
                     </button>
                 </div>
             </nav>
 
             <!-- Tabla de contenidos -->
             <div class="tab-content" id="nav-tabContent">
-                <!-- RENDIDAS -->
+                <!-- EN REVISIÓN -->
                 <div class="tab-pane fade show active" id="nav-rendidas" role="tabpanel"
                     aria-labelledby="nav-rendidas-tab" tabindex="0">
                     <div class="table-responsive mt-3">
@@ -69,30 +69,34 @@
                                     <th class="fw-normal"><i class="fas fa-sort me-1"></i> Nro. Movimiento</th>
                                     <th class="fw-normal"><i class="fas fa-sort me-1"></i> Monto</th>
                                                         <th class="text-center fw-normal">
-                        <i class="fas fa-sort me-1"></i> Opciones
+                        Opciones
                     </th>
                                 </tr>
                             </thead> 
                             <tbody>
-                                @forelse ($rendiciones as $item)
+                                @forelse ($rendiciones as $index => $item)
                                     <tr>
-                                        <td class="td-5">{{ $item->id }}</td>
+                                        <td class="td-5">{{ $index + 1 }}</td>
                                         <td class="fecha" data-order="2025-05-29">29/05/2025</td>
                                         <td>{{ $item->subvencion->rut_formateado }}</td>
-                                        <td>{{ $item->subvencion->organizacion }}</td>
+                                        <td>{{ $item->subvencion->nombre_organizacion }}</td>
                                         <td>{{ $item->subvencion->decreto }}</td>
                                         <td>865501</td>
                                         <td class="monto" data-valor="{{ $item->subvencion->monto }}">${{ number_format($item->subvencion->monto, 0, ',', '.') }}</td>
                                         <td class="td-5">
 
                                         <!-- REVISAR ACÁ LA FUNCIONALIDAD DEL BOTÓN VER DETALLE -->
-                                            <div class="d-flex justify-content-center align-items-center">
+                                            <div class="d-flex justify-content-center align-items-center gap-1 flex-wrap">
                                                 <button type="button" class="btn btn-accion btn-link align-baseline">
                                                     <i class="fas fa-search" data-id="{{ $item->id }}"
                                                         data-subvencion="{{ $item->subvencion_id }}"
                                                 
                                                         {{-- Guarda el ID del registro para usarlo en JavaScript --}}></i>
-
+                                                </button>
+                                                <!-- Eliminar -->
+                                                <button class="btn btn-danger btn-accion btn-eliminar-rendicion" 
+                                                    title="Eliminar" type="button" data-rendicion-id="{{ $item->id }}">
+                                                    <i class="fas fa-times-circle"></i>
                                                 </button>
                                             </div>
                                         </td>
@@ -102,7 +106,7 @@
                                         <td colspan="8" class="text-center py-4">
                                             <div class="text-muted">
                                                 <i class="fas fa-inbox fa-2x mb-2"></i>
-                                                <p class="mb-0">No hay rendiciones rendidas</p>
+                                                <p class="mb-0">No hay rendiciones en revisión</p>
                                             </div>
                                         </td>
                                     </tr>
@@ -112,7 +116,7 @@
                     </div>
                 </div>
 
-                <!-- PESTAÑA PENDIENTES -->
+                <!-- PESTAÑA OBJETADAS -->
                 <div class="tab-pane fade" id="nav-pendientes" role="tabpanel" aria-labelledby="nav-pendientes-tab"
                     tabindex="0">
                     <div class="table-responsive mt-3">
@@ -129,17 +133,17 @@
                                     <th class="fw-normal"><i class="fas fa-sort me-1"></i> Nro. Movimiento</th>
                                     <th class="fw-normal"><i class="fas fa-sort me-1"></i> Monto</th>
                                                         <th class="text-center fw-normal">
-                        <i class="fas fa-sort me-1"></i> Opciones
+                        Opciones
                     </th>
                                 </tr>
                             </thead>
                             <tbody>
-                                @forelse ($pendientes as $item)
+                                @forelse ($pendientes as $index => $item)
                                     <tr>
-                                        <td class="td-5">{{ $item->id }}</td>
+                                        <td class="td-5">{{ $index + 1 }}</td>
                                         <td class="fecha" data-order="2025-05-29">29/05/2025</td>
                                         <td>{{ $item->subvencion->rut_formateado }}</td>
-                                        <td>{{ $item->subvencion->organizacion }}</td>
+                                        <td>{{ $item->subvencion->nombre_organizacion }}</td>
                                         <td>{{ $item->subvencion->decreto }}</td>
                                         <td>346544</td>
                                         <td class="monto" data-valor="{{ $item->subvencion->monto }}">${{ number_format($item->subvencion->monto, 0, ',', '.') }}</td>
@@ -157,7 +161,7 @@
                                         <td colspan="8" class="text-center py-4">
                                             <div class="text-muted">
                                                 <i class="fas fa-inbox fa-2x mb-2"></i>
-                                                <p class="mb-0">No hay rendiciones pendientes</p>
+                                                <p class="mb-0">No hay rendiciones objetadas</p>
                                             </div>
                                         </td>
                                     </tr>
@@ -167,7 +171,7 @@
                     </div>
                 </div>
 
-                <!-- OBSERVADAS -->
+                <!-- APROBADAS -->
                 <div class="tab-pane fade" id="nav-observadas" role="tabpanel" aria-labelledby="nav-observadas-tab"
                     tabindex="0">
                     <div class="table-responsive mt-3">
@@ -183,16 +187,16 @@
                                     <th class="fw-normal"><i class="fas fa-sort me-1"></i> Decreto</th>
                                     <th class="fw-normal"><i class="fas fa-sort me-1"></i> Nro. Movimiento</th>
                                     <th class="fw-normal"><i class="fas fa-sort me-1"></i> Monto</th>
-                                    <th class="fw-normal"><i class="fas fa-sort me-1"></i> Opciones</th>
+                                    <th class="fw-normal">Opciones</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                @forelse ($observadas as $item)
+                                @forelse ($observadas as $index => $item)
                                     <tr>
-                                        <td class="td-5">{{ $item->id }}</td>
+                                        <td class="td-5">{{ $index + 1 }}</td>
                                         <td class="fecha" data-order="2025-05-29">29/05/2025</td>
                                         <td>{{ $item->subvencion->rut_formateado }}</td>
-                                        <td>{{ $item->subvencion->organizacion }}</td>
+                                        <td>{{ $item->subvencion->nombre_organizacion }}</td>
                                         <td>{{ $item->subvencion->decreto }}</td>
                                         <td>346544</td>
                                         <td class="monto" data-valor="{{ $item->subvencion->monto }}">${{ number_format($item->subvencion->monto, 0, ',', '.') }}</td>
@@ -215,7 +219,7 @@
                                         <td colspan="8" class="text-center py-4">
                                             <div class="text-muted">
                                                 <i class="fas fa-inbox fa-2x mb-2"></i>
-                                                <p class="mb-0">No hay rendiciones observadas</p>
+                                                <p class="mb-0">No hay rendiciones aprobadas</p>
                                             </div>
                                         </td>
                                     </tr>
@@ -242,16 +246,16 @@
                                     <th class="fw-normal"><i class="fas fa-sort me-1"></i> Decreto</th>
                                     <th class="fw-normal"><i class="fas fa-sort me-1"></i> Nro. Movimiento</th>
                                     <th class="fw-normal"><i class="fas fa-sort me-1"></i> Monto</th>
-                                    <th class="fw-normal"><i class="fas fa-sort me-1"></i> Opciones</th>
+                                    <th class="fw-normal">Opciones</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                @forelse ($rechazadas as $item)
+                                @forelse ($rechazadas as $index => $item)
                                     <tr>
-                                        <td class="td-5">{{ $item->id }}</td>
+                                        <td class="td-5">{{ $index + 1 }}</td>
                                         <td class="fecha" data-order="2025-05-29">29/05/2025</td>
                                         <td>{{ $item->subvencion->rut_formateado }}</td>
-                                        <td>{{ $item->subvencion->organizacion }}</td>
+                                        <td>{{ $item->subvencion->nombre_organizacion }}</td>
                                         <td>{{ $item->subvencion->decreto }}</td>
                                         <td>346544</td>
                                         <td class="monto" data-valor="{{ $item->subvencion->monto }}">${{ number_format($item->subvencion->monto, 0, ',', '.') }}</td>
@@ -285,6 +289,56 @@
 
     <!-- Modal Ver Detalles de Rendición -->
     <x-rendiciones.modal-ver-detalles />
+
+    <!-- Modal Eliminar Rendición -->
+    <div class="modal fade" id="modalEliminarRendicion" tabindex="-1" aria-labelledby="modalEliminarRendicionLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content shadow-lg rounded-4 overflow-hidden">
+                <div class="modal-header modal-header-app">
+                    <h5 class="modal-title fw-bold" id="modalEliminarRendicionLabel">
+                        <i class="fas fa-exclamation-triangle me-2"></i>Eliminar Rendición
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <div class="alert alert-warning" role="alert">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        <strong>Advertencia:</strong> Esta acción eliminará la rendición y devolverá la subvención al estado inicial.
+                    </div>
+                    
+                    <div class="mb-3">
+                        <h6 class="fw-bold mb-3">Datos de la Rendición:</h6>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <p><strong>Número:</strong> <span id="eliminarRendicionNumero">-</span></p>
+                                <p><strong>RUT:</strong> <span id="eliminarRendicionRut">-</span></p>
+                                <p><strong>Organización:</strong> <span id="eliminarRendicionOrganizacion">-</span></p>
+                            </div>
+                            <div class="col-md-6">
+                                <p><strong>Decreto:</strong> <span id="eliminarRendicionDecreto">-</span></p>
+                                <p><strong>Monto:</strong> <span id="eliminarRendicionMonto">-</span></p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="confirmarEliminacionRendicion" class="form-label fw-bold">
+                            <input type="checkbox" class="form-check-input me-2" id="confirmarEliminacionRendicion">
+                            Confirmo que deseo eliminar esta rendición
+                        </label>
+                    </div>
+                </div>
+                <div class="modal-footer d-flex justify-content-between p-3 border-top bg-light">
+                    <button type="button" class="btn btn-outline-secondary px-4 py-2 rounded-pill" data-bs-dismiss="modal">
+                        <i class="fa-solid fa-arrow-left me-2"></i>Cancelar
+                    </button>
+                    <button type="button" class="btn btn-danger px-4 py-2 rounded-pill" id="btnConfirmarEliminacionRendicion" disabled>
+                        <i class="fas fa-times-circle me-2"></i>Eliminar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
 
 
 
@@ -359,12 +413,94 @@
             csrfToken: '{{ csrf_token() }}'
         };
 
-        // Funcionalidad del buscador para rendiciones
+        // Funcionalidad del buscador y ordenamiento para rendiciones
         document.addEventListener('DOMContentLoaded', function() {
             const buscador = document.getElementById('buscadorRendiciones');
             
             // IDs de todas las tablas de rendiciones
             const tablasIds = ['table_id', 'table_pendientes', 'table_observadas', 'table_rechazadas'];
+            
+            // Variables para el ordenamiento de cada tabla
+            let ordenActual = {};
+            
+            // Función global para actualizar numeración en una tabla específica
+            function actualizarNumeracion(tablaId) {
+                const tabla = document.getElementById(tablaId);
+                if (!tabla) return;
+                const filasVisibles = Array.from(tabla.querySelectorAll('tbody tr')).filter(fila => fila.style.display !== 'none');
+                filasVisibles.forEach((fila, index) => {
+                    fila.cells[0].textContent = index + 1;
+                });
+            }
+            
+            // Función para inicializar ordenamiento en una tabla
+            function inicializarOrdenamiento(tablaId) {
+                const tabla = document.getElementById(tablaId);
+                if (!tabla) return;
+                
+                const headers = tabla.querySelectorAll('thead th');
+                
+                // Función para ordenar una tabla específica
+                function ordenarTabla(columna, direccion) {
+                    const tbody = tabla.querySelector('tbody');
+                    const filas = Array.from(tabla.querySelectorAll('tbody tr')).filter(fila => fila.style.display !== 'none');
+                    
+                    filas.sort((a, b) => {
+                        const valorA = a.cells[columna].textContent.trim();
+                        const valorB = b.cells[columna].textContent.trim();
+                        
+                        // Manejar diferentes tipos de datos
+                        let comparacion = 0;
+                        
+                        if (columna === 0) { // Columna # (números)
+                            comparacion = parseInt(valorA) - parseInt(valorB);
+                        } else if (columna === 1) { // Fecha
+                            const fechaA = new Date(valorA.split('/').reverse().join('-'));
+                            const fechaB = new Date(valorB.split('/').reverse().join('-'));
+                            comparacion = fechaA - fechaB;
+                        } else if (columna === 6) { // Monto
+                            const montoA = parseFloat(valorA.replace(/[^0-9]/g, ''));
+                            const montoB = parseFloat(valorB.replace(/[^0-9]/g, ''));
+                            comparacion = montoA - montoB;
+                        } else { // Texto
+                            comparacion = valorA.localeCompare(valorB, 'es', { numeric: true });
+                        }
+                        
+                        return direccion === 'asc' ? comparacion : -comparacion;
+                    });
+                    
+                    // Reorganizar las filas en el DOM
+                    filas.forEach(fila => tbody.appendChild(fila));
+                }
+
+                // Función para actualizar iconos de ordenamiento
+                function actualizarIconos(columna, direccion) {
+                    headers.forEach((header, index) => {
+                        const icono = header.querySelector('i.fas');
+                        if (icono) {
+                            if (index === columna) {
+                                icono.className = direccion === 'asc' ? 'fas fa-sort-up me-1' : 'fas fa-sort-down me-1';
+                            } else {
+                                icono.className = 'fas fa-sort me-1';
+                            }
+                        }
+                    });
+                }
+
+                // Agregar event listeners a los headers (excepto Opciones)
+                headers.forEach((header, index) => {
+                    // No agregar ordenamiento a Opciones (última columna)
+                    if (index < headers.length - 1) {
+                        header.style.cursor = 'pointer';
+                        header.addEventListener('click', function() {
+                            const direccion = ordenActual[tablaId] && ordenActual[tablaId][index] === 'asc' ? 'desc' : 'asc';
+                            ordenActual[tablaId] = { [index]: direccion };
+                            ordenarTabla(index, direccion);
+                            actualizarIconos(index, direccion);
+                        });
+                    }
+                });
+            }
             
             // Función para filtrar filas en una tabla específica
             function filtrarFilasEnTabla(tablaId, termino) {
@@ -390,6 +526,8 @@
                     // Mostrar u ocultar fila
                     fila.style.display = coincide ? '' : 'none';
                 });
+                
+                // No actualizar numeración después de filtrar - mantener numeración original
             }
 
             // Función para filtrar todas las tablas
@@ -398,6 +536,11 @@
                     filtrarFilasEnTabla(tablaId, termino);
                 });
             }
+
+            // Inicializar ordenamiento para todas las tablas
+            tablasIds.forEach(tablaId => {
+                inicializarOrdenamiento(tablaId);
+            });
 
             // Evento de búsqueda en tiempo real
             buscador.addEventListener('input', function() {

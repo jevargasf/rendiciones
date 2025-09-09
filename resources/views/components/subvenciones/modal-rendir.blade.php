@@ -112,16 +112,6 @@
                         </div>
                     </div>
 
-                    <div class="row gy-2 gx-0 align-items-start mt-2">
-                        <label for="Estado"
-                            class="col-12 col-sm-2 col-form-label fw-bold small mb-0">Estado</label>
-                        <div class="col-12 col-sm-10 ps-0 pull-left-sm pull-left-md">
-                            <select id="Estado" class="form-select form-select-sm shadow-sm"
-                                style="max-width: 250px" required>
-                                <option value="">Seleccione...</option>
-                            </select>
-                        </div>
-                    </div>
                     <!-- /INDENTACIÓN -->
                 </div>
 
