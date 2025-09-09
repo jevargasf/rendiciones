@@ -179,14 +179,44 @@ function verDetalleSubvencion(subvencionId){
     .then(response => response.json())
     .then(data => {
         if (data.success) {
-            // Llenar el formulario con los datos
-
             document.getElementById('informacion_organizacion').innerText = `(${data.data.rut}) ${data.data.organizacion}`;
             document.getElementById('detalle_fecha_decreto').innerText = data.data.fecha_asignacion;
             document.getElementById('detalle_decreto').innerText = data.data.decreto;
             document.getElementById('detalle_monto').innerText = data.data.monto;
             document.getElementById('detalle_fecha_subida').innerText = data;
             document.getElementById('detalle_destino').innerText = data.data.destino;
+
+            tabla_detalle = document.getElementById('detalle_acciones')
+            filas_acciones = ''
+            data.data.acciones.forEach((accion) =>{
+                filas_acciones += `
+                                                        <tr>
+                                                <td class="text-center px-2">${accion.fecha}</td>
+                                                <td class="px-2">${accion.accion_realizada}</td>
+                                                <td class="px-2">${accion.usuario}</td>
+                                                <td>    
+                                            </tr>
+                `
+            })
+            tabla_detalle.innerHTML = filas_acciones
+
+            // anteriores
+            detalle_anteriores = document.getElementById('detalle_anteriores')
+            filas_anteriores = ''
+            data.data.anteriores.forEach((anterior)=>{
+                filas_anteriores +=
+                    `
+                        <tr>
+                            <td class="text-center px-2">${anterior.id}</td>
+                            <td>29/05/2025</td>
+                            <td class="px-2">${anterior.decreto}</td>
+                            <td class="px-2">${anterior.monto}</td>
+                            <td class="px-2">${anterior.destino}</td>
+                        </tr>
+                    `
+            })
+            detalle_anteriores.innerHTML = filas_anteriores
+
         } else {
             Swal.fire({
                 title: "Error",

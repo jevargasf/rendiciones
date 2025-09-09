@@ -16,6 +16,7 @@ use Illuminate\Validation\Rules\File;
 use Illuminate\Routing\Controller as BaseController;
 use PhpOffice\PhpSpreadsheet\Reader\Xlsx;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
 
 class SubvencionController extends BaseController
 {
@@ -318,10 +319,60 @@ class SubvencionController extends BaseController
             $request->validate([
                 'id' => 'required|integer|exists:subvenciones,id'
             ]);
-            //dd($request->id);
+            // Detalle subvención
             $subvencion = Subvencion::findOrFail($request->id);
 
+            // Acciones asociadas
+            $subvenciones = DB::table('subvenciones')
+            ->join('rendiciones', 'subvenciones.id', '=', 'rendiciones.subvencion_id')
+            ->join('acciones', 'rendiciones.id', '=', 'acciones.rendicion_id')
+            ->join('estados_rendiciones', 'estados_rendiciones.id', '=', 'rendiciones.estado_rendicion_id')
+            ->where([
+                ['subvenciones.estado', '=', 1], 
+                ['rendiciones.estado', '=', 1],
+                ['subvenciones.id', '=', $request->id]
+                ])
+            ->get();
+
+            $acciones = array();
+            foreach($subvenciones as $sub){
+                $fecha_accion = \Carbon\Carbon::parse($sub->fecha_asignacion)->format('d/m/Y');
+                array_push($acciones, [
+                    'fecha'=>$fecha_accion,
+                    'usuario'=>$sub->km_nombre,
+                    'accion_realizada'=>$sub->comentario
+                ]);
+            }
             $fecha_formateada = \Carbon\Carbon::parse($subvencion->fecha_asignacion)->format('d/m/Y');
+            
+            // Subvenciones anteriores asociadas al mismo rut
+            $consulta_anteriores = Subvencion::where([
+                ['rut', '=', $subvencion->rut],
+                ['estado', '=', 1]
+            ])
+            ->whereNot('id', $subvencion->id)
+            ->get();
+
+            $anteriores = [];
+
+            if($consulta_anteriores->isEmpty()){
+                $anteriores = [
+                    'message'=>'No hay subvenciones anteriores asociadas.'
+                ];
+            }else{
+                foreach($consulta_anteriores as $anterior){
+                    $fecha_anterior_formateada = \Carbon\Carbon::parse($anterior->fecha)->format('d/m/Y');
+
+                    array_push($anteriores, [
+                        'id'=>$anterior->id,
+                        'decreto'=>$anterior->decreto,
+                        'monto'=>$anterior->monto,
+                        'fecha'=>$fecha_anterior_formateada,
+                        'destino'=>$anterior->destino
+                    ]);
+                }
+            }
+            
             return response()->json([
                 'success' => true,
                 'data' => [
@@ -331,10 +382,11 @@ class SubvencionController extends BaseController
                     'destino' => $subvencion->destino,
                     'rut' => $subvencion->rut,
                     'organizacion' => $subvencion->organizacion,
-                    'fecha_asignacion' => $fecha_formateada
+                    'fecha_asignacion' => $fecha_formateada,
+                    'acciones'=>$acciones,
+                    'anteriores'=>$anteriores
                 ]
             ]);
-
         } catch (Exception $e) {
             return response()->json([
                 'success' => false,

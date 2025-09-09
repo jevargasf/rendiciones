@@ -52,7 +52,7 @@
 
                 <!-- Contenido de las pestañas -->
                 <div class="tab-content pt-4 px-4 pb-2">
-                    <!-- Pestaña 1 -->
+                    <!-- Pestaña detalles -->
                     <div class="tab-pane fade active show" id="tab1" role="tabpanel">
                         <div class="bg-white border rounded-4 p-3 mb-0">
                             <div class="row">
@@ -93,7 +93,7 @@
                         </div>
                     </div>
 
-                    <!-- Pestaña 2 -->
+                    <!-- Pestaña acciones -->
                     <div class="tab-pane fade" id="tab2" role="tabpanel">
                         <div class="bg-white border rounded-4 p-3 mb-0 min-vh-50">
                             <div class="table-responsive">
@@ -107,67 +107,23 @@
                                                 <i class="fas fa-sort me-1"></i> Fecha
                                             </th>
                                             <th class="px-2">
+                                                <i class="fas fa-sort me-1"></i> Acción realizada
+                                            </th>
+                                            <th class="px-2">
                                                 <i class="fas fa-sort me-1"></i> Usuario
-                                            </th>
-                                            <th class="px-2">
-                                                <i class="fas fa-sort me-1"></i> Acción
-                                                realizada
-                                            </th>
-                                            <th class="px-2">
-                                                <i class="fas fa-sort me-1"></i> Detalle
                                             </th>
                                         </tr>
                                     </thead>
-                                    <tbody>
-                                        <tr>
-                                            <td class="text-center px-2">25/05/2025</td>
-                                            <td class="px-2">Michelle Figueroa</td>
-                                            <td class="px-2">Recepcionada correctamente</td>
-                                            <td>
-                                                <button
-                                                    type="button"
-                                                    title="Ver detalles"
-                                                    class="btn btn-accion btn-ver-detalle-rapido d-flex justify-content-center align-items-center"
-                                                    style="
-                                                        width: 2.5rem;
-                                                        height: 2.5rem;
-                                                        padding: 0;
-                                                    "
-                                                >
-                                                    <i
-                                                        class="bi bi-search border-0 p-0 text-dark"
-                                                    ></i>
-                                                </button>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td class="text-center px-2">20/04/2025</td>
-                                            <td class="px-2">Valentina Soto</td>
-                                            <td class="px-2">Objetada</td>
-                                            <td>
-                                                <button
-                                                    type="button"
-                                                    title="Ver detalles"
-                                                    class="btn btn-accion btn-ver-detalle-rapido d-flex justify-content-center align-items-center"
-                                                    style="
-                                                        width: 2.5rem;
-                                                        height: 2.5rem;
-                                                        padding: 0;
-                                                    "
-                                                >
-                                                    <i
-                                                        class="bi bi-search border-0 p-0 text-dark"
-                                                    ></i>
-                                                </button>
-                                            </td>
-                                        </tr>
+                                    <tbody id="detalle_acciones">
+                                        <!-- Formato fila -->
+
                                     </tbody>
                                 </table>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Overlay detalle acción -->
+                    <!-- Overlay detalle acción (no aparece botón) -->
                     <div id="ver-detalle" class="overlay-detalle d-none">
                         <div
                             class="detalle-box modal-content shadow-md rounded-4 overflow-hidden"
@@ -217,7 +173,7 @@
                         </div>
                     </div>
 
-                    <!-- Pestaña 3 -->
+                    <!-- Pestaña subvenciones anteriores -->
                     <div class="tab-pane fade" id="tab3" role="tabpanel">
                         <div class="bg-white border rounded-4 p-3 mb-0 min-vh-50">
                             <div class="table-responsive">
@@ -234,9 +190,6 @@
                                                 <i class="fas fa-sort me-1"></i>Decreto
                                             </th>
                                             <th class="px-2">
-                                                <i class="fas fa-sort me-1"></i>Nro. Movimiento
-                                            </th>
-                                            <th class="px-2">
                                                 <i class="fas fa-sort me-1"></i>Monto
                                             </th>
                                             <th class="px-2">
@@ -244,50 +197,15 @@
                                             </th>
                                         </tr>
                                     </thead>
-                                    <tbody>
-                                        <tr>
-                                            <td class="text-center px-2">4</td>
-                                            <td>29/05/2025</td>
-                                            <td class="px-2">2025-458</td>
-                                            <td class="px-2">12346</td>
-                                            <td class="px-2">$80.000</td>
-                                            <td class="px-2">Elementos para sede</td>
-                                        </tr>
-                                        <tr>
-                                            <td class="text-center px-2">3</td>
-                                            <td>29/05/2025</td>
-                                            <td class="text px-2">2025-458</td>
-                                            <td class="text px-2">45678</td>
-                                            <td class="text px-2">$35.000</td>
-                                            <td class="text px-2">Compra de elementos x</td>
-                                        </tr>
-                                        <tr>
-                                            <td class="text-center px-2">2</td>
-                                            <td>25/04/2025</td>
-                                            <td class="text px-2">2024-15</td>
-                                            <td class="text px-2">90123</td>
-                                            <td class="text px-2">$300.000</td>
-                                            <td class="text px-2">
-                                                Subvención relacionada a motivo x
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td class="text-center px-2">1</td>
-                                            <td>20/04/2025</td>
-                                            <td class="text px-2">2025-5</td>
-                                            <td class="text px-2">45678</td>
-                                            <td class="text px-2">$50.000</td>
-                                            <td class="text px-2">
-                                                Subvención relacionada a motivo y
-                                            </td>
-                                        </tr>
+                                    <tbody id="detalle_anteriores">
+
                                     </tbody>
                                 </table>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Pestaña 4 -->
+                    <!-- Pestaña datos organización -->
                     <div class="tab-pane fade" id="tab4" role="tabpanel">
                         <div class="bg-white border rounded-4 p-3 mb-0 min-vh-50">
                             <div class="row">
