@@ -117,7 +117,7 @@ class RendicionController extends BaseController
                 'rendicion_id' => $rendicion->id,
                 'persona_id' => auth()->user()->persona_id ?? 1, // Usar ID de persona del usuario autenticado o 1 por defecto
                 'cargo_id' => 1, // Asumir cargo por defecto
-                'comentario' => 'eliminada momentaneamente',
+                'comentario' => 'eliminada',
                 'fecha' => now(),
                 'estado' => 1,
                 'km_rut' => session('usuario.rut'), // RUT del usuario de la sesión
@@ -136,6 +136,73 @@ class RendicionController extends BaseController
                 'message' => 'Error al eliminar la rendición: ' . $e->getMessage()
             ], 500);
         }
+    }
+    
+    /**
+     * Actualizar el estado de una rendición
+     */
+    public function actualizarEstado(Request $request)
+    {
+        try {
+            $request->validate([
+                'id' => 'required|integer|exists:rendiciones,id',
+                'estado_rendicion_id' => 'required|integer|in:3,4,5', // 3=Objetada, 4=Rechazada, 5=Aprobada
+                'comentario' => 'nullable|string|max:500'
+            ]);
+
+            $rendicion = Rendicion::findOrFail($request->id);
+            
+            // Verificar que la rendición esté en revisión (estado_rendicion_id = 2)
+            if ($rendicion->estado_rendicion_id != 2) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Solo se pueden editar las rendiciones en revisión'
+                ]);
+            }
+
+            // Actualizar el estado de la rendición
+            $rendicion->update([
+                'estado_rendicion_id' => $request->estado_rendicion_id
+            ]);
+
+            // Registrar la acción
+            Accion::create([
+                'rendicion_id' => $rendicion->id,
+                'persona_id' => auth()->user()->persona_id ?? 1,
+                'cargo_id' => 1,
+                'comentario' => $request->comentario ?: 'Estado actualizado a ' . $this->getNombreEstado($request->estado_rendicion_id),
+                'fecha' => now(),
+                'estado' => 1,
+                'km_rut' => session('usuario.rut'),
+                'km_nombre' => session('usuario.nombres') . ' ' . session('usuario.apellido_paterno') . ' ' . session('usuario.apellido_materno')
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Estado de la rendición actualizado correctamente'
+            ]);
+
+        } catch (Exception $e) {
+            \Log::error('Error en actualizarEstado: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Error al actualizar el estado: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+    
+    /**
+     * Obtener el nombre del estado por ID
+     */
+    private function getNombreEstado($estadoId)
+    {
+        $estados = [
+            3 => 'Objetada',
+            4 => 'Rechazada',
+            5 => 'Aprobada'
+        ];
+        
+        return $estados[$estadoId] ?? 'Desconocido';
     }
     
     

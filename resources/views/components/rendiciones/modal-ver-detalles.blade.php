@@ -36,6 +36,12 @@
                             Notificaciones
                         </button>
                     </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="tab4-rendicion-tab" data-bs-toggle="tab"
+                            data-bs-target="#tab4-rendicion" type="button" role="tab">
+                            Editar rendición
+                        </button>
+                    </li>
                 </ul>
 
                 <!-- Contenido de las pestañas -->
@@ -107,14 +113,38 @@
                         </div>
                     </div>
 
+                    <!-- Pestaña 4 - Editar rendición -->
+                    <div class="tab-pane fade" id="tab4-rendicion" role="tabpanel">
+                        <div class="bg-white border rounded-4 p-3 mb-0 min-vh-50">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <label for="estado_rendicion_edit" class="form-label fw-bold">Estado de la rendición</label>
+                                    <select class="form-select" id="estado_rendicion_edit" name="estado_rendicion_edit">
+                                        <option value="">Seleccione un estado</option>
+                                        <option value="3">Objetada</option>
+                                        <option value="5">Aprobada</option>
+                                        <option value="4">Rechazada</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="comentario_estado" class="form-label fw-bold">Comentario (opcional)</label>
+                                    <textarea class="form-control" id="comentario_estado" name="comentario_estado" rows="3" placeholder="Ingrese un comentario sobre el cambio de estado..."></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
             </div>
 
             <!-- Footer -->
             <div class="modal-footer bg-light d-flex justify-content-end py-2">
-                <button type="button" class="btn btn-outline-secondary rounded-pill px-3 py-1"
+                <button type="button" class="btn btn-outline-secondary rounded-pill px-3 py-1 me-2"
                     data-bs-dismiss="modal">
                     <i class="fa-solid fa-xmark me-2"></i>Cerrar
+                </button>
+                <button type="button" class="btn btn-primary rounded-pill px-3 py-1" id="btn_guardar_cambios_rendicion">
+                    <i class="fa-solid fa-save me-2"></i>Guardar cambios
                 </button>
             </div>
         </div>
