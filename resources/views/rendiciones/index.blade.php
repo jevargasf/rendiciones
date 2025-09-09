@@ -69,14 +69,14 @@
                                     <th class="fw-normal"><i class="fas fa-sort me-1"></i> Nro. Movimiento</th>
                                     <th class="fw-normal"><i class="fas fa-sort me-1"></i> Monto</th>
                                                         <th class="text-center fw-normal">
-                        <i class="fas fa-sort me-1"></i> Opciones
+                        Opciones
                     </th>
                                 </tr>
                             </thead> 
                             <tbody>
-                                @forelse ($rendiciones as $item)
+                                @forelse ($rendiciones as $index => $item)
                                     <tr>
-                                        <td class="td-5">{{ $item->id }}</td>
+                                        <td class="td-5">{{ $index + 1 }}</td>
                                         <td class="fecha" data-order="2025-05-29">29/05/2025</td>
                                         <td>{{ $item->subvencion->rut_formateado }}</td>
                                         <td>{{ $item->subvencion->nombre_organizacion }}</td>
@@ -129,14 +129,14 @@
                                     <th class="fw-normal"><i class="fas fa-sort me-1"></i> Nro. Movimiento</th>
                                     <th class="fw-normal"><i class="fas fa-sort me-1"></i> Monto</th>
                                                         <th class="text-center fw-normal">
-                        <i class="fas fa-sort me-1"></i> Opciones
+                        Opciones
                     </th>
                                 </tr>
                             </thead>
                             <tbody>
-                                @forelse ($pendientes as $item)
+                                @forelse ($pendientes as $index => $item)
                                     <tr>
-                                        <td class="td-5">{{ $item->id }}</td>
+                                        <td class="td-5">{{ $index + 1 }}</td>
                                         <td class="fecha" data-order="2025-05-29">29/05/2025</td>
                                         <td>{{ $item->subvencion->rut_formateado }}</td>
                                         <td>{{ $item->subvencion->nombre_organizacion }}</td>
@@ -183,13 +183,13 @@
                                     <th class="fw-normal"><i class="fas fa-sort me-1"></i> Decreto</th>
                                     <th class="fw-normal"><i class="fas fa-sort me-1"></i> Nro. Movimiento</th>
                                     <th class="fw-normal"><i class="fas fa-sort me-1"></i> Monto</th>
-                                    <th class="fw-normal"><i class="fas fa-sort me-1"></i> Opciones</th>
+                                    <th class="fw-normal">Opciones</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                @forelse ($observadas as $item)
+                                @forelse ($observadas as $index => $item)
                                     <tr>
-                                        <td class="td-5">{{ $item->id }}</td>
+                                        <td class="td-5">{{ $index + 1 }}</td>
                                         <td class="fecha" data-order="2025-05-29">29/05/2025</td>
                                         <td>{{ $item->subvencion->rut_formateado }}</td>
                                         <td>{{ $item->subvencion->nombre_organizacion }}</td>
@@ -242,13 +242,13 @@
                                     <th class="fw-normal"><i class="fas fa-sort me-1"></i> Decreto</th>
                                     <th class="fw-normal"><i class="fas fa-sort me-1"></i> Nro. Movimiento</th>
                                     <th class="fw-normal"><i class="fas fa-sort me-1"></i> Monto</th>
-                                    <th class="fw-normal"><i class="fas fa-sort me-1"></i> Opciones</th>
+                                    <th class="fw-normal">Opciones</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                @forelse ($rechazadas as $item)
+                                @forelse ($rechazadas as $index => $item)
                                     <tr>
-                                        <td class="td-5">{{ $item->id }}</td>
+                                        <td class="td-5">{{ $index + 1 }}</td>
                                         <td class="fecha" data-order="2025-05-29">29/05/2025</td>
                                         <td>{{ $item->subvencion->rut_formateado }}</td>
                                         <td>{{ $item->subvencion->nombre_organizacion }}</td>
@@ -359,12 +359,94 @@
             csrfToken: '{{ csrf_token() }}'
         };
 
-        // Funcionalidad del buscador para rendiciones
+        // Funcionalidad del buscador y ordenamiento para rendiciones
         document.addEventListener('DOMContentLoaded', function() {
             const buscador = document.getElementById('buscadorRendiciones');
             
             // IDs de todas las tablas de rendiciones
             const tablasIds = ['table_id', 'table_pendientes', 'table_observadas', 'table_rechazadas'];
+            
+            // Variables para el ordenamiento de cada tabla
+            let ordenActual = {};
+            
+            // Función global para actualizar numeración en una tabla específica
+            function actualizarNumeracion(tablaId) {
+                const tabla = document.getElementById(tablaId);
+                if (!tabla) return;
+                const filasVisibles = Array.from(tabla.querySelectorAll('tbody tr')).filter(fila => fila.style.display !== 'none');
+                filasVisibles.forEach((fila, index) => {
+                    fila.cells[0].textContent = index + 1;
+                });
+            }
+            
+            // Función para inicializar ordenamiento en una tabla
+            function inicializarOrdenamiento(tablaId) {
+                const tabla = document.getElementById(tablaId);
+                if (!tabla) return;
+                
+                const headers = tabla.querySelectorAll('thead th');
+                
+                // Función para ordenar una tabla específica
+                function ordenarTabla(columna, direccion) {
+                    const tbody = tabla.querySelector('tbody');
+                    const filas = Array.from(tabla.querySelectorAll('tbody tr')).filter(fila => fila.style.display !== 'none');
+                    
+                    filas.sort((a, b) => {
+                        const valorA = a.cells[columna].textContent.trim();
+                        const valorB = b.cells[columna].textContent.trim();
+                        
+                        // Manejar diferentes tipos de datos
+                        let comparacion = 0;
+                        
+                        if (columna === 0) { // Columna # (números)
+                            comparacion = parseInt(valorA) - parseInt(valorB);
+                        } else if (columna === 1) { // Fecha
+                            const fechaA = new Date(valorA.split('/').reverse().join('-'));
+                            const fechaB = new Date(valorB.split('/').reverse().join('-'));
+                            comparacion = fechaA - fechaB;
+                        } else if (columna === 6) { // Monto
+                            const montoA = parseFloat(valorA.replace(/[^0-9]/g, ''));
+                            const montoB = parseFloat(valorB.replace(/[^0-9]/g, ''));
+                            comparacion = montoA - montoB;
+                        } else { // Texto
+                            comparacion = valorA.localeCompare(valorB, 'es', { numeric: true });
+                        }
+                        
+                        return direccion === 'asc' ? comparacion : -comparacion;
+                    });
+                    
+                    // Reorganizar las filas en el DOM
+                    filas.forEach(fila => tbody.appendChild(fila));
+                }
+
+                // Función para actualizar iconos de ordenamiento
+                function actualizarIconos(columna, direccion) {
+                    headers.forEach((header, index) => {
+                        const icono = header.querySelector('i.fas');
+                        if (icono) {
+                            if (index === columna) {
+                                icono.className = direccion === 'asc' ? 'fas fa-sort-up me-1' : 'fas fa-sort-down me-1';
+                            } else {
+                                icono.className = 'fas fa-sort me-1';
+                            }
+                        }
+                    });
+                }
+
+                // Agregar event listeners a los headers (excepto Opciones)
+                headers.forEach((header, index) => {
+                    // No agregar ordenamiento a Opciones (última columna)
+                    if (index < headers.length - 1) {
+                        header.style.cursor = 'pointer';
+                        header.addEventListener('click', function() {
+                            const direccion = ordenActual[tablaId] && ordenActual[tablaId][index] === 'asc' ? 'desc' : 'asc';
+                            ordenActual[tablaId] = { [index]: direccion };
+                            ordenarTabla(index, direccion);
+                            actualizarIconos(index, direccion);
+                        });
+                    }
+                });
+            }
             
             // Función para filtrar filas en una tabla específica
             function filtrarFilasEnTabla(tablaId, termino) {
@@ -390,6 +472,8 @@
                     // Mostrar u ocultar fila
                     fila.style.display = coincide ? '' : 'none';
                 });
+                
+                // No actualizar numeración después de filtrar - mantener numeración original
             }
 
             // Función para filtrar todas las tablas
@@ -398,6 +482,11 @@
                     filtrarFilasEnTabla(tablaId, termino);
                 });
             }
+
+            // Inicializar ordenamiento para todas las tablas
+            tablasIds.forEach(tablaId => {
+                inicializarOrdenamiento(tablaId);
+            });
 
             // Evento de búsqueda en tiempo real
             buscador.addEventListener('input', function() {
