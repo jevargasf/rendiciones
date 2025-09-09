@@ -368,6 +368,8 @@ class SubvencionController extends BaseController
         try {
             $request->validate([
                 'id' => 'required|integer|exists:subvenciones,id',
+                'decreto' => 'required|string|max:255',
+                'monto' => 'required|integer|min:1',
                 'destino' => 'required|string|max:1000',
                 'rut' => 'required|string|max:12',
                 'nombre_organizacion' => 'required|string|max:255'
@@ -384,8 +386,10 @@ class SubvencionController extends BaseController
                 ]);
             }
 
-            // Actualizar la subvención (sin modificar decreto ni monto)
+            // Actualizar la subvención
             $subvencion->update([
+                'decreto' => $request->decreto,
+                'monto' => $request->monto,
                 'destino' => $request->destino,
                 'rut' => $rutNormalizado,
                 'nombre_organizacion' => $request->nombre_organizacion
