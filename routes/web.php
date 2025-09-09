@@ -48,6 +48,8 @@ Route::prefix('rendiciones')->group(function () {
 
     Route::get('/detalleRendicion',[RendicionController::class, 'detalleRendicion'])->name('rendiciones.detalleRendicion'); 
 
+    Route::post('/eliminar-temporalmente', [RendicionController::class, 'eliminarTemporalmente'])->name('rendiciones.eliminar-temporalmente');
+
 });
 
 Route::prefix('personas')->group(function () {

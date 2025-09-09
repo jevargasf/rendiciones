@@ -63,7 +63,7 @@ function llenarTablaAcciones(acciones) {
         const fecha = new Date(accion.fecha);
         const fechaFormateada = fecha.toLocaleDateString('es-ES');
         const horaFormateada = fecha.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
-        const nombreCompleto = accion.persona ? `${accion.persona.nombre} ${accion.persona.apellido}` : 'Sistema';
+        const nombreCompleto = accion.km_nombre || 'Sistema';
         
         html += `
             <tr>
@@ -143,3 +143,125 @@ document.querySelector("#table_rechazadas")?.addEventListener("click", async fun
         mostrarDetalleRendicion(id);
     }
 });
+
+/* Event listener para botón eliminar rendición temporalmente */
+document.addEventListener('click', function(e) {
+    if (e.target.closest('.btn-eliminar-rendicion')) {
+        const button = e.target.closest('.btn-eliminar-rendicion');
+        const rendicionId = button.getAttribute('data-rendicion-id');
+        
+        // Obtener datos de la rendición desde la fila
+        const fila = button.closest('tr');
+        const celdas = fila.querySelectorAll('td');
+        
+        // Llenar el modal con los datos de la rendición
+        document.getElementById('eliminarRendicionNumero').textContent = celdas[0].textContent;
+        document.getElementById('eliminarRendicionRut').textContent = celdas[2].textContent;
+        document.getElementById('eliminarRendicionOrganizacion').textContent = celdas[3].textContent;
+        document.getElementById('eliminarRendicionDecreto').textContent = celdas[4].textContent;
+        document.getElementById('eliminarRendicionMonto').textContent = celdas[6].textContent;
+        
+        // Limpiar checkbox del modal
+        document.getElementById('confirmarEliminacionRendicion').checked = false;
+        document.getElementById('btnConfirmarEliminacionRendicion').disabled = true;
+        
+        // Mostrar el modal
+        const modal = new bootstrap.Modal(document.getElementById('modalEliminarRendicion'));
+        modal.show();
+        
+        // Guardar el ID para usar después
+        document.getElementById('btnConfirmarEliminacionRendicion').setAttribute('data-rendicion-id', rendicionId);
+    }
+});
+
+/* Funcionalidad para habilitar/deshabilitar botón de confirmación */
+document.addEventListener('change', function(e) {
+    if (e.target.id === 'confirmarEliminacionRendicion') {
+        const confirmado = e.target.checked;
+        const btnConfirmar = document.getElementById('btnConfirmarEliminacionRendicion');
+        
+        btnConfirmar.disabled = !confirmado;
+    }
+});
+
+/* Funcionalidad para el botón de confirmación de eliminación */
+document.addEventListener('click', function(e) {
+    if (e.target.id === 'btnConfirmarEliminacionRendicion') {
+        const rendicionId = e.target.getAttribute('data-rendicion-id');
+        
+        if (rendicionId) {
+            eliminarRendicionTemporalmente(rendicionId);
+        }
+    }
+});
+
+/* Función para eliminar rendición temporalmente */
+function eliminarRendicionTemporalmente(id) {
+    // Cerrar el modal primero
+    const modal = bootstrap.Modal.getInstance(document.getElementById('modalEliminarRendicion'));
+    modal.hide();
+    
+    // Mostrar SweetAlert de carga
+    Swal.fire({
+        title: 'Eliminando temporalmente...',
+        text: 'Por favor espere',
+        icon: 'info',
+        allowOutsideClick: false,
+        allowEscapeKey: false,
+        showConfirmButton: false,
+        didOpen: () => {
+            Swal.showLoading();
+        }
+    });
+
+    // Realizar petición AJAX
+    fetch('/rendiciones/eliminar-temporalmente', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || 
+                           document.querySelector('input[name="_token"]')?.value
+        },
+        body: JSON.stringify({
+            id: id
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Mostrar mensaje de éxito
+            Swal.fire({
+                title: '¡Eliminada correctamente!',
+                text: data.message,
+                icon: 'success',
+                confirmButtonText: 'Aceptar',
+                allowOutsideClick: false,
+                allowEscapeKey: false
+            }).then(() => {
+                // Recargar la página para actualizar la tabla
+                window.location.reload();
+            });
+        } else {
+            // Mostrar mensaje de error
+            Swal.fire({
+                title: 'Error',
+                text: data.message || 'Error al eliminar temporalmente la rendición',
+                icon: 'error',
+                confirmButtonText: 'Aceptar',
+                allowOutsideClick: true,
+                allowEscapeKey: true
+            });
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        Swal.fire({
+            title: 'Error',
+            text: 'Error de conexión. Por favor, intente nuevamente.',
+            icon: 'error',
+            confirmButtonText: 'Aceptar',
+            allowOutsideClick: true,
+            allowEscapeKey: true
+        });
+    });
+}

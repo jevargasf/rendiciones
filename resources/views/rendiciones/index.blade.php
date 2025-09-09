@@ -27,32 +27,32 @@
                     <button class="nav-link active" id="nav-rendidas-tab" data-bs-toggle="tab"
                         data-bs-target="#nav-rendidas" type="button" role="tab" aria-controls="nav-rendidas"
                         aria-selected="true">
-                        Rendidas
+                        En revisión
                     </button>
 
                     <button class="nav-link" id="nav-pendientes-tab" data-bs-toggle="tab"
                         data-bs-target="#nav-pendientes" type="button" role="tab" aria-controls="nav-pendientes"
                         aria-selected="false">
-                        Pendientes
+                        Objetada
                     </button>
 
                     <button class="nav-link" id="nav-observadas-tab" data-bs-toggle="tab"
                         data-bs-target="#nav-observadas" type="button" role="tab" aria-controls="nav-observadas"
                         aria-selected="false">
-                        Observadas
+                        Aprobada
                     </button>
 
                     <button class="nav-link" id="nav-rechazadas-tab" data-bs-toggle="tab"
                         data-bs-target="#nav-rechazadas" type="button" role="tab" aria-controls="nav-rechazadas"
                         aria-selected="false">
-                        Rechazadas
+                        Rechazada
                     </button>
                 </div>
             </nav>
 
             <!-- Tabla de contenidos -->
             <div class="tab-content" id="nav-tabContent">
-                <!-- RENDIDAS -->
+                <!-- EN REVISIÓN -->
                 <div class="tab-pane fade show active" id="nav-rendidas" role="tabpanel"
                     aria-labelledby="nav-rendidas-tab" tabindex="0">
                     <div class="table-responsive mt-3">
@@ -86,13 +86,17 @@
                                         <td class="td-5">
 
                                         <!-- REVISAR ACÁ LA FUNCIONALIDAD DEL BOTÓN VER DETALLE -->
-                                            <div class="d-flex justify-content-center align-items-center">
+                                            <div class="d-flex justify-content-center align-items-center gap-1 flex-wrap">
                                                 <button type="button" class="btn btn-accion btn-link align-baseline">
                                                     <i class="fas fa-search" data-id="{{ $item->id }}"
                                                         data-subvencion="{{ $item->subvencion_id }}"
                                                 
                                                         {{-- Guarda el ID del registro para usarlo en JavaScript --}}></i>
-
+                                                </button>
+                                                <!-- Eliminar temporalmente -->
+                                                <button class="btn btn-danger btn-accion btn-eliminar-rendicion" 
+                                                    title="Eliminar temporalmente" type="button" data-rendicion-id="{{ $item->id }}">
+                                                    <i class="fas fa-times-circle"></i>
                                                 </button>
                                             </div>
                                         </td>
@@ -102,7 +106,7 @@
                                         <td colspan="8" class="text-center py-4">
                                             <div class="text-muted">
                                                 <i class="fas fa-inbox fa-2x mb-2"></i>
-                                                <p class="mb-0">No hay rendiciones rendidas</p>
+                                                <p class="mb-0">No hay rendiciones en revisión</p>
                                             </div>
                                         </td>
                                     </tr>
@@ -112,7 +116,7 @@
                     </div>
                 </div>
 
-                <!-- PESTAÑA PENDIENTES -->
+                <!-- PESTAÑA OBJETADAS -->
                 <div class="tab-pane fade" id="nav-pendientes" role="tabpanel" aria-labelledby="nav-pendientes-tab"
                     tabindex="0">
                     <div class="table-responsive mt-3">
@@ -157,7 +161,7 @@
                                         <td colspan="8" class="text-center py-4">
                                             <div class="text-muted">
                                                 <i class="fas fa-inbox fa-2x mb-2"></i>
-                                                <p class="mb-0">No hay rendiciones pendientes</p>
+                                                <p class="mb-0">No hay rendiciones objetadas</p>
                                             </div>
                                         </td>
                                     </tr>
@@ -167,7 +171,7 @@
                     </div>
                 </div>
 
-                <!-- OBSERVADAS -->
+                <!-- APROBADAS -->
                 <div class="tab-pane fade" id="nav-observadas" role="tabpanel" aria-labelledby="nav-observadas-tab"
                     tabindex="0">
                     <div class="table-responsive mt-3">
@@ -215,7 +219,7 @@
                                         <td colspan="8" class="text-center py-4">
                                             <div class="text-muted">
                                                 <i class="fas fa-inbox fa-2x mb-2"></i>
-                                                <p class="mb-0">No hay rendiciones observadas</p>
+                                                <p class="mb-0">No hay rendiciones aprobadas</p>
                                             </div>
                                         </td>
                                     </tr>
@@ -285,6 +289,56 @@
 
     <!-- Modal Ver Detalles de Rendición -->
     <x-rendiciones.modal-ver-detalles />
+
+    <!-- Modal Eliminar Rendición Temporalmente -->
+    <div class="modal fade" id="modalEliminarRendicion" tabindex="-1" aria-labelledby="modalEliminarRendicionLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content shadow-lg rounded-4 overflow-hidden">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title fw-bold" id="modalEliminarRendicionLabel">
+                        <i class="fas fa-exclamation-triangle me-2"></i>Eliminar Rendición Temporalmente
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <div class="alert alert-warning" role="alert">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        <strong>Advertencia:</strong> Esta acción eliminará temporalmente la rendición y devolverá la subvención al estado inicial.
+                    </div>
+                    
+                    <div class="mb-3">
+                        <h6 class="fw-bold mb-3">Datos de la Rendición:</h6>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <p><strong>Número:</strong> <span id="eliminarRendicionNumero">-</span></p>
+                                <p><strong>RUT:</strong> <span id="eliminarRendicionRut">-</span></p>
+                                <p><strong>Organización:</strong> <span id="eliminarRendicionOrganizacion">-</span></p>
+                            </div>
+                            <div class="col-md-6">
+                                <p><strong>Decreto:</strong> <span id="eliminarRendicionDecreto">-</span></p>
+                                <p><strong>Monto:</strong> <span id="eliminarRendicionMonto">-</span></p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="confirmarEliminacionRendicion" class="form-label fw-bold">
+                            <input type="checkbox" class="form-check-input me-2" id="confirmarEliminacionRendicion">
+                            Confirmo que deseo eliminar temporalmente esta rendición
+                        </label>
+                    </div>
+                </div>
+                <div class="modal-footer d-flex justify-content-between p-3 border-top bg-light">
+                    <button type="button" class="btn btn-outline-secondary px-4 py-2 rounded-pill" data-bs-dismiss="modal">
+                        <i class="fa-solid fa-arrow-left me-2"></i>Cancelar
+                    </button>
+                    <button type="button" class="btn btn-danger px-4 py-2 rounded-pill" id="btnConfirmarEliminacionRendicion" disabled>
+                        <i class="fas fa-times-circle me-2"></i>Eliminar Temporalmente
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
 
 
 
