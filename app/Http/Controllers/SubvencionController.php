@@ -537,6 +537,11 @@ class SubvencionController extends BaseController
                     'estado_rendicion_id' => 2 // Estado "En Revisión" (ID 2)
                 ]);
             }
+            
+            // Cambiar el estado de la subvención a 2 (rendida)
+            $subvencion->update([
+                'estado' => 2
+            ]);
 
             // Obtener datos del usuario autenticado desde la sesión
             $usuarioAutenticado = session('usuario');

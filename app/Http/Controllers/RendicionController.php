@@ -16,37 +16,31 @@ class RendicionController extends BaseController
 
     public function index()
     {
+        // Solo mostrar rendiciones con estado_rendicion_id = 2 (En Revisión)
         $rendiciones = Rendicion::with(['subvencion', 'estadoRendicion'])
             ->where('estado', 1)
-            ->where('estado_rendicion_id', '!=', 1) // Excluir rendiciones con estado_rendicion_id = 1 (Pendiente)
+            ->where('estado_rendicion_id', 2) // Solo rendiciones en revisión
             ->get();
 
+        // Mantener las otras consultas para compatibilidad con la vista
         $pendientes = Rendicion::with(['subvencion', 'estadoRendicion'])
-            ->where('estado', 2)
-            ->where('estado_rendicion_id', '!=', 1) // Excluir rendiciones con estado_rendicion_id = 1 (Pendiente)
+            ->where('estado', 1)
+            ->where('estado_rendicion_id', 2) // Solo rendiciones en revisión
             ->get();
 
         $observadas = Rendicion::with(['subvencion', 'estadoRendicion'])
-            ->where('estado', 3)
-            ->where('estado_rendicion_id', '!=', 1) // Excluir rendiciones con estado_rendicion_id = 1 (Pendiente)
+            ->where('estado', 1)
+            ->where('estado_rendicion_id', 2) // Solo rendiciones en revisión
             ->get();
 
         $rechazadas = Rendicion::with(['subvencion', 'estadoRendicion'])
-            ->where('estado', 4)
-            ->where('estado_rendicion_id', '!=', 1) // Excluir rendiciones con estado_rendicion_id = 1 (Pendiente)
+            ->where('estado', 1)
+            ->where('estado_rendicion_id', 2) // Solo rendiciones en revisión
             ->get();
 
-
-
-
-        // dd($rendiciones);
-
         return view(
-
             'rendiciones.index',
-
-            compact('rendiciones', 'pendientes', 'observadas', 'rechazadas')
-
+            compact('En revisión', 'Objetadas', 'Aprobadas', 'rechazadas')
         );
     }
 

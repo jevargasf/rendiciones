@@ -20,7 +20,7 @@ class InicioController extends BaseController
             ->where('estado', '!=', 9) // Excluir subvenciones eliminadas
             ->count();
         $rendiciones = Rendicion::where('estado', 1)
-            ->where('estado_rendicion_id', '!=', 1) // Excluir rendiciones con estado_rendicion_id = 1 (Pendiente)
+            ->where('estado_rendicion_id', 2) // Solo rendiciones en revisión
             ->where('estado', '!=', 9) // Excluir rendiciones eliminadas
             ->count();
         $personas = Persona::count();
