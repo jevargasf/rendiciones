@@ -144,7 +144,7 @@ document.querySelector("#table_rechazadas")?.addEventListener("click", async fun
     }
 });
 
-/* Event listener para botón eliminar rendición temporalmente */
+/* Event listener para botón eliminar rendición */
 document.addEventListener('click', function(e) {
     if (e.target.closest('.btn-eliminar-rendicion')) {
         const button = e.target.closest('.btn-eliminar-rendicion');
@@ -195,7 +195,7 @@ document.addEventListener('click', function(e) {
     }
 });
 
-/* Función para eliminar rendición temporalmente */
+/* Función para eliminar rendición */
 function eliminarRendicionTemporalmente(id) {
     // Cerrar el modal primero
     const modal = bootstrap.Modal.getInstance(document.getElementById('modalEliminarRendicion'));
@@ -203,7 +203,7 @@ function eliminarRendicionTemporalmente(id) {
     
     // Mostrar SweetAlert de carga
     Swal.fire({
-        title: 'Eliminando temporalmente...',
+        title: 'Eliminando...',
         text: 'Por favor espere',
         icon: 'info',
         allowOutsideClick: false,
@@ -245,7 +245,7 @@ function eliminarRendicionTemporalmente(id) {
             // Mostrar mensaje de error
             Swal.fire({
                 title: 'Error',
-                text: data.message || 'Error al eliminar temporalmente la rendición',
+                text: data.message || 'Error al eliminar la rendición',
                 icon: 'error',
                 confirmButtonText: 'Aceptar',
                 allowOutsideClick: true,

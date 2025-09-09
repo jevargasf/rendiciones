@@ -87,7 +87,7 @@ class RendicionController extends BaseController
     }
     
     /**
-     * Eliminar temporalmente una rendición (cambiar estado de subvención a 1 y estado_rendicion_id a 1)
+     * Eliminar una rendición (cambiar estado de subvención a 1 y estado_rendicion_id a 1)
      */
     public function eliminarTemporalmente(Request $request)
     {
@@ -102,7 +102,7 @@ class RendicionController extends BaseController
             if ($rendicion->estado_rendicion_id != 2) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Solo se pueden eliminar temporalmente las rendiciones en revisión'
+                    'message' => 'Solo se pueden eliminar las rendiciones en revisión'
                 ]);
             }
 
@@ -119,19 +119,21 @@ class RendicionController extends BaseController
                 'cargo_id' => 1, // Asumir cargo por defecto
                 'comentario' => 'eliminada momentaneamente',
                 'fecha' => now(),
-                'estado' => 1
+                'estado' => 1,
+                'km_rut' => session('usuario.rut'), // RUT del usuario de la sesión
+                'km_nombre' => session('usuario.nombres') . ' ' . session('usuario.apellido_paterno') . ' ' . session('usuario.apellido_materno') // Nombre completo del usuario
             ]);
 
             return response()->json([
                 'success' => true,
-                'message' => 'Rendición eliminada temporalmente. La subvención ha vuelto al estado inicial.'
+                'message' => 'Rendición eliminada correctamente. La subvención ha vuelto al estado inicial.'
             ]);
 
         } catch (Exception $e) {
             \Log::error('Error en eliminarTemporalmente: ' . $e->getMessage());
             return response()->json([
                 'success' => false,
-                'message' => 'Error al eliminar temporalmente la rendición: ' . $e->getMessage()
+                'message' => 'Error al eliminar la rendición: ' . $e->getMessage()
             ], 500);
         }
     }

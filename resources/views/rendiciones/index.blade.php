@@ -93,9 +93,9 @@
                                                 
                                                         {{-- Guarda el ID del registro para usarlo en JavaScript --}}></i>
                                                 </button>
-                                                <!-- Eliminar temporalmente -->
+                                                <!-- Eliminar -->
                                                 <button class="btn btn-danger btn-accion btn-eliminar-rendicion" 
-                                                    title="Eliminar temporalmente" type="button" data-rendicion-id="{{ $item->id }}">
+                                                    title="Eliminar" type="button" data-rendicion-id="{{ $item->id }}">
                                                     <i class="fas fa-times-circle"></i>
                                                 </button>
                                             </div>
@@ -290,20 +290,20 @@
     <!-- Modal Ver Detalles de Rendición -->
     <x-rendiciones.modal-ver-detalles />
 
-    <!-- Modal Eliminar Rendición Temporalmente -->
+    <!-- Modal Eliminar Rendición -->
     <div class="modal fade" id="modalEliminarRendicion" tabindex="-1" aria-labelledby="modalEliminarRendicionLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content shadow-lg rounded-4 overflow-hidden">
-                <div class="modal-header bg-danger text-white">
+                <div class="modal-header modal-header-app">
                     <h5 class="modal-title fw-bold" id="modalEliminarRendicionLabel">
-                        <i class="fas fa-exclamation-triangle me-2"></i>Eliminar Rendición Temporalmente
+                        <i class="fas fa-exclamation-triangle me-2"></i>Eliminar Rendición
                     </h5>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body p-4">
                     <div class="alert alert-warning" role="alert">
                         <i class="fas fa-exclamation-triangle me-2"></i>
-                        <strong>Advertencia:</strong> Esta acción eliminará temporalmente la rendición y devolverá la subvención al estado inicial.
+                        <strong>Advertencia:</strong> Esta acción eliminará la rendición y devolverá la subvención al estado inicial.
                     </div>
                     
                     <div class="mb-3">
@@ -324,7 +324,7 @@
                     <div class="mb-3">
                         <label for="confirmarEliminacionRendicion" class="form-label fw-bold">
                             <input type="checkbox" class="form-check-input me-2" id="confirmarEliminacionRendicion">
-                            Confirmo que deseo eliminar temporalmente esta rendición
+                            Confirmo que deseo eliminar esta rendición
                         </label>
                     </div>
                 </div>
@@ -333,7 +333,7 @@
                         <i class="fa-solid fa-arrow-left me-2"></i>Cancelar
                     </button>
                     <button type="button" class="btn btn-danger px-4 py-2 rounded-pill" id="btnConfirmarEliminacionRendicion" disabled>
-                        <i class="fas fa-times-circle me-2"></i>Eliminar Temporalmente
+                        <i class="fas fa-times-circle me-2"></i>Eliminar
                     </button>
                 </div>
             </div>
