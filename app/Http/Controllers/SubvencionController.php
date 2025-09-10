@@ -20,6 +20,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use PhpOffice\PhpSpreadsheet\Shared\Date;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\File as FileReader;
 
 class SubvencionController extends BaseController
 {
@@ -31,6 +32,16 @@ class SubvencionController extends BaseController
         $subvenciones = Subvencion::where('estado', 1) // Excluir subvenciones eliminadas (estado = 9)
             ->get();
         // nombre organización lo pedimos desde la API usando el rut para evitar errores (a medida que lo necesitemos)
+        
+        // TERMINAR DE ITERAR ARRAY DE SUBVENCIONES
+        // BLOQUE IF COMPROBANDO RUT_JSON == RUT_SUBVENCION
+        foreach($subvenciones as $subvencion){
+            $data_organizacion = FileReader::get(base_path('resources/data/endpoint.json'));
+            $json_organizacion = json_decode($data_organizacion, associative: true);
+            $rut_json = $json_organizacion[0]['rut'];
+            $nombre_json = $json_organizacion[0]['nombre_organizacion'];
+        }
+        dd($subvenciones->toArray());
         return view(
             'subvenciones.index',
             compact('subvenciones')
@@ -120,7 +131,7 @@ class SubvencionController extends BaseController
                             'fecha' => $fecha
                         ]
                         ,[
-                            'rut' => 'required|regex:/^[0-9]{1,2}[0-9]{6}-[0-9kK]$/',
+                            'rut' => 'required|regex:/^[0-9]{1,2}\.[0-9]{3}\.[0-9]{3}-[0-9kK]$/',
                             'monto' => 'required|integer',
                             'destino' => 'required|string|max:200',
                             'fecha' => 'required|date_format:d-m-Y'
@@ -141,7 +152,7 @@ class SubvencionController extends BaseController
                         'monto' => $fila_validada['monto'],
                         'fecha_asignacion' => $fila_validada['fecha'],
                         'destino' => $fila_validada['destino'],
-                        'rut' => $fila_validada['rut'],
+                        'rut' => $this->normalizarRut($fila_validada['rut']),
                         'estado' => 1,
                         'motivo_eliminacion' => null
                     ]);

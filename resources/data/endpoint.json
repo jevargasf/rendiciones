@@ -1,0 +1,30 @@
+[
+    {
+        "organizacion_id": 25,
+        "nombre_organizacion": "Junta de vecinos RECOLETA",
+        "rut": "66666666-6",
+        "pj_municipal": "3283940-2025",
+        "pj_registro_civil": "232311",
+        "telefono": "953527809",
+        "correo": "sin@mail.cl",
+        "direccion": "Requegua paradero 13\r\ncasa 1282",
+        "tipo_organizacion": "TERRITORIALES",
+        "directivas": [
+            {
+                "cargo": "Presidente",
+                "nombre_persona": "luis",
+                "apellido_persona": "morales"
+            },
+            {
+                "cargo": "Tesorero",
+                "nombre_persona": "pedro",
+                "apellido_persona": "picapiedra"
+            },
+            {
+                "cargo": "Secretario",
+                "nombre_persona": "toma",
+                "apellido_persona": "castro"
+            }
+        ]
+    }
+]

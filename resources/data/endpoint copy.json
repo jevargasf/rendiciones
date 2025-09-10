@@ -1,0 +1,114 @@
+[
+    {
+        "organizacion_id": 25,
+        "nombre_organizacion": "Junta de vecinos RECOLETA",
+        "rut": "66666666-6",
+        "pj_municipal": "3283940-2025",
+        "pj_registro_civil": "232311",
+        "telefono": "953527809",
+        "correo": "sin@mail.cl",
+        "direccion": "Requegua paradero 13\r\ncasa 1282",
+        "tipo_organizacion": "TERRITORIALES",
+        "directivas": [
+            {
+                "cargo": "Presidente",
+                "nombre_persona": "luis",
+                "apellido_persona": "morales"
+            },
+            {
+                "cargo": "Tesorero",
+                "nombre_persona": "pedro",
+                "apellido_persona": "picapiedra"
+            },
+            {
+                "cargo": "Secretario",
+                "nombre_persona": "toma",
+                "apellido_persona": "castro"
+            }
+        ]
+    },
+    {
+        "organizacion_id": 26,
+        "nombre_organizacion": "Junta de vecinos VILLA EL SOL",
+        "rut": "55555555-5",
+        "pj_municipal": "3283940-2025",
+        "pj_registro_civil": "232311",
+        "telefono": "953527809",
+        "correo": "sin1@mail.cl",
+        "direccion": "Requegua paradero 13\r\ncasa 1282",
+        "tipo_organizacion": "TERRITORIALES",
+        "directivas": [
+            {
+                "cargo": "Presidente",
+                "nombre_persona": "luis",
+                "apellido_persona": "morales"
+            },
+            {
+                "cargo": "Tesorero",
+                "nombre_persona": "pedro",
+                "apellido_persona": "picapiedra"
+            },
+            {
+                "cargo": "Secretario",
+                "nombre_persona": "toma",
+                "apellido_persona": "castro"
+            }
+        ]
+    },
+    {
+        "organizacion_id": 27,
+        "nombre_organizacion": "Junta de vecinos LOS GIRASOLES",
+        "rut": "77777777-7",
+        "pj_municipal": "3283940-2025",
+        "pj_registro_civil": "232311",
+        "telefono": "953527809",
+        "correo": "sin2@mail.cl",
+        "direccion": "Requegua paradero 13\r\ncasa 1282",
+        "tipo_organizacion": "TERRITORIALES",
+        "directivas": [
+            {
+                "cargo": "Presidente",
+                "nombre_persona": "luis",
+                "apellido_persona": "morales"
+            },
+            {
+                "cargo": "Tesorero",
+                "nombre_persona": "pedro",
+                "apellido_persona": "picapiedra"
+            },
+            {
+                "cargo": "Secretario",
+                "nombre_persona": "toma",
+                "apellido_persona": "castro"
+            }
+        ]
+    },
+    {
+        "organizacion_id": 28,
+        "nombre_organizacion": "Junta de vecinos DON MATEO",
+        "rut": "67686656-1",
+        "pj_municipal": "3283940-2025",
+        "pj_registro_civil": "232311",
+        "telefono": "953527809",
+        "correo": "sin3@mail.cl",
+        "direccion": "Requegua paradero 13\r\ncasa 1282",
+        "tipo_organizacion": "TERRITORIALES",
+        "directivas": [
+            {
+                "cargo": "Presidente",
+                "nombre_persona": "luis",
+                "apellido_persona": "morales"
+            },
+            {
+                "cargo": "Tesorero",
+                "nombre_persona": "pedro",
+                "apellido_persona": "picapiedra"
+            },
+            {
+                "cargo": "Secretario",
+                "nombre_persona": "toma",
+                "apellido_persona": "castro"
+            }
+        ]
+    }
+]
