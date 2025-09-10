@@ -24,16 +24,11 @@ class SubvencionController extends BaseController
 
     public function index()
     {
-        $subvenciones = Subvencion::where('estado', 1)
-            ->where('estado', '!=', 9) // Excluir subvenciones eliminadas (estado = 9)
+        $subvenciones = Subvencion::where('estado', 1) // Excluir subvenciones eliminadas (estado = 9)
             ->get();
-
-        // dd($subvenciones);
-
+        // nombre organización lo pedimos desde la API usando el rut para evitar errores (a medida que lo necesitemos)
         return view(
-
             'subvenciones.index',
-
             compact('subvenciones')
 
         );  
