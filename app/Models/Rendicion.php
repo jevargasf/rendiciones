@@ -16,7 +16,8 @@ class Rendicion extends Model
     protected $fillable = [
         'subvencion_id',
         'estado_rendicion_id',
-        'estado'
+        'estado',
+        'motivo_eliminacion'
     ];
     
     /**
@@ -44,11 +45,11 @@ class Rendicion extends Model
     }
     
     /**
-     * Relación con notificaciones
+     * Relación con notificaciones a través de acciones
      */
     public function notificaciones()
     {
-        return $this->hasMany(Notificacion::class, 'rendicion_id');
+        return $this->hasManyThrough(Notificacion::class, Accion::class, 'rendicion_id', 'accion_id');
     }
 }
 

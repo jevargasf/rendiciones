@@ -261,30 +261,3 @@ window.idioma = {
         renameTitle: "Cambiar Nombre Estado",
     },
 };
-
-document.addEventListener("DOMContentLoaded", function() {
-    const botones = document.querySelectorAll(".fas.fa-times-circle");
-    botones.forEach((boton) => {
-        boton.addEventListener("click", (event) => {
-            event.preventDefault();
-            Swal.fire({
-                title: "¿Seguro desea eliminar?",
-                text: "",
-                icon: "warning",
-                showCancelButton: true,
-                confirmButtonText: "Sí, eliminar",
-                cancelButtonText: "Cancelar",
-                customClass: {
-                    confirmButton: "swal-warning"
-                },
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    const form = event.target.closest("form");
-                    if (form) {
-                        form.submit();
-                    }
-                }
-            });
-        });
-    });
-});

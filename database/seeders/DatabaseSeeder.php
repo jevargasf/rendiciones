@@ -22,7 +22,6 @@ class DatabaseSeeder extends Seeder
         // Seeders para datos de configuración del sistema
         $this->call([
             EstadoRendicionSeeder::class,
-            TipoNotificacionSeeder::class,
             CargoSeeder::class,
         ]);
     }

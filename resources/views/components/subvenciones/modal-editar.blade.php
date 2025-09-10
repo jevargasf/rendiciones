@@ -28,7 +28,7 @@
                                     Organización
                                 </label>
                                 <div class="col-sm-8">
-                                    <input class="form-control form-control-sm shadow-sm" id="organizacion_editar" name="organizacion"
+                                    <input class="form-control form-control-sm shadow-sm" id="organizacion_editar" name="nombre_organizacion"
                                         type="text" placeholder="Nombre de la organización" required />
                                 </div>
                             </div>
@@ -41,7 +41,7 @@
                                 </label>
                                 <div class="col-sm-8">
                                     <input class="form-control form-control-sm shadow-sm" id="decreto_editar" name="decreto"
-                                        type="text" placeholder="324-2500" required />
+                                        type="text" placeholder="324-2500" readonly disabled />
                                 </div>
                             </div>
                             <div class="col-sm-6">
@@ -52,7 +52,7 @@
                                     <div class="input-group input-group-sm">
                                         <span class="input-group-text">$</span>
                                         <input class="form-control form-control-sm shadow-sm" id="monto_editar" name="monto"
-                                            type="number" placeholder="100000" min="1" required />
+                                            type="number" placeholder="100000" min="1" readonly disabled />
                                     </div>
                                 </div>
                             </div>
