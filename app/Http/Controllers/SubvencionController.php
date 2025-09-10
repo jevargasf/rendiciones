@@ -27,6 +27,7 @@ class SubvencionController extends BaseController
 
     public function index()
     {
+        //dd(Session::all());
         $subvenciones = Subvencion::where('estado', 1) // Excluir subvenciones eliminadas (estado = 9)
             ->get();
         // nombre organización lo pedimos desde la API usando el rut para evitar errores (a medida que lo necesitemos)
@@ -308,24 +309,29 @@ class SubvencionController extends BaseController
             $subvencion = Subvencion::findOrFail($request->id);
 
             // REVISAR: aquí se pueden hacer consultas más optimizadas
-            $subvenciones = DB::table('subvenciones')
-            ->join('rendiciones', 'subvenciones.id', '=', 'rendiciones.subvencion_id')
-            ->join('acciones', 'rendiciones.id', '=', 'acciones.rendicion_id')
-            ->join('estados_rendiciones', 'estados_rendiciones.id', '=', 'rendiciones.estado_rendicion_id')
+            $subvenciones = Subvencion::with([
+                'rendiciones.acciones' => function ($query) {
+                        $query->where('estado', 1);
+                    }],[
+                'rendiciones.estados_rendiciones' => function ($query) {
+                        $query->where('estado', 1);
+                    }
+                ])
             ->where([
                 ['subvenciones.estado', '=', 1], 
-                ['rendiciones.estado', '=', 1],
                 ['subvenciones.id', '=', $request->id]
                 ])
             ->get();
+            
+            $data_acciones = $subvenciones->toArray()[0]['rendiciones'][0]['acciones'];
 
             $acciones = array();
-            foreach($subvenciones as $sub){
-                $fecha_accion = \Carbon\Carbon::parse($sub->fecha_asignacion)->format('d/m/Y');
+            foreach($data_acciones as $accion){
+                $fecha_accion = \Carbon\Carbon::parse($accion['fecha'])->format('d/m/Y');
                 array_push($acciones, [
                     'fecha'=>$fecha_accion,
-                    'usuario'=>$sub->km_nombre,
-                    'accion_realizada'=>$sub->comentario
+                    'usuario'=>$accion['km_nombre'],
+                    'accion_realizada'=>$accion['comentario']
                 ]);
             }
             $fecha_formateada = \Carbon\Carbon::parse($subvencion->fecha_asignacion)->format('d/m/Y');
