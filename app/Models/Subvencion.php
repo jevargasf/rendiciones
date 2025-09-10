@@ -15,17 +15,18 @@ class Subvencion extends Model
     
     protected $fillable = [
         'decreto',
+        'fecha_decreto',
         'monto',
         'fecha_asignacion',
         'destino',
         'rut',
-        'nombre_organizacion',
         'estado',
         'motivo_eliminacion'
     ];
     
     protected $casts = [
-        'fecha_asignacion' => 'datetime',
+        'fecha_asignacion' => 'date',
+        'fecha_decreto' => 'date',
         'monto' => 'integer'
     ];
     

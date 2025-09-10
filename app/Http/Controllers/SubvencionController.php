@@ -17,6 +17,9 @@ use Illuminate\Routing\Controller as BaseController;
 use PhpOffice\PhpSpreadsheet\Reader\Xlsx;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
+use PhpOffice\PhpSpreadsheet\Shared\Date;
+use Illuminate\Support\Facades\Session;
 
 class SubvencionController extends BaseController
 {
@@ -87,12 +90,12 @@ class SubvencionController extends BaseController
 
             // Obtener encabezados para validar formato
             $headers = $worksheet->rangeToArray('A1:' . $highestColumn . '1', null, true, true, true);
-            $headersCleaned = array_map('trim', $headers);
+            //$headersCleaned = array_map('trim', $headers);
             $expectedHeaders = ['Rut Organización', 'Monto', 'Destino', 'Fecha'];
             
             // REVISAR: Validar que los encabezados sean correctos. Solo valida el número, no valida que tengan el mismo nombre
             $headerRow = array_values($headers[1]);
-            if (count($headerRow) < 5) {
+            if (count($headerRow) < 4) {
                 return response()->json([
                     'success' => false,
                     'message' => 'El archivo no tiene el formato esperado. Las columnas deben ser: RUT Organización, Monto, Destino, Fecha'
@@ -105,46 +108,39 @@ class SubvencionController extends BaseController
             // Procesar cada fila de datos
             for ($row = 2; $row <= $highestRow; $row++) {
                 try {
-                    $rut = $worksheet->getCell('A' . $row)->getValue();
-                    $organizacion = $worksheet->getCell('B' . $row)->getValue();
-                    $monto = $worksheet->getCell('C' . $row)->getValue();
-                    $destino = $worksheet->getCell('D' . $row)->getValue();
-                    $fecha = $worksheet->getCell('E' . $row)->getValue();
+                    $fecha = Date::excelToDateTimeObject($worksheet->getCell('D' . $row)
+                    ->getValue())->format('d-m-Y');
+                    
+                    
+                    $validar_fila = Validator::make([
+                            'rut' => $worksheet->getCell('A' . $row)->getValue(),
+                            'monto' => $worksheet->getCell('B' . $row)->getValue(),
+                            'destino' => $worksheet->getCell('C' . $row)->getValue(),
+                            'fecha' => $fecha
+                        ]
+                        ,[
+                            'rut' => 'required|regex:/^[0-9]{1,2}[0-9]{6}-[0-9kK]$/',
+                            'monto' => 'required|integer',
+                            'destino' => 'required|string|max:200',
+                            'fecha' => 'required|date_format:d-m-Y'
+                        ]);
 
-                    // Validar que no vengan campos vacíos en la fila
-                    if (empty($rut) || empty($organizacion) || empty($monto) || empty($destino) || empty($fecha)) {
-                        $errores[] = "Fila $row: Todos los campos son obligatorios";
+                    if ($validar_fila->fails()){
+                        // Error genérico
+                        $errores[] = "Fila $row contiene errores: " . $validar_fila->errors();
                         continue;
                     }
 
-                    // Normalizar y validar RUT
-                    $rutNormalizado = $this->normalizarRut($rut);
-                    if (!$rutNormalizado) {
-                        $errores[] = "Fila $row: RUT inválido ($rut)";
-                        continue;
-                    }
-
-                    // Validar monto
-                    if (!is_numeric($monto) || $monto <= 0) {
-                        $errores[] = "Fila $row: Monto inválido ($monto)";
-                        continue;
-                    }
-
-                    // REVISAR: Las fechas no deben tener hora.
-                    $fechaAsignacion = $this->convertirFecha($fecha);
-                    if (!$fechaAsignacion) {
-                        $errores[] = "Fila $row: Fecha inválida ($fecha)";
-                        continue;
-                    }
-
+                    $fila_validada = $validar_fila->validated();
                     // Crear registro de subvención
+                    // Falta consumir json rut organización para validar rut
                     $subvencion = Subvencion::create([
                         'decreto' => $request->numero_decreto,
-                        'monto' => (int) $monto,
-                        'destino' => $destino,
-                        'fecha_asignacion' => $fechaAsignacion,
-                        'rut' => $rutNormalizado,
-                        'nombre_organizacion' => $organizacion,
+                        'fecha_decreto' => $request->fecha_decreto,
+                        'monto' => $fila_validada['monto'],
+                        'fecha_asignacion' => $fila_validada['fecha'],
+                        'destino' => $fila_validada['destino'],
+                        'rut' => $fila_validada['rut'],
                         'estado' => 1,
                         'motivo_eliminacion' => null
                     ]);
@@ -155,48 +151,22 @@ class SubvencionController extends BaseController
                         'estado_rendicion_id' => 1, // Estado inicial
                         'estado' => 1
                     ]);
+
+                    // Crear acción automática de subvención creada 
+                    $km_data = session('usuario');                   
+                    if ($km_data) {
+                        $nombre_completo = trim($km_data['nombres'] ?? '') . ' ' . 
+                                               ($km_data['apellido_paterno'] ?? '') . ' ' . 
+                                               ($km_data['apellido_materno'] ?? '');
                     
-                    // Crear acción automática de subvención creada
-                    $usuarioAutenticado = session('usuario');
-                    if ($usuarioAutenticado) {
-                        $nombreCompletoUsuario = trim(($usuarioAutenticado['nombres'] ?? '') . ' ' . 
-                                               ($usuarioAutenticado['apellido_paterno'] ?? '') . ' ' . 
-                                               ($usuarioAutenticado['apellido_materno'] ?? ''));
-                        
-                        //  AQUÍ NO VA CREACIÓN DE REGISTRO PERSONA: Obtener o crear una persona por defecto para el sistema
-                        // $personaSistema = Persona::firstOrCreate(
-                        //     ['rut' => '00000000-0'],
-                        //     [
-                        //         'nombre' => 'Sistema',
-                        //         'apellido' => 'Interno',
-                        //         'correo' => 'sistema@interno.cl',
-                        //         'estado' => 1
-                        //     ]
-                        // );
-                        
-                        // Obtener o crear un cargo por defecto para el sistema
-                        // $cargoSistema = Cargo::firstOrCreate(
-                        //     ['nombre' => 'Sistema'],
-                        //     ['estado' => 1]
-                        // );
-                        
-                        $accion = Accion::create([
+                        Accion::create([
                             'fecha' => now(),
-                            'comentario' => 'Creación de subvención',
-                            'km_rut' => $usuarioAutenticado['run'] ?? '',
-                            'km_nombre' => $nombreCompletoUsuario,
+                            'comentario' => 'Subvención registrada en el sistema.',
+                            'km_rut' => $km_data['run'] ?? '',
+                            'km_nombre' => $nombre_completo,
                             'rendicion_id' => $rendicion->id,
                             'estado' => 1
                         ]);
-                        
-                        // Crear notificación inicial de subvención creada
-                        // Notificacion::create([
-                        //     'fecha_envio' => now(),
-                        //     'fecha_lectura' => null,
-                        //     'estado_notificacion' => false, // No leída
-                        //     'accion_id' => $accion->id,
-                        //     'estado' => 1
-                        // ]);
                     }
 
                     $subvencionesCreadas++;
@@ -337,7 +307,7 @@ class SubvencionController extends BaseController
             // Detalle subvención
             $subvencion = Subvencion::findOrFail($request->id);
 
-            // Acciones asociadas
+            // REVISAR: aquí se pueden hacer consultas más optimizadas
             $subvenciones = DB::table('subvenciones')
             ->join('rendiciones', 'subvenciones.id', '=', 'rendiciones.subvencion_id')
             ->join('acciones', 'rendiciones.id', '=', 'acciones.rendicion_id')
@@ -419,8 +389,10 @@ class SubvencionController extends BaseController
             $request->validate([
                 'id' => 'required|integer|exists:subvenciones,id',
                 'destino' => 'required|string|max:1000',
-                'rut' => 'required|string|max:12',
-                'nombre_organizacion' => 'required|string|max:255'
+                'rut' => 'required|regex:/^[0-9]{1,2}[0-9]{6}-[0-9kK]$/',
+                'fecha_decreto' => 'required|date',
+                'numero_decreto' => 'required|string|max:255',
+                'monto'
             ]);
 
             $subvencion = Subvencion::findOrFail($request->id);
@@ -437,8 +409,7 @@ class SubvencionController extends BaseController
             // Actualizar la subvención (sin modificar decreto ni monto)
             $subvencion->update([
                 'destino' => $request->destino,
-                'rut' => $rutNormalizado,
-                'nombre_organizacion' => $request->nombre_organizacion
+                'rut' => $rutNormalizado
             ]);
 
             return response()->json([
