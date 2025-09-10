@@ -48,6 +48,7 @@ class SubvencionController extends BaseController
             $file = $request->file('seleccionar_archivo');
             $extension = $file->getClientOriginalExtension();
             
+            // Alerta si la extensión del archivo no es válida
             if (!in_array($extension, ['xls', 'xlsx'])) {
                 return response()->json([
                     'success' => false,
@@ -68,12 +69,13 @@ class SubvencionController extends BaseController
             $reader->setReadDataOnly(true);
             $spreadsheet = $reader->load($filePath);
 
-            // Obtener la primera hoja
+            // Obtener la hoja activa del excel
             $worksheet = $spreadsheet->getActiveSheet();
+            // Obtener número de fila y columna que tienen realmente datos
             $highestRow = $worksheet->getHighestDataRow();
             $highestColumn = $worksheet->getHighestDataColumn();
 
-            // Validar que el archivo tenga datos
+            // Validación: el archivo tiene solo 1 fila con datos
             if ($highestRow < 2) {
                 return response()->json([
                     'success' => false,
@@ -81,16 +83,19 @@ class SubvencionController extends BaseController
                 ]);
             }
 
+            // Falta: validación de número de columnas esperado
+
             // Obtener encabezados para validar formato
             $headers = $worksheet->rangeToArray('A1:' . $highestColumn . '1', null, true, true, true);
-            $expectedHeaders = ['Rut Organización', 'Organización', 'Monto', 'Destino', 'Fecha'];
+            $headersCleaned = array_map('trim', $headers);
+            $expectedHeaders = ['Rut Organización', 'Monto', 'Destino', 'Fecha'];
             
-            // Validar que los encabezados sean correctos
+            // REVISAR: Validar que los encabezados sean correctos. Solo valida el número, no valida que tengan el mismo nombre
             $headerRow = array_values($headers[1]);
             if (count($headerRow) < 5) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'El archivo debe tener al menos 5 columnas: RUT Organización, Organización, Monto, Destino, Fecha'
+                    'message' => 'El archivo no tiene el formato esperado. Las columnas deben ser: RUT Organización, Monto, Destino, Fecha'
                 ]);
             }
 
@@ -106,7 +111,7 @@ class SubvencionController extends BaseController
                     $destino = $worksheet->getCell('D' . $row)->getValue();
                     $fecha = $worksheet->getCell('E' . $row)->getValue();
 
-                    // Validar datos de la fila
+                    // Validar que no vengan campos vacíos en la fila
                     if (empty($rut) || empty($organizacion) || empty($monto) || empty($destino) || empty($fecha)) {
                         $errores[] = "Fila $row: Todos los campos son obligatorios";
                         continue;
@@ -125,7 +130,7 @@ class SubvencionController extends BaseController
                         continue;
                     }
 
-                    // Convertir fecha si es necesario
+                    // REVISAR: Las fechas no deben tener hora.
                     $fechaAsignacion = $this->convertirFecha($fecha);
                     if (!$fechaAsignacion) {
                         $errores[] = "Fila $row: Fecha inválida ($fecha)";
@@ -158,22 +163,22 @@ class SubvencionController extends BaseController
                                                ($usuarioAutenticado['apellido_paterno'] ?? '') . ' ' . 
                                                ($usuarioAutenticado['apellido_materno'] ?? ''));
                         
-                        // Obtener o crear una persona por defecto para el sistema
-                        $personaSistema = Persona::firstOrCreate(
-                            ['rut' => '00000000-0'],
-                            [
-                                'nombre' => 'Sistema',
-                                'apellido' => 'Interno',
-                                'correo' => 'sistema@interno.cl',
-                                'estado' => 1
-                            ]
-                        );
+                        //  AQUÍ NO VA CREACIÓN DE REGISTRO PERSONA: Obtener o crear una persona por defecto para el sistema
+                        // $personaSistema = Persona::firstOrCreate(
+                        //     ['rut' => '00000000-0'],
+                        //     [
+                        //         'nombre' => 'Sistema',
+                        //         'apellido' => 'Interno',
+                        //         'correo' => 'sistema@interno.cl',
+                        //         'estado' => 1
+                        //     ]
+                        // );
                         
                         // Obtener o crear un cargo por defecto para el sistema
-                        $cargoSistema = Cargo::firstOrCreate(
-                            ['nombre' => 'Sistema'],
-                            ['estado' => 1]
-                        );
+                        // $cargoSistema = Cargo::firstOrCreate(
+                        //     ['nombre' => 'Sistema'],
+                        //     ['estado' => 1]
+                        // );
                         
                         $accion = Accion::create([
                             'fecha' => now(),
@@ -181,19 +186,17 @@ class SubvencionController extends BaseController
                             'km_rut' => $usuarioAutenticado['run'] ?? '',
                             'km_nombre' => $nombreCompletoUsuario,
                             'rendicion_id' => $rendicion->id,
-                            'persona_id' => $personaSistema->id,
-                            'cargo_id' => $cargoSistema->id,
                             'estado' => 1
                         ]);
                         
                         // Crear notificación inicial de subvención creada
-                        Notificacion::create([
-                            'fecha_envio' => now(),
-                            'fecha_lectura' => null,
-                            'estado_notificacion' => false, // No leída
-                            'accion_id' => $accion->id,
-                            'estado' => 1
-                        ]);
+                        // Notificacion::create([
+                        //     'fecha_envio' => now(),
+                        //     'fecha_lectura' => null,
+                        //     'estado_notificacion' => false, // No leída
+                        //     'accion_id' => $accion->id,
+                        //     'estado' => 1
+                        // ]);
                     }
 
                     $subvencionesCreadas++;
@@ -609,23 +612,19 @@ class SubvencionController extends BaseController
             ]);
             
             // Crear notificación para la acción de rendición
-            Notificacion::create([
-                'fecha_envio' => now(),
-                'fecha_lectura' => null,
-                'estado_notificacion' => false, // No leída
-                'accion_id' => $accion->id,
-                'estado' => 1
-            ]);
+            // Notificacion::create([
+            //     'fecha_envio' => now(),
+            //     'fecha_lectura' => null,
+            //     'estado_notificacion' => false, // No leída
+            //     'accion_id' => $accion->id,
+            //     'estado' => 1
+            // ]);
 
             // No se actualiza el destino de la subvención ya que es información original
 
             return response()->json([
                 'success' => true,
-                'message' => 'Rendición guardada correctamente',
-                'data' => [
-                    'persona_id' => $persona->id,
-                    'rendicion_id' => $rendicion->id
-                ]
+                'message' => 'Rendición guardada correctamente'
             ]);
 
         } catch (Exception $e) {
