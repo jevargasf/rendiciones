@@ -480,16 +480,15 @@ class SubvencionController extends BaseController
                 ]);
 
                 // Cambiar estado de todas las rendiciones asociadas a 9 (eliminadas)
-                $rendicionesCount = $subvencionAEliminar->rendiciones()->update([
-                    'estado' => 9,
-                    'motivo_eliminacion' => $request->motivo
+                $subvencionAEliminar->rendiciones()->update([
+                    'estado' => 9
                 ]);
                 
                 $subvencionesEliminadas++;
-                $rendicionesEliminadas += $rendicionesCount;
+                $rendicionesEliminadas++;
             }
 
-            $mensaje = "Se eliminaron {$subvencionesEliminadas} subvención(es) con el decreto '{$decreto}' y {$rendicionesEliminadas} rendición(es) asociada(s).";
+            $mensaje = "Se eliminaron {$subvencionesEliminadas} subvención(es) asociadas al decreto '{$decreto}'.";
 
             return response()->json([
                 'success' => true,

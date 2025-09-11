@@ -17,8 +17,8 @@
                         <div class="alert alert-warning d-flex align-items-center mb-4" role="alert">
                             <i class="fas fa-exclamation-triangle fa-2x me-3"></i>
                             <div>
-                                <h6 class="alert-heading mb-1">¡Advertencia Importante!</h6>
-                                <p class="mb-0">Al eliminar esta subvención, se eliminarán <strong>TODAS las subvenciones</strong> que tengan el mismo decreto. Esta acción no se puede deshacer.</p>
+                                <h6 class="alert-heading mb-1">¡Advertencia!</h6>
+                                <p class="mb-0" id="advertencia_eliminar"></p>
                             </div>
                         </div>
 
