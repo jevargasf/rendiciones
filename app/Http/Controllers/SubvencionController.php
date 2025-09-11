@@ -26,7 +26,7 @@ class SubvencionController extends BaseController
 {
 
 
-    public function agregarDataOrganizacion($data, $endpoint){
+    public function conseguirDetalleOrganizacion($data, $endpoint){
         foreach($data as $subvencion){
             $data_organizacion = FileReader::get(base_path($endpoint));
             $json_organizacion = json_decode($data_organizacion, associative: true);
@@ -34,9 +34,11 @@ class SubvencionController extends BaseController
             $nombre_json = $json_organizacion[0]['nombre_organizacion'];
             if ($rut_json == $subvencion['rut']){
                 $subvencion->nombre_organizacion = $nombre_json;
+            } else {
+                $subvencion->nombre_organizacion = 'S/D';
             }
         }
-        return $data;
+        return [$data, $data_organizacion];
     }
 
     public function index()
@@ -46,7 +48,7 @@ class SubvencionController extends BaseController
             ->get();
         // nombre organización lo pedimos desde la API usando el rut para evitar errores (a medida que lo necesitemos)
         
-        $subvenciones = $this->agregarDataOrganizacion($subvenciones, '/resources/data/endpoint.json');
+        $subvenciones = $this->conseguirDetalleOrganizacion($subvenciones, '/resources/data/endpoint.json')[0];
         return view(
             'subvenciones.index',
             compact('subvenciones')
@@ -322,10 +324,7 @@ class SubvencionController extends BaseController
                 'id' => 'required|integer|exists:subvenciones,id'
             ]);
             // Detalle subvención
-            $subvencion = Subvencion::findOrFail($request->id);
-
-            // REVISAR: aquí se pueden hacer consultas más optimizadas
-            $subvenciones = Subvencion::with([
+            $subvencion = Subvencion::with([
                 'rendiciones.acciones' => function ($query) {
                         $query->where('estado', 1);
                     }],[
@@ -337,27 +336,22 @@ class SubvencionController extends BaseController
                 ['subvenciones.estado', '=', 1], 
                 ['subvenciones.id', '=', $request->id]
                 ])
-            ->get();
-            
-            $data_acciones = $subvenciones->toArray()[0]['rendiciones'][0]['acciones'];
+            ->get();       
 
-            $acciones = array();
-            foreach($data_acciones as $accion){
-                $fecha_accion = \Carbon\Carbon::parse($accion['fecha'])->format('d/m/Y');
-                array_push($acciones, [
-                    'fecha'=>$fecha_accion,
-                    'usuario'=>$accion['km_nombre'],
-                    'accion_realizada'=>$accion['comentario']
-                ]);
+            foreach($subvencion[0]->rendiciones[0]->acciones as $accion){
+                $fecha_accion = \Carbon\Carbon::parse($accion->fecha)->format('d/m/Y');
+                $accion->fecha = $accion->fecha->format('d/m/Y');
             }
-            $fecha_formateada = \Carbon\Carbon::parse($subvencion->fecha_asignacion)->format('d/m/Y');
-            
+
+            // Agregar data organización
+            $subvencion = $this->conseguirDetalleOrganizacion($subvencion, '/resources/data/endpoint.json')[0];
+
             // Subvenciones anteriores asociadas al mismo rut
             $consulta_anteriores = Subvencion::where([
-                ['rut', '=', $subvencion->rut],
+                ['rut', '=', $subvencion[0]->rut],
                 ['estado', '=', 1]
             ])
-            ->whereNot('id', $subvencion->id)
+            ->whereNot('id', $subvencion[0]->id)
             ->get();
 
             $anteriores = [];
@@ -379,19 +373,21 @@ class SubvencionController extends BaseController
                     ]);
                 }
             }
-            
+
             return response()->json([
                 'success' => true,
                 'data' => [
-                    'id' => $subvencion->id,
-                    'decreto' => $subvencion->decreto,
-                    'monto' => $subvencion->monto,
-                    'destino' => $subvencion->destino,
-                    'rut' => $subvencion->rut,
-                    'organizacion' => $subvencion->organizacion,
-                    'fecha_asignacion' => $fecha_formateada,
-                    'acciones'=>$acciones,
-                    'anteriores'=>$anteriores
+                    'id' => $subvencion[0]->id,
+                    'decreto' => $subvencion[0]->decreto,
+                    'fecha_decreto' => $subvencion[0]->fecha_decreto->format('d/m/Y'),
+                    'monto' => $subvencion[0]->monto,
+                    'destino' => $subvencion[0]->destino,
+                    'rut' => $subvencion[0]->rut,
+                    'organizacion' => $subvencion[0]->nombre_organizacion,
+                    'fecha_asignacion' => $subvencion[0]->fecha_asignacion->format('d/m/Y'),
+                    'acciones'=>$subvencion[0]->rendiciones[0]->acciones->toArray(),
+                    'anteriores'=>$anteriores,
+                    'detalle_organizacion'=>json_decode($this->conseguirDetalleOrganizacion($subvencion, '/resources/data/endpoint.json')[1], true)[0]
                 ]
             ]);
         } catch (Exception $e) {

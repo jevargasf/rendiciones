@@ -180,20 +180,22 @@ function verDetalleSubvencion(subvencionId){
     .then(data => {
         if (data.success) {
             document.getElementById('informacion_organizacion').innerText = `(${data.data.rut}) ${data.data.organizacion}`;
-            document.getElementById('detalle_fecha_decreto').innerText = data.data.fecha_asignacion;
+            document.getElementById('detalle_fecha_decreto').innerText = data.data.fecha_decreto;
             document.getElementById('detalle_decreto').innerText = data.data.decreto;
             document.getElementById('detalle_monto').innerText = data.data.monto;
-            document.getElementById('detalle_fecha_subida').innerText = data;
+            console.log(data.data)
+            document.getElementById('detalle_fecha_asignacion').innerText = data.data.fecha_asignacion;
             document.getElementById('detalle_destino').innerText = data.data.destino;
 
             tabla_detalle = document.getElementById('detalle_acciones')
             filas_acciones = ''
             data.data.acciones.forEach((accion) =>{
+                fecha_accion = new Date(accion.fecha).toLocaleDateString()
                 filas_acciones += `
                                                         <tr>
-                                                <td class="text-center px-2">${accion.fecha}</td>
-                                                <td class="px-2">${accion.accion_realizada}</td>
-                                                <td class="px-2">${accion.usuario}</td>
+                                                <td class="text-center px-2">${fecha_accion}</td>
+                                                <td class="px-2">${accion.comentario}</td>
+                                                <td class="px-2">${accion.km_nombre}</td>
                                                 <td>    
                                             </tr>
                 `
@@ -216,7 +218,17 @@ function verDetalleSubvencion(subvencionId){
                     `
             })
             detalle_anteriores.innerHTML = filas_anteriores
-
+            document.getElementById('organizacion_pj_municipal').innerText = data.data.detalle_organizacion.pj_municipal
+            document.getElementById('organizacion_pj_reg_civil').innerText = data.data.detalle_organizacion.pj_registro_civil
+            document.getElementById('organizacion_nombre').innerText = data.data.detalle_organizacion.nombre_organizacion
+            document.getElementById('organizacion_direccion').innerText = data.data.detalle_organizacion.direccion
+            document.getElementById('organizacion_rut').innerText = data.data.detalle_organizacion.rut
+            document.getElementById('organizacion_tipo').innerText = data.data.detalle_organizacion.tipo_organizacion
+            document.getElementById('organizacion_telefono').innerText = data.data.detalle_organizacion.telefono
+            document.getElementById('organizacion_correo').innerText = data.data.detalle_organizacion.correo
+            document.getElementById('organizacion_presidente').innerText = `${data.data.detalle_organizacion.directivas[0].nombre_persona} ${data.data.detalle_organizacion.directivas[0].apellido_persona}`
+            document.getElementById('organizacion_tesorero').innerText = `${data.data.detalle_organizacion.directivas[2].nombre_persona} ${data.data.detalle_organizacion.directivas[2].apellido_persona}`
+            document.getElementById('organizacion_secretario').innerText = `${data.data.detalle_organizacion.directivas[1].nombre_persona} ${data.data.detalle_organizacion.directivas[1].apellido_persona}`
         } else {
             Swal.fire({
                 title: "Error",

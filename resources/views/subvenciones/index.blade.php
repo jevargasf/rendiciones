@@ -34,7 +34,7 @@
                             </th>
                             <th class="fw-normal">
                                 <i class="fas fa-sort me-1"> </i>
-                                Fecha
+                                Fecha asignación
                             </th>
                             <th class="fw-normal">
                                 <i class="fas fa-sort me-1"> </i>

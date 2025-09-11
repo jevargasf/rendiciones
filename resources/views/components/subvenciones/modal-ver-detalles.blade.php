@@ -72,8 +72,8 @@
                                 </div>
                                 <div class="col-md-6">
                                     <p class="mb-3">
-                                        <strong>Fecha subida:</strong>
-                                        <span class="dato-subrayado" id="detalle_fecha_subida"></span>
+                                        <strong>Fecha asignación:</strong>
+                                        <span class="dato-subrayado" id="detalle_fecha_asignacion"></span>
                                     </p>
                                     <p class="mb-3">
                                         <strong>Usuario:</strong>
@@ -215,35 +215,35 @@
                                         <tbody>
                                             <tr>
                                                 <td>PJ Municipal</td>
-                                                <td>350-2025</td>
+                                                <td id="organizacion_pj_municipal"></td>
                                             </tr>
                                             <tr>
                                                 <td>PJ Registro Civil</td>
-                                                <td>283465</td>
+                                                <td id="organizacion_pj_reg_civil"></td>
                                             </tr>
                                             <tr>
                                                 <td>Nombre</td>
-                                                <td>Junta de Vecinos Población X</td>
+                                                <td id="organizacion_nombre"></td>
                                             </tr>
                                             <tr>
                                                 <td>Dirección</td>
-                                                <td>República de Chile 2323</td>
+                                                <td id="organizacion_direccion"></td>
                                             </tr>
                                             <tr>
                                                 <td>RUT</td>
-                                                <td>69.876.321-0</td>
+                                                <td id="organizacion_rut"></td>
                                             </tr>
                                             <tr>
                                                 <td>Tipo</td>
-                                                <td>Territorial</td>
+                                                <td id="organizacion_tipo"></td>
                                             </tr>
                                             <tr>
                                                 <td>Teléfono</td>
-                                                <td>+5695556623</td>
+                                                <td id="organizacion_telefono"></td>
                                             </tr>
                                             <tr>
                                                 <td>E-mail</td>
-                                                <td>jjvv.poblacionx@gmail.com</td>
+                                                <td id="organizacion_correo"></td>
                                             </tr>
                                         </tbody>
                                     </table>
@@ -255,36 +255,15 @@
                                         <tbody>
                                             <tr>
                                                 <td>Presidente</td>
-                                                <td>5.210.559-0</td>
-                                                <td>María José Lucero</td>
+                                                <td id="organizacion_presidente"></td>
                                             </tr>
                                             <tr>
                                                 <td>Tesorero</td>
-                                                <td>7.890.110-8</td>
-                                                <td>Pedro Pablo Robles</td>
+                                                <td id="organizacion_tesorero"></td>
                                             </tr>
                                             <tr>
                                                 <td>Secretario</td>
-                                                <td>10.580.890-1</td>
-                                                <td>Miguel Arias</td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                    <br />
-                                    <p><strong>Comisión Electoral</strong></p>
-                                    <table class="table table-borderless">
-                                        <tbody>
-                                            <tr>
-                                                <td>5.210.559-0</td>
-                                                <td>María José Lucero</td>
-                                            </tr>
-                                            <tr>
-                                                <td>7.890.110-8</td>
-                                                <td>Pedro Pablo Robles</td>
-                                            </tr>
-                                            <tr>
-                                                <td>10.580.890-1</td>
-                                                <td>Miguel Arias</td>
+                                                <td id="organizacion_secretario"></td>
                                             </tr>
                                         </tbody>
                                     </table>
