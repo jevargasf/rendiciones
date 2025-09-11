@@ -26,6 +26,19 @@ class SubvencionController extends BaseController
 {
 
 
+    public function agregarDataOrganizacion($data, $endpoint){
+        foreach($data as $subvencion){
+            $data_organizacion = FileReader::get(base_path($endpoint));
+            $json_organizacion = json_decode($data_organizacion, associative: true);
+            $rut_json = $json_organizacion[0]['rut'];
+            $nombre_json = $json_organizacion[0]['nombre_organizacion'];
+            if ($rut_json == $subvencion['rut']){
+                $subvencion->nombre_organizacion = $nombre_json;
+            }
+        }
+        return $data;
+    }
+
     public function index()
     {
         //dd(Session::all());
@@ -33,15 +46,7 @@ class SubvencionController extends BaseController
             ->get();
         // nombre organización lo pedimos desde la API usando el rut para evitar errores (a medida que lo necesitemos)
         
-        // TERMINAR DE ITERAR ARRAY DE SUBVENCIONES
-        // BLOQUE IF COMPROBANDO RUT_JSON == RUT_SUBVENCION
-        foreach($subvenciones as $subvencion){
-            $data_organizacion = FileReader::get(base_path('resources/data/endpoint.json'));
-            $json_organizacion = json_decode($data_organizacion, associative: true);
-            $rut_json = $json_organizacion[0]['rut'];
-            $nombre_json = $json_organizacion[0]['nombre_organizacion'];
-        }
-        dd($subvenciones->toArray());
+        $subvenciones = $this->agregarDataOrganizacion($subvenciones, '/resources/data/endpoint.json');
         return view(
             'subvenciones.index',
             compact('subvenciones')

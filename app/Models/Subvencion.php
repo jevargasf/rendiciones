@@ -21,7 +21,8 @@ class Subvencion extends Model
         'destino',
         'rut',
         'estado',
-        'motivo_eliminacion'
+        'motivo_eliminacion',
+        'nombre_organizacion'
     ];
     
     protected $casts = [
@@ -29,6 +30,11 @@ class Subvencion extends Model
         'fecha_decreto' => 'date',
         'monto' => 'integer'
     ];
+    
+
+    public function getNombreOrganizacion(){
+        return $this->nombre_organizacion ?? 'S/D';
+    }
     
     /**
      * Accessor para formatear el RUT
