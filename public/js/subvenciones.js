@@ -296,6 +296,8 @@ function abrirModalEditar(subvencionId) {
             document.getElementById('rut_editar').value = data.data.rut;
             document.getElementById('organizacion_editar').value = data.data.organizacion;
             document.getElementById('decreto_editar').value = data.data.decreto;
+            document.getElementById('fecha_decreto_editar').value = data.data.fecha_decreto;
+            document.getElementById('fecha_asignacion_editar').value = data.data.fecha_asignacion;
             document.getElementById('destino_editar').value = data.data.destino;
             document.getElementById('monto_editar').value = data.data.monto;
             

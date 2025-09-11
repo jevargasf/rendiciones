@@ -410,7 +410,7 @@ class SubvencionController extends BaseController
                 'rut' => 'required|regex:/^[0-9]{1,2}[0-9]{6}-[0-9kK]$/',
                 'fecha_decreto' => 'required|date',
                 'numero_decreto' => 'required|string|max:255',
-                'monto'
+                'monto' => 'required|integer'
             ]);
 
             $subvencion = Subvencion::findOrFail($request->id);
@@ -427,7 +427,11 @@ class SubvencionController extends BaseController
             // Actualizar la subvención (sin modificar decreto ni monto)
             $subvencion->update([
                 'destino' => $request->destino,
-                'rut' => $rutNormalizado
+                'rut' => $rutNormalizado,
+                'numero_decreto' => $request->decreto,
+                'fecha_decreto' => $request->fecha_decreto,
+                'numero_decreto' => $request->numero_decreto,
+                'monto' => $request->monto
             ]);
 
             return response()->json([

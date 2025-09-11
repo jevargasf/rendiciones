@@ -29,7 +29,7 @@
                                 </label>
                                 <div class="col-sm-8">
                                     <input class="form-control form-control-sm shadow-sm" id="organizacion_editar" name="nombre_organizacion"
-                                        type="text" placeholder="Nombre de la organización" required />
+                                        type="text" placeholder="Nombre de la organización" readonly disabled />
                                 </div>
                             </div>
                         </div>
@@ -40,7 +40,7 @@
                                     Nro decreto
                                 </label>
                                 <div class="col-sm-8">
-                                    <input class="form-control form-control-sm shadow-sm" id="decreto_editar" name="decreto"
+                                    <input class="form-control form-control-sm shadow-sm" id="decreto_editar" name="numero_decreto"
                                         type="text" placeholder="324-2500"/>
                                 </div>
                             </div>
@@ -57,7 +57,28 @@
                                 </div>
                             </div>
                         </div>
-                        
+
+                        <div class="row mb-1 align-items-end">
+                            <div class="col-sm-6">
+                                <label class="col-sm-4 col-form-label fw-bold small" for="fecha_decreto_editar">
+                                    Fecha decreto
+                                </label>
+                                <div class="col-sm-8">
+                                    <input class="form-control form-control-sm shadow-sm" id="fecha_decreto_editar" name="fecha_decreto"
+                                        type="text" placeholder="dd/mm/AAAA">
+                                </div>
+                            </div>
+                            <div class="col-sm-6">
+                                <label class="col-sm-4 col-form-label fw-bold small" for="fecha_asignacion_editar">
+                                    Fecha asignación
+                                </label>
+                                <div class="col-sm-8">
+                                    <input class="form-control form-control-sm shadow-sm" id="fecha_asignacion_editar" name="fecha_asignacion"
+                                        type="text" placeholder="dd/mm/AAAA"/>
+                                </div>
+                            </div>
+                        </div>
+
                         <div class="row mb-0">
                             <div class="col-12">
                                 <label class="col-sm-2 col-form-label fw-bold small" for="destino_editar">
