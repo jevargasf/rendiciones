@@ -862,6 +862,23 @@ button.btn.btn-app.btn-eliminar:focus {
   width: clamp(230px, 100%, 350px);
 }
 
+@media (max-width: 540px) {          
+  .row.tight.responsive-break { 
+    flex-wrap: wrap !important; 
+  }
+  .row.tight.responsive-break .col-label {
+    flex: 0 0 100%;
+    width: 100%;
+    margin-right: 0;
+    margin-bottom: 4px;              
+  }
+  .row.tight.responsive-break .col-field {
+    flex: 0 0 100%;
+    width: 100%;
+    min-width: 0;
+  }
+}
+
 /* Modal Editar Subvención */
 #modalEditar .modal-dialog {
   max-width: 900px;
