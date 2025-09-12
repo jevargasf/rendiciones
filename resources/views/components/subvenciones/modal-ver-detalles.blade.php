@@ -76,8 +76,8 @@
                                         <span class="dato-subrayado" id="detalle_fecha_asignacion"></span>
                                     </p>
                                     <p class="mb-3">
-                                        <strong>Usuario:</strong>
-                                        <span class="dato-subrayado" id="detalle_usuario"></span>
+                                        <strong>Seguimiento:</strong>
+                                        <span class="dato-subrayado" id="detalle_usuario">Iniciada</span>
                                     </p>
                                 </div>
                             </div>
@@ -208,7 +208,7 @@
                     <!-- Pestaña datos organización -->
                     <div class="tab-pane fade" id="tab4" role="tabpanel">
                         <div class="bg-white border rounded-4 p-3 mb-0 min-vh-50">
-                            <div class="row">
+                            <div class="row" id="detalle_organizacion">
                                 <div class="col-md-6">
                                     <p><strong>Datos de la organización</strong></p>
                                     <table class="table table-borderless">
@@ -242,14 +242,13 @@
                                                 <td id="organizacion_telefono"></td>
                                             </tr>
                                             <tr>
-                                                <td>E-mail</td>
+                                                <td>Correo electrónico</td>
                                                 <td id="organizacion_correo"></td>
                                             </tr>
                                         </tbody>
                                     </table>
                                 </div>
                                 <div class="col-md-6">
-                                    <br />
                                     <p><strong>Directiva vigente</strong></p>
                                     <table class="table table-borderless">
                                         <tbody>

@@ -179,17 +179,26 @@ function verDetalleSubvencion(subvencionId){
     .then(response => response.json())
     .then(data => {
         if (data.success) {
-            document.getElementById('informacion_organizacion').innerText = `(${data.data.rut}) ${data.data.organizacion}`;
-            document.getElementById('detalle_fecha_decreto').innerText = data.data.fecha_decreto;
-            document.getElementById('detalle_decreto').innerText = data.data.decreto;
-            document.getElementById('detalle_monto').innerText = data.data.monto;
-            console.log(data.data)
-            document.getElementById('detalle_fecha_asignacion').innerText = data.data.fecha_asignacion;
-            document.getElementById('detalle_destino').innerText = data.data.destino;
+            // qué pasa si el historial de "otras" llega vacío
+            // iterar con los nuevos nombres y estructura del arreglo data
+            fecha_decreto = new Date(data.subvencion.fecha_decreto).toLocaleDateString()
+            fecha_asignacion = new Date(data.subvencion.fecha_asignacion).toLocaleDateString()
+            if(data.subvencion.data_organizacion.error){
+                document.getElementById('informacion_organizacion').innerText = `(${data.subvencion.rut})`;
+
+            }else{
+                document.getElementById('informacion_organizacion').innerText = `(${data.subvencion.rut}) ${data.subvencion.data_organizacion.nombre_organizacion}`;
+            }
+            document.getElementById('detalle_fecha_decreto').innerText = fecha_decreto;
+            document.getElementById('detalle_decreto').innerText = data.subvencion.decreto;
+            document.getElementById('detalle_monto').innerText = data.subvencion.monto;
+
+            document.getElementById('detalle_fecha_asignacion').innerText = fecha_asignacion;
+            document.getElementById('detalle_destino').innerText = data.subvencion.destino;
 
             tabla_detalle = document.getElementById('detalle_acciones')
             filas_acciones = ''
-            data.data.acciones.forEach((accion) =>{
+            data.subvencion.rendiciones[0].acciones.forEach((accion) =>{
                 fecha_accion = new Date(accion.fecha).toLocaleDateString()
                 filas_acciones += `
                                                         <tr>
@@ -202,33 +211,46 @@ function verDetalleSubvencion(subvencionId){
             })
             tabla_detalle.innerHTML = filas_acciones
 
-            // anteriores
+            // historial
             detalle_anteriores = document.getElementById('detalle_anteriores')
             filas_anteriores = ''
-            data.data.anteriores.forEach((anterior)=>{
-                filas_anteriores +=
-                    `
-                        <tr>
-                            <td class="text-center px-2">${anterior.id}</td>
-                            <td>29/05/2025</td>
-                            <td class="px-2">${anterior.decreto}</td>
-                            <td class="px-2">${anterior.monto}</td>
-                            <td class="px-2">${anterior.destino}</td>
-                        </tr>
-                    `
-            })
+            if(data.historial.length == 0){
+                filas_anteriores = `<p>No hay otras subvenciones asociadas a esta organización.</p>`
+            } else {
+                data.historial.anteriores.forEach((anterior)=>{
+                    filas_anteriores +=
+                        `
+                            <tr>
+                                <td class="text-center px-2">${anterior.id}</td>
+                                <td>29/05/2025</td>
+                                <td class="px-2">${anterior.decreto}</td>
+                                <td class="px-2">${anterior.monto}</td>
+                                <td class="px-2">${anterior.destino}</td>
+                            </tr>
+                        `
+                })
+            }
+
             detalle_anteriores.innerHTML = filas_anteriores
-            document.getElementById('organizacion_pj_municipal').innerText = data.data.detalle_organizacion.pj_municipal
-            document.getElementById('organizacion_pj_reg_civil').innerText = data.data.detalle_organizacion.pj_registro_civil
-            document.getElementById('organizacion_nombre').innerText = data.data.detalle_organizacion.nombre_organizacion
-            document.getElementById('organizacion_direccion').innerText = data.data.detalle_organizacion.direccion
-            document.getElementById('organizacion_rut').innerText = data.data.detalle_organizacion.rut
-            document.getElementById('organizacion_tipo').innerText = data.data.detalle_organizacion.tipo_organizacion
-            document.getElementById('organizacion_telefono').innerText = data.data.detalle_organizacion.telefono
-            document.getElementById('organizacion_correo').innerText = data.data.detalle_organizacion.correo
-            document.getElementById('organizacion_presidente').innerText = `${data.data.detalle_organizacion.directivas[0].nombre_persona} ${data.data.detalle_organizacion.directivas[0].apellido_persona}`
-            document.getElementById('organizacion_tesorero').innerText = `${data.data.detalle_organizacion.directivas[2].nombre_persona} ${data.data.detalle_organizacion.directivas[2].apellido_persona}`
-            document.getElementById('organizacion_secretario').innerText = `${data.data.detalle_organizacion.directivas[1].nombre_persona} ${data.data.detalle_organizacion.directivas[1].apellido_persona}`
+            // ficha detalles organización
+            if(data.subvencion.data_organizacion.error){
+                // escribir un mensaje de que no se pudo recuperar la data de la organización
+                document.getElementById('detalle_organizacion').innerHTML = `
+                    <p>No se pudo recuperar los datos de la organización.</p>
+                `
+            }else if(data.subvencion.data_organizacion){
+                document.getElementById('organizacion_pj_municipal').innerText = data.subvencion.data_organizacion.pj_municipal
+                document.getElementById('organizacion_pj_reg_civil').innerText = data.subvencion.data_organizacion.pj_registro_civil
+                document.getElementById('organizacion_nombre').innerText = data.subvencion.data_organizacion.nombre_organizacion
+                document.getElementById('organizacion_direccion').innerText = data.subvencion.data_organizacion.direccion
+                document.getElementById('organizacion_rut').innerText = data.subvencion.data_organizacion.rut
+                document.getElementById('organizacion_tipo').innerText = data.subvencion.data_organizacion.tipo_organizacion
+                document.getElementById('organizacion_telefono').innerText = data.subvencion.data_organizacion.telefono
+                document.getElementById('organizacion_correo').innerText = data.subvencion.data_organizacion.correo
+                document.getElementById('organizacion_presidente').innerText = data.subvencion.data_organizacion.directivas[0].nombre_persona + ' ' + data.subvencion.data_organizacion.directivas[0].apellido_persona
+                document.getElementById('organizacion_tesorero').innerText = data.subvencion.data_organizacion.directivas[2].nombre_persona + ' ' + data.subvencion.data_organizacion.directivas[2].apellido_persona
+                document.getElementById('organizacion_secretario').innerText = data.subvencion.data_organizacion.directivas[1].nombre_persona + ' ' + data.subvencion.data_organizacion.directivas[1].apellido_persona
+            }
         } else {
             Swal.fire({
                 title: "Error",

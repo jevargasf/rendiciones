@@ -22,13 +22,14 @@ class Subvencion extends Model
         'rut',
         'estado',
         'motivo_eliminacion',
-        'nombre_organizacion'
+        'data_organizacion'
     ];
     
     protected $casts = [
         'fecha_asignacion' => 'date',
         'fecha_decreto' => 'date',
-        'monto' => 'integer'
+        'monto' => 'integer',
+        'data_organizacion' => 'array'
     ];
     
 
