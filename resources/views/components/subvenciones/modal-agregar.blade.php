@@ -1,6 +1,6 @@
 <!-- Botón para agregar subvenciones -->
 <div aria-hidden="true" class="modal fade" id="modalForm" tabindex="-1">
-    <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-dialog modal-dialog-centered" style="--bs-modal-width:min(640px, 92vw)">
         <div class="modal-content shadow-md rounded-4 overflow-hidden">
             <div class="modal-header modal-header-app">
                 <h5 class="modal-title fw-bold" id="modalFormTitulo">
@@ -13,36 +13,40 @@
                 @csrf
                 @method('POST')
                 <div class="modal-body p-4">
-                    <div class="container">
-                        <div class="p-4 rounded">
-                            <div class="row mb-3 align-items-center">
-                                <label class="col-sm-3 col-form-label fw-bold" for="fecha_decreto">
+                    <div class="container-fluid">
+                        <div class="p-4 rounded form-horizontal-fixed">
+                             <!-- Fecha Decreto -->
+                            <div class="row tight flex-nowrap align-items-center mb-3">
+                                <label for="fecha_decreto" class="col-label fw-bold" >
                                     Fecha Decreto
-                                    <span class="text-danger"> * </span>
+                                    <span class="text-danger">*</span>
                                 </label>
-                                <div class="col-sm-3">
-                                    <input class="form-control shadow-sm" id="fecha_decreto" name="fecha_decreto"
+                                <div class="col-field">
+                                    <input class="form-control form-control-sm input-compact-220" id="fecha_decreto" name="fecha_decreto"
                                         placeholder="Ej: 29/05/2025" required="" type="date" />
                                 </div>
                             </div>
-                            <div class="row mb-3 align-items-center">
-                                <label class="col-sm-3 col-form-label fw-bold" for="numero_decreto">
+                            <div class="row tight flex-nowrap align-items-center mb-3">
+                                <label class="col-label fw-bold mb-0" for="numero_decreto">
                                     N.° Decreto
                                     <span class="text-danger"> * </span>
                                 </label>
-                                <div class="col-sm-3">
-                                    <input class="form-control shadow-sm" id="numero_decreto"
+                                <div class="col-field">
+                                    <input class="form-control form-control-sm input-compact-220" id="numero_decreto"
                                         name="numero_decreto" placeholder="Ej: 2025-458" required=""
                                         type="text" />
                                 </div>
                             </div>
-                            <div class="row mb-3 align-items-center">
-                                <label class="col-sm-3 col-form-label fw-bold" for="seleccionar_archivo">
+
+                            <!--Archivo-->
+
+                            <div class="row tight flex-nowrap align-items-center mb-3 label-archivo-180 responsive-break">
+                                <label class="col-label fw-bold" for="seleccionar_archivo">
                                     Seleccione archivo
                                     <span class="text-danger"> * </span>
                                 </label>
-                                <div class="col-sm-9">
-                                    <input class="form-control shadow-sm custom-file" id="seleccionar_archivo"
+                                <div class="col-field">
+                                    <input class="form-control form-control-sm shadow-sm input-file-350" id="seleccionar_archivo"
                                         name="seleccionar_archivo" type="file" />
                                 </div>
                             </div>

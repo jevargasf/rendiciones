@@ -15,10 +15,11 @@
             <div class="row mb-3">
                 <div class="col-12">
                     <div class="position-relative">
-                        <i class="fas fa-search position-absolute" style="left: 15px; top: 50%; transform: translateY(-50%); color: #6c757d; z-index: 10;"></i>
-                        <input type="text" class="form-control ps-5" id="buscadorSubvenciones" 
-                               placeholder="Buscar en subvenciones (RUT, organización, decreto, destino, monto...)" 
-                               autocomplete="off" style="padding-left: 45px;">
+                        <i class="fas fa-search position-absolute"
+                            style="left: 15px; top: 50%; transform: translateY(-50%); color: #6c757d; z-index: 10;"></i>
+                        <input type="text" class="form-control ps-5" id="buscadorSubvenciones"
+                            placeholder="Buscar en subvenciones (RUT, organización, decreto, destino, monto...)"
+                            autocomplete="off" style="padding-left: 45px;">
                     </div>
                 </div>
             </div>
@@ -74,24 +75,23 @@
                                     <div class="d-flex justify-content-center align-items-center gap-1 flex-wrap">
                                         <!-- Ver detalles -->
                                         <button class="btn btn-accion" data-bs-target="#modalVerDetalles"
-                                            onclick="verDetalleSubvencion({{ $item->id }})"
-                                            data-bs-toggle="modal" title="Ver detalles" type="button">
+                                            onclick="verDetalleSubvencion({{ $item->id }})" data-bs-toggle="modal"
+                                            title="Ver detalles" type="button">
                                             <i class="fas fa-search"> </i>
                                         </button>
                                         <!-- Editar -->
-                                        <button class="btn btn-success btn-accion" 
-                                            title="Editar" type="button" 
+                                        <button class="btn btn-success btn-accion" title="Editar" type="button"
                                             onclick="abrirModalEditar({{ $item->id }})">
                                             <i class="fas fa-file-signature"> </i>
                                         </button>
                                         <!-- Rendir subvención -->
                                         <button class="btn btn-success btn-accion"
-                                            onclick="abrirModalRendir({{ $item->id }})"
-                                            title="Rendir subvención" type="button">
+                                            onclick="abrirModalRendir({{ $item->id }})" title="Rendir subvención"
+                                            type="button">
                                             <i class="fas fa-clipboard-check icon-static-blue"></i>
                                         </button>
                                         <!-- Eliminar -->
-                                        <button class="btn btn-success btn-accion btn-eliminar-subvencion" 
+                                        <button class="btn btn-success btn-accion btn-eliminar-subvencion"
                                             title="Eliminar" type="button" data-subvencion-id="{{ $item->id }}">
                                             <i class="fas fa-times-circle"> </i>
                                         </button>
@@ -112,7 +112,76 @@
                 </table>
             </div>
 
-            
+
+            <!--Tabla Datos Subvenciones con data table -->
+            <div class="table-responsive">
+                <table id="table_subvenciones" class="table table-striped align-middle w-100">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Fecha</th>
+                            <th>RUT</th>
+                            <th>Organización</th>
+                            <th>Decreto</th>
+                            <th>Monto</th>
+                            <th>Destino</th>
+                            <th>Opciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse ($subvenciones as $item)
+                            <tr>
+                                <td class="text-center">{{ $item->id }}</td>
+                                <td class="text-nowrap">
+                                    {{ $item->fecha_asignacion ? \Carbon\Carbon::parse($item->fecha_asignacion)->format('d/m/Y') : '-' }}
+                                </td>
+                                <td class="text-nowrap">{{ $item->rut }}</td>
+                                <td class="text-break">{{ $item->organizacion }}</td>
+                                <td>{{ $item->decreto }}</td>
+                                <td>${{ number_format($item->monto, 0, ',', '.') }}</td>
+                                <td>{{ $item->destino }}</td>
+                                <td class="text-center" style="white-space: nowrap">
+                                    <div class="d-flex justify-content-center align-items-center gap-1 flex-wrap">
+                                        <!-- Ver detalles -->
+                                        <button class="btn btn-accion" data-bs-target="#modalVerDetalles"
+                                            onclick="verDetalleSubvencion({{ $item->id }})" data-bs-toggle="modal"
+                                            title="Ver detalles" type="button">
+                                            <i class="fas fa-search"> </i>
+                                        </button>
+                                        <!-- Editar -->
+                                        <button class="btn btn-success btn-accion" title="Editar" type="button"
+                                            onclick="abrirModalEditar({{ $item->id }})">
+                                            <i class="fas fa-file-signature"> </i>
+                                        </button>
+                                        <!-- Rendir subvención -->
+                                        <button class="btn btn-success btn-accion"
+                                            onclick="abrirModalRendir({{ $item->id }})" title="Rendir subvención"
+                                            type="button">
+                                            <i class="fas fa-clipboard-check icon-static-blue"></i>
+                                        </button>
+                                        <!-- Eliminar -->
+                                        <button class="btn btn-success btn-accion btn-eliminar-subvencion"
+                                            title="Eliminar" type="button" data-subvencion-id="{{ $item->id }}">
+                                            <i class="fas fa-times-circle"> </i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="8" class="text-center py-4">
+                                    <div class="text-muted">
+                                        <i class="fas fa-inbox fa-2x mb-2"></i>
+                                        <p class="mb-0">No hay subvenciones</p>
+                                    </div>
+                                </td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+
+
             <!-- Modal Ver Detalles -->
             <x-subvenciones.modal-ver-detalles />
         </div>
@@ -158,11 +227,11 @@
             // Función para filtrar filas
             function filtrarFilas(termino) {
                 const terminoLower = termino.toLowerCase();
-                
+
                 filas.forEach(fila => {
                     const celdas = fila.querySelectorAll('td');
                     let coincide = false;
-                    
+
                     // Buscar en todas las celdas excepto la última (opciones)
                     for (let i = 0; i < celdas.length - 1; i++) {
                         const texto = celdas[i].textContent.toLowerCase();
@@ -171,7 +240,7 @@
                             break;
                         }
                     }
-                    
+
                     // Mostrar u ocultar fila
                     fila.style.display = coincide ? '' : 'none';
                 });

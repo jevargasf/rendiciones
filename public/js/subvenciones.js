@@ -806,9 +806,13 @@ document.addEventListener('click', function(event) {
 });
 
 
-
-
-
+// Prueba Data tables
+new DataTable('#table_subvenciones', {
+    order: [],
+    language: idioma ?? {},
+    deferRender: true,
+    responsive: true,
+});
 
 
 

@@ -265,3 +265,33 @@ function eliminarRendicionTemporalmente(id) {
         });
     });
 }
+
+// Prueba Data tables - Pestaña Rendiciones
+new DataTable('#table_rendiciones', {
+    order: [],
+    language: idioma ?? {},
+    deferRender: true,
+    responsive: true,
+});
+
+// Prueba Data Tables - Pestaña Pendientes //
+new DataTable('#table_pendientes', {
+    order: [],
+    language: idioma ?? {},
+    deferRender: true,
+    responsive: true,
+});
+
+new DataTable('#table_observadas', {
+    order: [],
+    language: idioma ?? {},
+    deferRender: true,
+    responsive: true,
+});
+
+new DataTable('#table_rechazadas', {
+    order: [],
+    language: idioma ?? {},
+    deferRender: true,
+    responsive: true,
+});
