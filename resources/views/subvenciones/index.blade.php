@@ -118,7 +118,7 @@
 
             <!--Tabla Datos Subvenciones con data table -->
             <div class="table-responsive">
-                <table id="myTable" class="table table-striped align-middle w-100">
+                <table id="table_subvenciones" class="table table-striped align-middle w-100">
                     <thead>
                         <tr>
                             <th>#</th>

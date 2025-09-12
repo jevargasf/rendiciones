@@ -13,10 +13,11 @@
             <div class="row mb-3">
                 <div class="col-12">
                     <div class="position-relative">
-                        <i class="fas fa-search position-absolute" style="left: 15px; top: 50%; transform: translateY(-50%); color: #6c757d; z-index: 10;"></i>
-                        <input type="text" class="form-control ps-5" id="buscadorRendiciones" 
-                               placeholder="Buscar en rendiciones (RUT, organización, decreto, monto...)" 
-                               autocomplete="off" style="padding-left: 45px;">
+                        <i class="fas fa-search position-absolute"
+                            style="left: 15px; top: 50%; transform: translateY(-50%); color: #6c757d; z-index: 10;"></i>
+                        <input type="text" class="form-control ps-5" id="buscadorRendiciones"
+                            placeholder="Buscar en rendiciones (RUT, organización, decreto, monto...)"
+                            autocomplete="off" style="padding-left: 45px;">
                     </div>
                 </div>
             </div>
@@ -56,23 +57,19 @@
                 <div class="tab-pane fade show active" id="nav-rendidas" role="tabpanel"
                     aria-labelledby="nav-rendidas-tab" tabindex="0">
                     <div class="table-responsive mt-3">
-                        <table id="table_id" class="table table-striped mx-auto">  <!-- nombre de tabla llamada en archivo JS document.querySelector("#table_id")?.addEventListener("click", async function (e)-->
+                        <table id="table_rendiciones" class="table table-striped align-middle w-100">
                             <thead>
                                 <tr>
-                                                        <th class="text-center fw-normal">
-                        <i class="fas fa-sort me-1"></i> #
-                    </th>
-                                    <th class="fw-normal"><i class="fas fa-sort me-1"></i> Fecha</th>
-                                    <th class="fw-normal"><i class="fas fa-sort me-1"></i> R.U.T</th>
-                                    <th class="fw-normal"><i class="fas fa-sort me-1"></i> Organización</th>
-                                    <th class="fw-normal"><i class="fas fa-sort me-1"></i> Decreto</th>
-                                    <th class="fw-normal"><i class="fas fa-sort me-1"></i> Nro. Movimiento</th>
-                                    <th class="fw-normal"><i class="fas fa-sort me-1"></i> Monto</th>
-                                                        <th class="text-center fw-normal">
-                        <i class="fas fa-sort me-1"></i> Opciones
-                    </th>
+                                    <th>#</th>
+                                    <th>Fecha</th>
+                                    <th>R.U.T</th>
+                                    <th>Organización</th>
+                                    <th>Decreto</th>
+                                    <th>Nro. Movimiento</th>
+                                    <th>Monto</th>
+                                    <th>Opciones</th>
                                 </tr>
-                            </thead> 
+                            </thead>
                             <tbody>
                                 @forelse ($rendiciones as $item)
                                     <tr>
@@ -82,15 +79,15 @@
                                         <td>{{ $item->subvencion->organizacion }}</td>
                                         <td>{{ $item->subvencion->decreto }}</td>
                                         <td>865501</td>
-                                        <td class="monto" data-valor="{{ $item->subvencion->monto }}">${{ number_format($item->subvencion->monto, 0, ',', '.') }}</td>
+                                        <td class="monto" data-valor="{{ $item->subvencion->monto }}">
+                                            ${{ number_format($item->subvencion->monto, 0, ',', '.') }}</td>
                                         <td class="td-5">
 
-                                        <!-- REVISAR ACÁ LA FUNCIONALIDAD DEL BOTÓN VER DETALLE -->
+                                            <!-- REVISAR ACÁ LA FUNCIONALIDAD DEL BOTÓN VER DETALLE -->
                                             <div class="d-flex justify-content-center align-items-center">
                                                 <button type="button" class="btn btn-accion btn-link align-baseline">
                                                     <i class="fas fa-search" data-id="{{ $item->id }}"
                                                         data-subvencion="{{ $item->subvencion_id }}"
-                                                
                                                         {{-- Guarda el ID del registro para usarlo en JavaScript --}}></i>
 
                                                 </button>
@@ -112,29 +109,26 @@
                     </div>
                 </div>
 
-                <!-- PESTAÑA PENDIENTES -->
+                <!-- PESTAÑA PENDIENTES DATATABLE -->
                 <div class="tab-pane fade" id="nav-pendientes" role="tabpanel" aria-labelledby="nav-pendientes-tab"
                     tabindex="0">
                     <div class="table-responsive mt-3">
-                        <table id="table_pendientes" class="table table-striped mx-auto">
+                        <table id="table_pendientes" class="table table-striped align-middle w-100">
                             <thead>
                                 <tr>
-                                                        <th class="text-center fw-normal">
-                        <i class="fas fa-sort me-1"></i> #
-                    </th>
-                                    <th class="fw-normal"><i class="fas fa-sort me-1"></i> Fecha</th>
-                                    <th class="fw-normal"><i class="fas fa-sort me-1"></i> R.U.T</th>
-                                    <th class="fw-normal"><i class="fas fa-sort me-1"></i> Organización</th>
-                                    <th class="fw-normal"><i class="fas fa-sort me-1"></i> Decreto</th>
-                                    <th class="fw-normal"><i class="fas fa-sort me-1"></i> Nro. Movimiento</th>
-                                    <th class="fw-normal"><i class="fas fa-sort me-1"></i> Monto</th>
-                                                        <th class="text-center fw-normal">
-                        <i class="fas fa-sort me-1"></i> Opciones
-                    </th>
+                                    <th>#</th>
+                                    <th>Fecha</th>
+                                    <th>R.U.T</th>
+                                    <th>Organización</th>
+                                    <th>Decreto</th>
+                                    <th>Nro. Movimiento</th>
+                                    <th>Monto</th>
+                                    <th>Opciones</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                @forelse ($pendientes as $item)
+                            <tbody>
+                                @foreach ($pendientes as $item)
                                     <tr>
                                         <td class="td-5">{{ $item->id }}</td>
                                         <td class="fecha" data-order="2025-05-29">29/05/2025</td>
@@ -142,60 +136,8 @@
                                         <td>{{ $item->subvencion->organizacion }}</td>
                                         <td>{{ $item->subvencion->decreto }}</td>
                                         <td>346544</td>
-                                        <td class="monto" data-valor="{{ $item->subvencion->monto }}">${{ number_format($item->subvencion->monto, 0, ',', '.') }}</td>
-                                        <td class="td-5">
-                                            <div class="d-flex justify-content-center align-items-center">
-                                                <button type="button" class="btn btn-accion btn-link align-baseline">
-                                                    <i class="fas fa-search" data-id="{{ $item->id }}"
-                                                        {{-- Guarda el ID del registro para usarlo en JavaScript --}}></i>
-                                                </button>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                @empty
-                                    <tr>
-                                        <td colspan="8" class="text-center py-4">
-                                            <div class="text-muted">
-                                                <i class="fas fa-inbox fa-2x mb-2"></i>
-                                                <p class="mb-0">No hay rendiciones pendientes</p>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                @endforelse
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-
-                <!-- OBSERVADAS -->
-                <div class="tab-pane fade" id="nav-observadas" role="tabpanel" aria-labelledby="nav-observadas-tab"
-                    tabindex="0">
-                    <div class="table-responsive mt-3">
-                        <table id="table_observadas" class="table table-striped mx-auto"> <!-- nombre de tabla llamada en archivo JS document.querySelector("#table_observadas")?.addEventListener("click", async function (e)-->
-                            <thead>
-                                <tr>
-                                    <th class="text-center">
-                                        <i class="fas fa-sort me-1"></i>#
-                                    </th>
-                                    <th class="fw-normal"><i class="fas fa-sort me-1"></i> Fecha</th>
-                                    <th class="fw-normal"><i class="fas fa-sort me-1"></i> R.U.T</th>
-                                    <th class="fw-normal"><i class="fas fa-sort me-1"></i> Organización</th>
-                                    <th class="fw-normal"><i class="fas fa-sort me-1"></i> Decreto</th>
-                                    <th class="fw-normal"><i class="fas fa-sort me-1"></i> Nro. Movimiento</th>
-                                    <th class="fw-normal"><i class="fas fa-sort me-1"></i> Monto</th>
-                                    <th class="fw-normal"><i class="fas fa-sort me-1"></i> Opciones</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @forelse ($observadas as $item)
-                                    <tr>
-                                        <td class="td-5">{{ $item->id }}</td>
-                                        <td class="fecha" data-order="2025-05-29">29/05/2025</td>
-                                        <td>{{ $item->subvencion->rut_formateado }}</td>
-                                        <td>{{ $item->subvencion->organizacion }}</td>
-                                        <td>{{ $item->subvencion->decreto }}</td>
-                                        <td>346544</td>
-                                        <td class="monto" data-valor="{{ $item->subvencion->monto }}">${{ number_format($item->subvencion->monto, 0, ',', '.') }}</td>
+                                        <td class="monto" data-order="{{ $item->subvencion->monto }}">
+                                            ${{ number_format($item->subvencion->monto, 0, ',', '.') }}
                                         <td class="td-5">
                                             <div class="d-flex justify-content-center align-items-center">
                                                 <button type="button" class="btn btn-accion btn-link align-baseline">
@@ -206,47 +148,36 @@
                                                     data-bs-toggle="modal" data-bs-target="#modalVer">
                                                     <i class="bi bi-search"></i>
                                                 </button> Antiguo boton  -->
-
                                             </div>
                                         </td>
                                     </tr>
-                                @empty
-                                    <tr>
-                                        <td colspan="8" class="text-center py-4">
-                                            <div class="text-muted">
-                                                <i class="fas fa-inbox fa-2x mb-2"></i>
-                                                <p class="mb-0">No hay rendiciones observadas</p>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                @endforelse
+                                @endforeach
+                            </tbody>
                             </tbody>
                         </table>
                     </div>
                 </div>
 
-                <!--Pestaña Tabla Rechazadas-->
-
-                <div class="tab-pane fade" id="nav-rechazadas" role="tabpanel" aria-labelledby="nav-rechazadas-tab"
+                <!-- OBSERVADAS DATATABLE-->
+                <div class="tab-pane fade" id="nav-observadas" role="tabpanel" aria-labelledby="nav-observadas-tab"
                     tabindex="0">
                     <div class="table-responsive mt-3">
-                        <table id="table_rechazadas" class="table table-striped mx-auto"> <!-- nombre de tabla llamada en archivo JS document.querySelector("#table_rechazadas")?.addEventListener("click", async function (e)-->
+                        <table id="table_observadas" class="table table-striped align-middle w-100">
+                            <!-- nombre de tabla llamada en archivo JS document.querySelector("#table_observadas")?.addEventListener("click", async function (e)-->
                             <thead>
                                 <tr>
-                                    <th class="text-center">
-                                        <i class="fas fa-sort me-1"></i>#
-                                    </th>
-                                    <th class="fw-normal"><i class="fas fa-sort me-1"></i> Fecha</th>
-                                    <th class="fw-normal"><i class="fas fa-sort me-1"></i> R.U.T</th>
-                                    <th class="fw-normal"><i class="fas fa-sort me-1"></i> Organización</th>
-                                    <th class="fw-normal"><i class="fas fa-sort me-1"></i> Decreto</th>
-                                    <th class="fw-normal"><i class="fas fa-sort me-1"></i> Nro. Movimiento</th>
-                                    <th class="fw-normal"><i class="fas fa-sort me-1"></i> Monto</th>
-                                    <th class="fw-normal"><i class="fas fa-sort me-1"></i> Opciones</th>
+                                    <th>#</th>
+                                    <th>Fecha</th>
+                                    <th>R.U.T</th>
+                                    <th>Organización</th>
+                                    <th>Decreto</th>
+                                    <th>Nro. Movimiento</th>
+                                    <th>Monto</th>
+                                    <th>Opciones</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                @forelse ($rechazadas as $item)
+                                @foreach ($observadas as $item)
                                     <tr>
                                         <td class="td-5">{{ $item->id }}</td>
                                         <td class="fecha" data-order="2025-05-29">29/05/2025</td>
@@ -254,7 +185,53 @@
                                         <td>{{ $item->subvencion->organizacion }}</td>
                                         <td>{{ $item->subvencion->decreto }}</td>
                                         <td>346544</td>
-                                        <td class="monto" data-valor="{{ $item->subvencion->monto }}">${{ number_format($item->subvencion->monto, 0, ',', '.') }}</td>
+                                        <td class="monto" data-valor="{{ $item->subvencion->monto }}">
+                                            ${{ number_format($item->subvencion->monto, 0, ',', '.') }}</td>
+                                        <td class="td-5">
+                                            <div class="d-flex justify-content-center align-items-center">
+                                                <button type="button" class="btn btn-accion btn-link align-baseline">
+                                                    <i class="fas fa-search" data-id="{{ $item->id }}"
+                                                        {{-- Guarda el ID del registro para usarlo en JavaScript --}}></i>
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!--Pestaña Tabla Rechazadas con DATATABLE-->
+
+                <div class="tab-pane fade" id="nav-rechazadas" role="tabpanel" aria-labelledby="nav-rechazadas-tab"
+                    tabindex="0">
+                    <div class="table-responsive mt-3">
+                        <table id="table_rechazadas" class="table table-striped align-middle w-100">
+                            <!-- nombre de tabla llamada en archivo JS document.querySelector("#table_rechazadas")?.addEventListener("click", async function (e)-->
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Fecha</th>
+                                    <th>R.U.T</th>
+                                    <th>Organización</th>
+                                    <th>Decreto</th>
+                                    <th>Nro. Movimiento</th>
+                                    <th>Monto</th>
+                                    <th>Opciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach ($rechazadas as $item)
+                                    <tr>
+                                        <td class="td-5">{{ $item->id }}</td>
+                                        <td class="fecha" data-order="2025-05-29">29/05/2025</td>
+                                        <td>{{ $item->subvencion->rut_formateado }}</td>
+                                        <td>{{ $item->subvencion->organizacion }}</td>
+                                        <td>{{ $item->subvencion->decreto }}</td>
+                                        <td>346544</td>
+                                        <td class="monto" data-valor="{{ $item->subvencion->monto }}">
+                                            ${{ number_format($item->subvencion->monto, 0, ',', '.') }}</td>
                                         <td class="td-5">
                                             <div class="d-flex justify-content-center align-items-center">
                                                 <button type="button" class="btn btn-accion btn-link align-baseline">
@@ -263,16 +240,7 @@
                                             </div>
                                         </td>
                                     </tr>
-                                @empty
-                                    <tr>
-                                        <td colspan="8" class="text-center py-4">
-                                            <div class="text-muted">
-                                                <i class="fas fa-inbox fa-2x mb-2"></i>
-                                                <p class="mb-0">No hay rendiciones rechazadas</p>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                @endforelse
+                                @endforeach
                             </tbody>
                         </table>
                     </div>
@@ -362,22 +330,22 @@
         // Funcionalidad del buscador para rendiciones
         document.addEventListener('DOMContentLoaded', function() {
             const buscador = document.getElementById('buscadorRendiciones');
-            
+
             // IDs de todas las tablas de rendiciones
             const tablasIds = ['table_id', 'table_pendientes', 'table_observadas', 'table_rechazadas'];
-            
+
             // Función para filtrar filas en una tabla específica
             function filtrarFilasEnTabla(tablaId, termino) {
                 const tabla = document.getElementById(tablaId);
                 if (!tabla) return;
-                
+
                 const filas = tabla.querySelectorAll('tbody tr');
                 const terminoLower = termino.toLowerCase();
-                
+
                 filas.forEach(fila => {
                     const celdas = fila.querySelectorAll('td');
                     let coincide = false;
-                    
+
                     // Buscar en todas las celdas excepto la última (opciones)
                     for (let i = 0; i < celdas.length - 1; i++) {
                         const texto = celdas[i].textContent.toLowerCase();
@@ -386,7 +354,7 @@
                             break;
                         }
                     }
-                    
+
                     // Mostrar u ocultar fila
                     fila.style.display = coincide ? '' : 'none';
                 });
