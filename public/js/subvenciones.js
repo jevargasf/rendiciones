@@ -1,7 +1,7 @@
 var modal = new bootstrap.Modal(document.getElementById("modalForm"));
 
 
-console.log('Funcionó');
+
 
 // Función para normalizar RUT chileno
 function normalizarRut(rut) {
@@ -198,7 +198,8 @@ function verDetalleSubvencion(subvencionId){
 
             tabla_detalle = document.getElementById('detalle_acciones')
             filas_acciones = ''
-            data.subvencion.rendiciones[0].acciones.forEach((accion) =>{
+            console.log(data.subvencion.rendiciones)
+            data.subvencion.rendiciones.acciones.forEach((accion) =>{
                 fecha_accion = new Date(accion.fecha).toLocaleDateString()
                 filas_acciones += `
                                                         <tr>
@@ -217,7 +218,8 @@ function verDetalleSubvencion(subvencionId){
             if(data.historial.length == 0){
                 filas_anteriores = `<p>No hay otras subvenciones asociadas a esta organización.</p>`
             } else {
-                data.historial.anteriores.forEach((anterior)=>{
+                console.log(data.historial)
+                data.historial.forEach((anterior)=>{
                     filas_anteriores +=
                         `
                             <tr>
@@ -233,23 +235,37 @@ function verDetalleSubvencion(subvencionId){
 
             detalle_anteriores.innerHTML = filas_anteriores
             // ficha detalles organización
-            if(data.subvencion.data_organizacion.error){
+            if(Object.keys(data.subvencion.data_organizacion).length > 1){
+                // declarar variables
+                nombre_presidente = data.subvencion.data_organizacion.directivas[0].nombre_persona[0].toUpperCase() + data.subvencion.data_organizacion.directivas[0].nombre_persona.substring(1).toLowerCase()
+
+
+                // inyectar datos al elemento correspondiente en el DOM
+                document.getElementById('detalle_organizacion').hidden = false
+                document.getElementById('detalle_sin_datos').hidden = true
+                
+                document.getElementById('organizacion_pj_municipal').textContent = data.subvencion.data_organizacion.pj_municipal
+                document.getElementById('organizacion_pj_reg_civil').textContent = data.subvencion.data_organizacion.pj_registro_civil
+                document.getElementById('organizacion_nombre').textContent = data.subvencion.data_organizacion.nombre_organizacion
+                document.getElementById('organizacion_direccion').textContent = data.subvencion.data_organizacion.direccion
+                document.getElementById('organizacion_rut').textContent = data.subvencion.data_organizacion.rut
+                document.getElementById('organizacion_tipo').textContent = data.subvencion.data_organizacion.tipo_organizacion
+                document.getElementById('organizacion_telefono').textContent = data.subvencion.data_organizacion.telefono
+                document.getElementById('organizacion_correo').textContent = data.subvencion.data_organizacion.correo
+                document.getElementById('organizacion_presidente').textContent = nombre_presidente + ' ' + data.subvencion.data_organizacion.directivas[0].apellido_persona
+                document.getElementById('organizacion_tesorero').textContent = data.subvencion.data_organizacion.directivas[2].nombre_persona + ' ' + data.subvencion.data_organizacion.directivas[2].apellido_persona
+                document.getElementById('organizacion_secretario').textContent = data.subvencion.data_organizacion.directivas[1].nombre_persona + ' ' + data.subvencion.data_organizacion.directivas[1].apellido_persona
+
+            }else{
+                // AQUÍ PASA QUE SI CLICKEO UNA ORGANIZACIÓN SIN DATOS, BORRO TODOS LOS ELEMENTOS DEL DOM
                 // escribir un mensaje de que no se pudo recuperar la data de la organización
-                document.getElementById('detalle_organizacion').innerHTML = `
-                    <p>No se pudo recuperar los datos de la organización.</p>
+                document.getElementById('detalle_organizacion').hidden = true
+                document.getElementById('detalle_sin_datos').hidden = false
+                document.getElementById('detalle_sin_datos').textContent = `
+                    No se pudo recuperar los datos de la organización.
                 `
-            }else if(data.subvencion.data_organizacion){
-                document.getElementById('organizacion_pj_municipal').innerText = data.subvencion.data_organizacion.pj_municipal
-                document.getElementById('organizacion_pj_reg_civil').innerText = data.subvencion.data_organizacion.pj_registro_civil
-                document.getElementById('organizacion_nombre').innerText = data.subvencion.data_organizacion.nombre_organizacion
-                document.getElementById('organizacion_direccion').innerText = data.subvencion.data_organizacion.direccion
-                document.getElementById('organizacion_rut').innerText = data.subvencion.data_organizacion.rut
-                document.getElementById('organizacion_tipo').innerText = data.subvencion.data_organizacion.tipo_organizacion
-                document.getElementById('organizacion_telefono').innerText = data.subvencion.data_organizacion.telefono
-                document.getElementById('organizacion_correo').innerText = data.subvencion.data_organizacion.correo
-                document.getElementById('organizacion_presidente').innerText = data.subvencion.data_organizacion.directivas[0].nombre_persona + ' ' + data.subvencion.data_organizacion.directivas[0].apellido_persona
-                document.getElementById('organizacion_tesorero').innerText = data.subvencion.data_organizacion.directivas[2].nombre_persona + ' ' + data.subvencion.data_organizacion.directivas[2].apellido_persona
-                document.getElementById('organizacion_secretario').innerText = data.subvencion.data_organizacion.directivas[1].nombre_persona + ' ' + data.subvencion.data_organizacion.directivas[1].apellido_persona
+
+
             }
         } else {
             Swal.fire({
@@ -275,6 +291,7 @@ function verDetalleSubvencion(subvencionId){
 /*Editar*/
 // Función para abrir modal de edición con datos de la subvención
 function abrirModalEditar(subvencionId) {
+    console.log(subvencionId)
     // Obtener token CSRF
     let csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
     
@@ -313,15 +330,17 @@ function abrirModalEditar(subvencionId) {
     .then(response => response.json())
     .then(data => {
         if (data.success) {
+            fecha_decreto = new Date(data.subvencion.fecha_decreto).toLocaleDateString()
+            fecha_asignacion = new Date(data.subvencion.fecha_asignacion).toLocaleDateString()
             // Llenar el formulario con los datos
-            document.getElementById('subvencion_id').value = data.data.id;
-            document.getElementById('rut_editar').value = data.data.rut;
-            document.getElementById('organizacion_editar').value = data.data.organizacion;
-            document.getElementById('decreto_editar').value = data.data.decreto;
-            document.getElementById('fecha_decreto_editar').value = data.data.fecha_decreto;
-            document.getElementById('fecha_asignacion_editar').value = data.data.fecha_asignacion;
-            document.getElementById('destino_editar').value = data.data.destino;
-            document.getElementById('monto_editar').value = data.data.monto;
+            document.getElementById('subvencion_id').value = data.subvencion.id;
+            document.getElementById('rut_editar').value = data.subvencion.rut;
+            document.getElementById('organizacion_editar').value = data.subvencion.organizacion;
+            document.getElementById('decreto_editar').value = data.subvencion.decreto;
+            document.getElementById('fecha_decreto_editar').value = fecha_decreto;
+            document.getElementById('fecha_asignacion_editar').value = fecha_asignacion;
+            document.getElementById('destino_editar').value = data.subvencion.destino;
+            document.getElementById('monto_editar').value = data.subvencion.monto;
             
             // Mostrar el modal
             const modalEditar = new bootstrap.Modal(document.getElementById('modalEditar'));
@@ -382,7 +401,11 @@ document.querySelector("#btnFormEditar").addEventListener("click", async functio
     for (let [key, value] of formData.entries()) {
         data[key] = value;
     }
-    
+    // Formatear fechas
+    fechaDecretoSeparada = data['fecha_decreto'].split('/')
+    fechaAsignacionSeparada = data['fecha_asignacion'].split('/')
+    data['fecha_decreto'] = new Date(fechaDecretoSeparada[0], fechaDecretoSeparada[1], fechaDecretoSeparada[2])
+    data['fecha_asignacion'] = new Date(fechaAsignacionSeparada[0], fechaAsignacionSeparada[1], fechaAsignacionSeparada[2])
     try {
         const response = await fetch(`${window.apiBaseUrl}subvenciones/actualizar`, {
             method: 'POST',
@@ -468,20 +491,21 @@ function abrirModalRendir(subvencionId) {
     .then(response => response.json())
     .then(data => {
         if (data.success) {
+            console.log(data.subvencion.rendiciones)
             // Llenar ID de subvención
-            document.getElementById('subvencion_id').value = data.data.subvencion.id;
-            
+            document.getElementById('rendicion_id').value = data.subvencion.rendiciones.id;
             // Llenar datos de la subvención
-            document.getElementById('rut_organizacion_rendir').textContent = data.data.subvencion.rut;
-            document.getElementById('nombre_organizacion_rendir').textContent = data.data.subvencion.organizacion;
-            document.getElementById('decreto_rendir').textContent = data.data.subvencion.decreto;
-            document.getElementById('monto_rendir').textContent = '$' + data.data.subvencion.monto.toLocaleString('es-CL');
-            document.getElementById('destino_subvencion_rendir').textContent = data.data.subvencion.destino;
+            document.getElementById('rut_organizacion_rendir').textContent = data.subvencion.rut;
+            document.getElementById('nombre_organizacion_rendir').textContent = data.subvencion.data_organizacion.nombre_organizacion;
+            document.getElementById('decreto_rendir').textContent = data.subvencion.decreto;
+            document.getElementById('monto_rendir').textContent = '$' + data.subvencion.monto.toLocaleString('es-CL');
+            document.getElementById('destino_subvencion_rendir').textContent = data.subvencion.destino;
             
             // Llenar opciones de cargos
             const cargoSelect = document.getElementById('persona_cargo');
             cargoSelect.innerHTML = '<option value="">Seleccione...</option>';
-            data.data.cargos.forEach(cargo => {
+            console.log(data)
+            data.cargos.forEach(cargo => {
                 const option = document.createElement('option');
                 option.value = cargo.id;
                 option.textContent = cargo.nombre;
@@ -519,110 +543,110 @@ function abrirModalRendir(subvencionId) {
 }
 
 // Función para buscar personas por RUT
-function buscarPersonas(query) {
-    if (query.length < 2) {
-        ocultarSugerencias();
-        return;
-    }
+// function buscarPersonas(query) {
+//     if (query.length < 2) {
+//         ocultarSugerencias();
+//         return;
+//     }
     
-    // Solo normalizar si el RUT tiene al menos 7 caracteres
-    if (query.length >= 7) {
-        const rutNormalizado = normalizarRut(query);
-        if (rutNormalizado) {
-            // Si el RUT es válido, actualizar el campo con el formato correcto
-            document.getElementById('persona_rut').value = rutNormalizado;
-        }
-    }
+//     // Solo normalizar si el RUT tiene al menos 7 caracteres
+//     if (query.length >= 7) {
+//         const rutNormalizado = normalizarRut(query);
+//         if (rutNormalizado) {
+//             // Si el RUT es válido, actualizar el campo con el formato correcto
+//             document.getElementById('persona_rut').value = rutNormalizado;
+//         }
+//     }
 
-    // Obtener token CSRF
-    let csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+//     // Obtener token CSRF
+//     let csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
     
-    if (!csrfToken) {
-        csrfToken = document.querySelector('input[name="_token"]')?.value;
-    }
+//     if (!csrfToken) {
+//         csrfToken = document.querySelector('input[name="_token"]')?.value;
+//     }
     
-    if (!csrfToken && typeof $ !== 'undefined') {
-        csrfToken = $('meta[name="csrf-token"]').attr('content');
-    }
+//     if (!csrfToken && typeof $ !== 'undefined') {
+//         csrfToken = $('meta[name="csrf-token"]').attr('content');
+//     }
     
-    if (!csrfToken) {
-        console.error('No se pudo obtener el token CSRF');
-        return;
-    }
+//     if (!csrfToken) {
+//         console.error('No se pudo obtener el token CSRF');
+//         return;
+//     }
     
-    // Buscar personas
-    fetch(`${window.apiBaseUrl}personas/buscar`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-Requested-With': 'XMLHttpRequest',
-            'Accept': 'application/json',
-            'X-CSRF-TOKEN': csrfToken
-        },
-        body: JSON.stringify({ q: query })
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            mostrarSugerencias(data.data);
-        }
-    })
-    .catch(error => {
-        console.error('Error al buscar personas:', error);
-    });
-}
+//     // Buscar personas
+//     // fetch(`${window.apiBaseUrl}personas/buscar`, {
+//     //     method: 'POST',
+//     //     headers: {
+//     //         'Content-Type': 'application/json',
+//     //         'X-Requested-With': 'XMLHttpRequest',
+//     //         'Accept': 'application/json',
+//     //         'X-CSRF-TOKEN': csrfToken
+//     //     },
+//     //     body: JSON.stringify({ q: query })
+//     // })
+//     // .then(response => response.json())
+//     // .then(data => {
+//     //     if (data.success) {
+//     //         mostrarSugerencias(data.data);
+//     //     }
+//     // })
+//     // .catch(error => {
+//     //     console.error('Error al buscar personas:', error);
+//     // });
+// }
 
 // Función para mostrar sugerencias
-function mostrarSugerencias(personas) {
-    const contenedor = document.getElementById('sugerencias_rut');
-    contenedor.innerHTML = '';
+// function mostrarSugerencias(personas) {
+//     const contenedor = document.getElementById('sugerencias_rut');
+//     contenedor.innerHTML = '';
     
-    if (personas.length === 0) {
-        contenedor.style.display = 'none';
-        return;
-    }
+//     if (personas.length === 0) {
+//         contenedor.style.display = 'none';
+//         return;
+//     }
     
-    personas.forEach(persona => {
-        const item = document.createElement('div');
-        item.className = 'list-group-item list-group-item-action';
-        item.style.cursor = 'pointer';
-        item.innerHTML = `
-            <div class="d-flex w-100 justify-content-between">
-                <h6 class="mb-1">${persona.rut}</h6>
-            </div>
-            <p class="mb-1">${persona.nombre} ${persona.apellido}</p>
-        `;
+//     personas.forEach(persona => {
+//         const item = document.createElement('div');
+//         item.className = 'list-group-item list-group-item-action';
+//         item.style.cursor = 'pointer';
+//         item.innerHTML = `
+//             <div class="d-flex w-100 justify-content-between">
+//                 <h6 class="mb-1">${persona.rut}</h6>
+//             </div>
+//             <p class="mb-1">${persona.nombre} ${persona.apellido}</p>
+//         `;
         
-        item.addEventListener('click', () => {
-            seleccionarPersona(persona);
-        });
+//         item.addEventListener('click', () => {
+//             seleccionarPersona(persona);
+//         });
         
-        contenedor.appendChild(item);
-    });
+//         contenedor.appendChild(item);
+//     });
     
-    contenedor.style.display = 'block';
-}
+//     contenedor.style.display = 'block';
+// }
 
 // Función para ocultar sugerencias
-function ocultarSugerencias() {
-    const contenedor = document.getElementById('sugerencias_rut');
-    contenedor.style.display = 'none';
-}
+// function ocultarSugerencias() {
+//     const contenedor = document.getElementById('sugerencias_rut');
+//     contenedor.style.display = 'none';
+// }
 
 // Función para seleccionar una persona
-function seleccionarPersona(persona) {
-    // Llenar campos de persona
-    document.getElementById('persona_rut').value = persona.rut;
-    document.getElementById('persona_nombre').value = persona.nombre;
-    document.getElementById('persona_apellido').value = persona.apellido;
-    document.getElementById('persona_email').value = persona.correo || '';
+// function seleccionarPersona(persona) {
+//     // Llenar campos de persona
+//     document.getElementById('persona_rut').value = persona.rut;
+//     document.getElementById('persona_nombre').value = persona.nombre;
+//     document.getElementById('persona_apellido').value = persona.apellido;
+//     document.getElementById('persona_email').value = persona.correo || '';
     
-    // Ocultar sugerencias
-    ocultarSugerencias();
+//     // Ocultar sugerencias
+//     ocultarSugerencias();
     
-    // Marcar que el RUT ya está validado para evitar validación en blur
-    document.getElementById('persona_rut').setAttribute('data-validated', 'true');
-}
+//     // Marcar que el RUT ya está validado para evitar validación en blur
+//     document.getElementById('persona_rut').setAttribute('data-validated', 'true');
+// }
 
 // Event listener para el botón de guardar rendición
 document.getElementById('btnFormRendir').addEventListener('click', async function(event) {
@@ -680,45 +704,17 @@ document.getElementById('btnFormRendir').addEventListener('click', async functio
     
     try {
         // Primero guardar/actualizar la persona
-        const datosPersona = {
+        const datosRendicion = {
             rut: document.getElementById('persona_rut').value,
             nombre: document.getElementById('persona_nombre').value,
             apellido: document.getElementById('persona_apellido').value,
-            correo: document.getElementById('persona_email').value
+            correo: document.getElementById('persona_email').value,
+            cargo: document.getElementById('persona_cargo').value,
+            comentario: document.getElementById('comentario_detalle').value,
+            id: document.getElementById('rendicion_id').value
         };
         
-        const responsePersona = await fetch(`${window.apiBaseUrl}personas/guardar`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-Requested-With': 'XMLHttpRequest',
-                'Accept': 'application/json',
-                'X-CSRF-TOKEN': csrfToken
-            },
-            body: JSON.stringify(datosPersona)
-        });
-        
-        const resultPersona = await responsePersona.json();
-        
-        if (!responsePersona.ok || !resultPersona.success) {
-            Swal.fire({
-                title: "Error",
-                text: resultPersona.message || "Error al guardar los datos de la persona",
-                icon: "error",
-                confirmButtonText: "Aceptar"
-            });
-            return;
-        }
-        
-        // Si la persona se guardó correctamente, proceder con la rendición
-        const datosRendicion = {
-            subvencion_id: document.getElementById('subvencion_id').value,
-            persona_id: resultPersona.data.id,
-            persona_cargo_id: document.getElementById('persona_cargo').value,
-            comentario: document.getElementById('comentario_detalle').value
-        };
-        
-        const responseRendicion = await fetch(`${window.apiBaseUrl}subvenciones/guardar-rendicion`, {
+        const responseRendicion = await fetch(`${window.apiBaseUrl}rendiciones/crear`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -728,6 +724,37 @@ document.getElementById('btnFormRendir').addEventListener('click', async functio
             },
             body: JSON.stringify(datosRendicion)
         });
+        
+        // const resultPersona = await responsePersona.json();
+        
+        // if (!responsePersona.ok || !resultPersona.success) {
+        //     Swal.fire({
+        //         title: "Error",
+        //         text: resultPersona.message || "Error al guardar los datos de la persona",
+        //         icon: "error",
+        //         confirmButtonText: "Aceptar"
+        //     });
+        //     return;
+        // }
+        
+        // Si la persona se guardó correctamente, proceder con la rendición
+        // const datosRendicion = {
+        //     subvencion_id: document.getElementById('subvencion_id').value,
+        //     persona_id: resultPersona.data.id,
+        //     persona_cargo_id: document.getElementById('persona_cargo').value,
+        //     comentario: document.getElementById('comentario_detalle').value
+        // };
+        
+        // const responseRendicion = await fetch(`${window.apiBaseUrl}subvenciones/guardar-rendicion`, {
+        //     method: 'POST',
+        //     headers: {
+        //         'Content-Type': 'application/json',
+        //         'X-Requested-With': 'XMLHttpRequest',
+        //         'Accept': 'application/json',
+        //         'X-CSRF-TOKEN': csrfToken
+        //     },
+        //     body: JSON.stringify(datosRendicion)
+        // });
         
         const resultRendicion = await responseRendicion.json();
         
@@ -741,7 +768,7 @@ document.getElementById('btnFormRendir').addEventListener('click', async functio
         } else {
             Swal.fire({
                 title: "Éxito",
-                text: "Persona y rendición guardadas correctamente",
+                text: "Rendición iniciada exitosamente",
                 icon: "success",
                 confirmButtonText: "Aceptar"
             }).then(() => {
@@ -749,6 +776,7 @@ document.getElementById('btnFormRendir').addEventListener('click', async functio
                 const modalRendir = bootstrap.Modal.getInstance(document.getElementById('modalRendirsubvencion'));
                 modalRendir.hide();
                 window.location.reload();
+                console.log("llegó acá")
             });
         }
     } catch (error) {
@@ -763,55 +791,72 @@ document.getElementById('btnFormRendir').addEventListener('click', async functio
 });
 
 // Event listener para normalizar RUT cuando el usuario termine de escribir
-document.getElementById('persona_rut').addEventListener('blur', function(event) {
-    const rut = event.target.value.trim();
+// document.getElementById('persona_rut').addEventListener('blur', function(event) {
+//     const rut = event.target.value.trim();
     
-    // No validar si el RUT ya fue seleccionado de las sugerencias
-    if (event.target.getAttribute('data-validated') === 'true') {
-        event.target.removeAttribute('data-validated');
-        return;
-    }
+//     // No validar si el RUT ya fue seleccionado de las sugerencias
+//     if (event.target.getAttribute('data-validated') === 'true') {
+//         event.target.removeAttribute('data-validated');
+//         return;
+//     }
     
-    // Solo validar si el RUT tiene al menos 7 caracteres (mínimo para un RUT válido)
-    if (rut && rut.length >= 7) {
-        const rutNormalizado = normalizarRut(rut);
-        if (rutNormalizado) {
-            event.target.value = rutNormalizado;
-        } else {
-            // Mostrar error si el RUT no es válido
-            Swal.fire({
-                title: "RUT inválido",
-                text: "El RUT ingresado no es válido. Por favor, verifique el número y dígito verificador.",
-                icon: "warning",
-                confirmButtonText: "Aceptar",
-                allowOutsideClick: true,
-                allowEscapeKey: true
-            }).then((result) => {
-                if (result.isConfirmed || result.isDismissed) {
-                    event.target.focus();
-                }
-            });
-        }
-    }
-});
+//     // Solo validar si el RUT tiene al menos 7 caracteres (mínimo para un RUT válido)
+//     if (rut && rut.length >= 7) {
+//         const rutNormalizado = normalizarRut(rut);
+//         if (rutNormalizado) {
+//             event.target.value = rutNormalizado;
+//         } else {
+//             // Mostrar error si el RUT no es válido
+//             Swal.fire({
+//                 title: "RUT inválido",
+//                 text: "El RUT ingresado no es válido. Por favor, verifique el número y dígito verificador.",
+//                 icon: "warning",
+//                 confirmButtonText: "Aceptar",
+//                 allowOutsideClick: true,
+//                 allowEscapeKey: true
+//             }).then((result) => {
+//                 if (result.isConfirmed || result.isDismissed) {
+//                     event.target.focus();
+//                 }
+//             });
+//         }
+//     }
+// });
 
 // Event listener para ocultar sugerencias al hacer clic fuera
-document.addEventListener('click', function(event) {
-    const campoRut = document.getElementById('persona_rut');
-    const sugerencias = document.getElementById('sugerencias_rut');
+// document.addEventListener('click', function(event) {
+//     const campoRut = document.getElementById('persona_rut');
+//     const sugerencias = document.getElementById('sugerencias_rut');
     
-    if (campoRut && sugerencias && !campoRut.contains(event.target) && !sugerencias.contains(event.target)) {
-        ocultarSugerencias();
-    }
-});
+//     if (campoRut && sugerencias && !campoRut.contains(event.target) && !sugerencias.contains(event.target)) {
+//         ocultarSugerencias();
+//     }
+// });
 
 
-// Prueba Data tables
-new DataTable('#table_subvenciones', {
-    order: [],
-    language: idioma ?? {},
-    deferRender: true,
-    responsive: true,
+document.getElementById('modalVerDetalles').addEventListener('hidden.bs.modal', function (e) {
+    // Tabs nav
+  const tabs = document.querySelectorAll('#modalVerDetalles button.nav-link');
+  // Tab panes
+  const panes = document.querySelectorAll('.tab-content .tab-pane');
+
+  // Quitar active y show de todas
+  tabs.forEach(tab => tab.classList.remove('active'));
+  panes.forEach(pane => {
+    pane.classList.remove('active');
+    pane.classList.remove('show');
+  });
+
+  // Poner active y show en el primero
+  if(tabs.length > 0)
+  {
+    tabs[0].classList.add('active');
+    tabs[0].classList.add('show');
+  }
+  if(panes.length > 0) {
+    panes[0].classList.add('active');
+    panes[0].classList.add('show');
+  }
 });
 
 

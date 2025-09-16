@@ -76,8 +76,8 @@
                                         <span class="dato-subrayado" id="detalle_fecha_asignacion"></span>
                                     </p>
                                     <p class="mb-3">
-                                        <strong>Seguimiento:</strong>
-                                        <span class="dato-subrayado" id="detalle_usuario">Iniciada</span>
+                                        <strong>Estado:</strong>
+                                        <span class="dato-subrayado" id="detalle_usuario">No se ha iniciado una rendición</span>
                                     </p>
                                 </div>
                             </div>
@@ -124,7 +124,7 @@
                     </div>
 
                     <!-- Overlay detalle acción (no aparece botón) -->
-                    <div id="ver-detalle" class="overlay-detalle d-none">
+                    <!-- <div id="ver-detalle" class="overlay-detalle d-none">
                         <div
                             class="detalle-box modal-content shadow-md rounded-4 overflow-hidden"
                         >
@@ -171,7 +171,7 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </div> -->
 
                     <!-- Pestaña subvenciones anteriores -->
                     <div class="tab-pane fade" id="tab3" role="tabpanel">
@@ -208,6 +208,7 @@
                     <!-- Pestaña datos organización -->
                     <div class="tab-pane fade" id="tab4" role="tabpanel">
                         <div class="bg-white border rounded-4 p-3 mb-0 min-vh-50">
+                            <p id="detalle_sin_datos" hidden></p>
                             <div class="row" id="detalle_organizacion">
                                 <div class="col-md-6">
                                     <p><strong>Datos de la organización</strong></p>

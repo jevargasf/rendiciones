@@ -4,20 +4,88 @@ namespace App\Http\Controllers;
 
 use App\Models\Rendicion;
 use App\Models\Accion;
+use App\Models\EstadoRendicion;
 use Illuminate\Http\Request;
 use App\Models\Subvencion;
 use App\Models\Notificacion;
 use Exception;
 use Illuminate\Routing\Controller as BaseController;
+use App\Models\Persona;
+use App\Http\Controllers\SubvencionController;
+use Illuminate\Support\Facades\File as FileReader;
 
 class RendicionController extends BaseController
 {
 
+    private function normalizarRut($rut)
+    {
+        // Limpiar el RUT, mantener solo números y K
+        $rutLimpio = preg_replace('/[^0-9kK]/', '', $rut);
+        
+        // Validar longitud mínima y máxima
+        if (strlen($rutLimpio) < 7 || strlen($rutLimpio) > 9) {
+            return false;
+        }
 
+        $dv = strtoupper(substr($rutLimpio, -1));
+        $numero = substr($rutLimpio, 0, -1);
+
+        // Validar que el dígito verificador sea válido (0-9 o K)
+        if (!in_array($dv, ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'K'])) {
+            return false;
+        }
+
+        // Validar que el número solo contenga dígitos
+        if (!ctype_digit($numero)) {
+            return false;
+        }
+
+        // Calcular dígito verificador para validar
+        $suma = 0;
+        $multiplicador = 2;
+
+        for ($i = strlen($numero) - 1; $i >= 0; $i--) {
+            $suma += $numero[$i] * $multiplicador;
+            $multiplicador = $multiplicador == 7 ? 2 : $multiplicador + 1;
+        }
+
+        $resto = $suma % 11;
+        $dvCalculado = 11 - $resto;
+
+        if ($dvCalculado == 11) {
+            $dvCalculado = '0';
+        } elseif ($dvCalculado == 10) {
+            $dvCalculado = 'K';
+        } else {
+            $dvCalculado = (string) $dvCalculado;
+        }
+
+        // Si el dígito verificador es correcto, retornar en formato estándar
+        if ($dv === $dvCalculado) {
+            return $numero . '-' . $dv;
+        }
+
+        return false;
+    }
+
+
+    
+    public function conseguirDetalleOrganizacion($subvencion_objeto, $endpoint){
+        $data_organizacion = FileReader::get(base_path($endpoint));
+        // Adjunta data organización al objeto, rellena con S/D en caso de que no encuentre datos
+            $json_organizacion = json_decode($data_organizacion, associative: true);
+            $rut_json = $json_organizacion[0]['rut'];
+            if ($rut_json == $subvencion_objeto['rut']){
+                $subvencion_objeto->data_organizacion = $json_organizacion[0];
+            } else {
+                $subvencion_objeto->data_organizacion = ['nombre_organizacion' => 'S/D'];
+            }
+        return $subvencion_objeto;
+    }
     public function index()
     {
         // En revisión (estado_rendicion_id = 2)
-        $rendiciones = Rendicion::with(['subvencion', 'estadoRendicion'])
+        $revision = Rendicion::with(['subvencion', 'estadoRendicion'])
             ->where('estado', 1)
             ->where('estado_rendicion_id', 2) // En revisión
             ->get();
@@ -28,64 +96,211 @@ class RendicionController extends BaseController
             ->where('estado_rendicion_id', 3) // Objetadas
             ->get();
 
-        // Aprobadas (estado_rendicion_id = 5)
-        $observadas = Rendicion::with(['subvencion', 'estadoRendicion'])
-            ->where('estado', 1)
-            ->where('estado_rendicion_id', 5) // Aprobadas
-            ->get();
-
         // Rechazadas (estado_rendicion_id = 4)
         $rechazadas = Rendicion::with(['subvencion', 'estadoRendicion'])
             ->where('estado', 1)
             ->where('estado_rendicion_id', 4) // Rechazadas
             ->get();
 
+        // Aprobadas (estado_rendicion_id = 5)
+        $observadas = Rendicion::with(['subvencion', 'estadoRendicion'])
+            ->where('estado', 1)
+            ->where('estado_rendicion_id', 5) // Aprobadas
+            ->get();
+
         return view(
             'rendiciones.index',
-            compact('rendiciones', 'pendientes', 'observadas', 'rechazadas')
+            compact('revision', 'pendientes', 'observadas', 'rechazadas')
         );
     }
 
-   
-    public function detalleRendicion(Request $request) /** detalleRendicion es el mismo nombre de la ruta, Así Laravel sabe qué método ejecutar cuando llega una petición a esa ruta*/
+        /**
+     * Guardar rendición de subvención
+     */
+    public function crear(Request $request)
     {
-        try{
-            // Obtener el ID de la rendición
-            $rendicionId = $request->input('id');
+        try {
+            // HACERLO COMO TRANSACCIÓN POR SI ALGO FALLA
+            // Validar data
+            $data_validada = $request->validate([
+                'id' => 'required|integer|exists:rendiciones,id',
+                'rut' => 'required|regex:/^[0-9]{1,2}\.[0-9]{3}\.[0-9]{3}-[0-9kK]$/',
+                'nombre' => 'required|string|max:50',
+                'apellido' => 'required|string|max:50',
+                'correo' => 'required|email|max:100',
+                'cargo' => 'required|integer|exists:cargos,id',
+                'comentario' => 'required|string|max:400'
+            ]);
+
+            // Limpiar RUT
+            $data_validada['rut'] = $this->normalizarRut($data_validada['rut']);
             
-            if (!$rendicionId) {
-                return response()->json(['error' => 'ID de rendición requerido'], 400);
+            // Buscar si ya existe una persona con el mismo RUT
+            $persona = Persona::where('rut', $data_validada['rut'])->first();
+
+            if ($persona) {
+                // Actualizar persona existente
+                $persona->update([
+                    'nombre' => $data_validada['nombre'],
+                    'apellido' => $data_validada['apellido'],
+                    'correo' => $data_validada['correo'],
+                    'estado' => 1
+                ]);
+            } else {
+                // Crear nueva persona
+                $persona = Persona::create([
+                    'rut' => $data_validada['rut'],
+                    'nombre' => $data_validada['nombre'],
+                    'apellido' => $data_validada['apellido'],
+                    'correo' => $data_validada['correo'],
+                    'estado' => 1
+                ]);
+            }
+            
+            // Buscar rendición solo estado 1 = Creada
+            $rendicion = Rendicion::where([['id', '=', $data_validada['id']], ['estado', '=', 1], ['estado_rendicion_id', '=', 1]])->first();
+            
+            // if (!$rendicion) {
+            //     $rendicion = Rendicion::create([
+            //         'subvencion_id' => $request->subvencion_id,
+            //         'estado_rendicion_id' => 2, // Estado "En Revisión" (ID 2)
+            //         'estado' => 1
+            //     ]);
+            // } else {
+            //     // Actualizar estado de rendición existente a "En Revisión"
+            //     $rendicion->update([
+            //         'estado_rendicion_id' => 2 // Estado "En Revisión" (ID 2)
+            //     ]);
+            // }
+            
+            // Cambiar el estado de la rendición a 2 (en revisión)
+            $rendicion->update([
+                'estado_rendicion_id' => 2
+            ]);
+
+            // Obtener datos del usuario autenticado desde la sesión
+            $usuarioAutenticado = session('usuario');
+            $nombreCompletoUsuario = trim(($usuarioAutenticado['nombres'] ?? '') . ' ' . 
+                                   ($usuarioAutenticado['apellido_paterno'] ?? '') . ' ' . 
+                                   ($usuarioAutenticado['apellido_materno'] ?? ''));
+            
+            // Crear acción de rendición usando datos del usuario autenticado
+            Accion::create([
+                'fecha' => now(),
+                'comentario' => $request->comentario,
+                'km_rut' => $usuarioAutenticado['run'] ?? 'S/D',
+                'km_nombre' => $nombreCompletoUsuario ?? 'S/D',
+                'rendicion_id' => $rendicion->id,
+                'persona_id' => $persona->id,
+                'cargo_id' => $data_validada['cargo'],
+                'estado' => 1
+            ]);
+
+            $subvenciones = Subvencion::where('estado', 1)
+            ->whereHas('rendiciones', function ($query) {
+                $query->where('estado_rendicion_id', 1);
+            })
+            ->get();
+
+            if($subvenciones->isEmpty()){
+                return response()->json([
+                    'success' => true,
+                    'subvenciones' => $subvenciones
+                    
+                ]);  
+            }else{
+                // Realiza consulta al json de datos para cada subvención
+                foreach($subvenciones as $subvencion){
+                    $subvencion = $this->conseguirDetalleOrganizacion($subvencion, '/resources/data/endpoint.json');
+
+                }
+                return response()->json([
+                    'success' => true,
+                    'subvenciones' => $subvenciones
+                ]); 
             }
 
+        } catch (Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error al guardar la rendición: ' . $e->getMessage()
+            ]);
+        }
+    }
+   
+    public function obtener(Request $request) /** detalleRendicion es el mismo nombre de la ruta, Así Laravel sabe qué método ejecutar cuando llega una petición a esa ruta*/
+    {
+        try{
+            $request->validate([
+                'id' => 'required|integer|exists:rendiciones,id'
+            ]);
+            
+            // if (!$rendicionId) {
+            //     return response()->json(['error' => 'ID de rendición requerido'], 400);
+            // }
+
             // Obtener acciones
-            $acciones = Accion::with(['persona', 'cargo'])
-                ->select('id', 'fecha', 'comentario', 'km_nombre', 'rendicion_id', 'persona_id', 'cargo_id', 'estado')
-                ->where('estado', 1)
-                ->where('rendicion_id', $rendicionId)
-                ->orderBy('fecha', 'desc')
-                ->get();
+            $rendicion = Rendicion::with([
+                'subvencion' => function ($query){
+                    $query->where('estado', 1);
+                },
+                'acciones' => function ($query){
+                    $query->where('estado', 1);
+                },
+                'acciones.persona' => function ($query){
+                    $query->where('estado', 1);
+                },
+                'acciones.cargo' => function ($query){
+                    $query->where('estado', 1);
+                },
+                'estadoRendicion' => function ($query){
+                    $query->where('estado', 1);
+                }
+            ])
+            ->where([
+                ['rendiciones.estado', '=', 1],
+                ['rendiciones.id', '=', $request->id]
+            ])
+            ->get();
 
             // Obtener notificaciones a través de acciones
-            $notificaciones = Notificacion::with(['accion'])
-                ->whereHas('accion', function($query) use ($rendicionId) {
-                    $query->where('rendicion_id', $rendicionId);
-                })
-                ->orderBy('fecha_envio', 'desc')
-                ->get();
-
+            // $notificaciones = Notificacion::with(['accion'])
+            //     ->whereHas('accion', function($query) use ($rendicionId) {
+            //         $query->where('rendicion_id', $rendicionId);
+            //     })
+            //     ->orderBy('fecha_envio', 'desc')
+            //     ->get();
+            $estados_rendicion = EstadoRendicion::whereBetween('id', [3, 5])->get();
             return response()->json([
-                'acciones' => $acciones,
-                'notificaciones' => $notificaciones,
+                'success' => true,
+                'rendicion' => $rendicion[0],
+                'estados_rendicion' => $estados_rendicion
             ]);
         } catch(Exception $e) {
-            \Log::error('Error en detalleRendicion: ' . $e->getMessage());
             return response()->json([
-                'error' => 'Error al obtener los detalles de la rendición',
-                'message' => $e->getMessage()
-            ], 500);
+                'success' => false,
+                'message' => 'Error al obtener la rendición: ' . $e->getMessage()
+            ]);
         }
     }
     
+
+    public function cambiarEstado(Request $request){
+        try{
+            dd($request->all());
+            $data_validada = $request->validate([
+                'id' => 'required|integer|exists:rendiciones,id',
+                'nuevo_estado_id' => 'required|integer|exists:estados_rendiciones,id',
+                'comentario' => 'required|string|max:400'
+            ]);
+            dd($data_validada);
+        } catch(Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error al cambiar el estado de la rendición: ' . $e->getMessage()
+            ]);
+        }
+    }
     /**
      * Eliminar una rendición (cambiar estado de subvención a 1 y estado_rendicion_id a 1)
      */
@@ -137,7 +352,7 @@ class RendicionController extends BaseController
             ], 500);
         }
     }
-    
+
     
 }
 

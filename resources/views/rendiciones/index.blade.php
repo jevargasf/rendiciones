@@ -57,58 +57,20 @@
                 <div class="tab-pane fade show active" id="nav-rendidas" role="tabpanel"
                     aria-labelledby="nav-rendidas-tab" tabindex="0">
                     <div class="table-responsive mt-3">
-                        <table id="table_rendiciones" class="table table-striped align-middle w-100">
+                        <table id="table_revision" class="table table-striped align-middle w-100">
                             <thead>
                                 <tr>
                                     <th>#</th>
                                     <th>Fecha</th>
-                                    <th>R.U.T</th>
+                                    <th>RUT</th>
                                     <th>Organización</th>
                                     <th>Decreto</th>
-                                    <th>Nro. Movimiento</th>
                                     <th>Monto</th>
+                                    <th>Destino</th>
+                                    <th>Estado</th>
                                     <th>Opciones</th>
                                 </tr>
                             </thead>
-                            <tbody>
-                                @forelse ($rendiciones as $index => $item)
-                                    <tr>
-                                        <td class="td-5">{{ $index + 1 }}</td>
-                                        <td class="fecha" data-order="2025-05-29">29/05/2025</td>
-                                        <td>{{ $item->subvencion->rut_formateado }}</td>
-                                        <td>{{ $item->subvencion->nombre_organizacion }}</td>
-                                        <td>{{ $item->subvencion->decreto }}</td>
-                                        <td>865501</td>
-                                        <td class="monto" data-valor="{{ $item->subvencion->monto }}">
-                                            ${{ number_format($item->subvencion->monto, 0, ',', '.') }}</td>
-                                        <td class="td-5">
-
-                                            <!-- REVISAR ACÁ LA FUNCIONALIDAD DEL BOTÓN VER DETALLE -->
-                                            <div class="d-flex justify-content-center align-items-center">
-                                                <button type="button" class="btn btn-accion btn-link align-baseline">
-                                                    <i class="fas fa-search" data-id="{{ $item->id }}"
-                                                        data-subvencion="{{ $item->subvencion_id }}"
-                                                        {{-- Guarda el ID del registro para usarlo en JavaScript --}}></i>
-                                                </button>
-                                                <!-- Eliminar -->
-                                                <button class="btn btn-danger btn-accion btn-eliminar-rendicion" 
-                                                    title="Eliminar" type="button" data-rendicion-id="{{ $item->id }}">
-                                                    <i class="fas fa-times-circle"></i>
-                                                </button>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                @empty
-                                    <tr>
-                                        <td colspan="8" class="text-center py-4">
-                                            <div class="text-muted">
-                                                <i class="fas fa-inbox fa-2x mb-2"></i>
-                                                <p class="mb-0">No hay rendiciones en revisión</p>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                @endforelse
-                            </tbody>
                         </table>
                     </div>
                 </div>
@@ -125,39 +87,11 @@
                                     <th>R.U.T</th>
                                     <th>Organización</th>
                                     <th>Decreto</th>
-                                    <th>Nro. Movimiento</th>
                                     <th>Monto</th>
+                                    <th>Estado</th>
                                     <th>Opciones</th>
                                 </tr>
                             </thead>
-                            <tbody>
-                            <tbody>
-                                @foreach ($pendientes as $item)
-                                    <tr>
-                                        <td class="td-5">{{ $index + 1 }}</td>
-                                        <td class="fecha" data-order="2025-05-29">29/05/2025</td>
-                                        <td>{{ $item->subvencion->rut_formateado }}</td>
-                                        <td>{{ $item->subvencion->nombre_organizacion }}</td>
-                                        <td>{{ $item->subvencion->decreto }}</td>
-                                        <td>346544</td>
-                                        <td class="monto" data-order="{{ $item->subvencion->monto }}">
-                                            ${{ number_format($item->subvencion->monto, 0, ',', '.') }}
-                                        <td class="td-5">
-                                            <div class="d-flex justify-content-center align-items-center">
-                                                <button type="button" class="btn btn-accion btn-link align-baseline">
-                                                    <i class="fas fa-search" data-id="{{ $item->id }}"
-                                                        {{-- Guarda el ID del registro para usarlo en JavaScript --}}></i>
-                                                </button>
-                                                <!--    <button type="button" class="btn btn-accion btn-link align-baseline"
-                                                    data-bs-toggle="modal" data-bs-target="#modalVer">
-                                                    <i class="bi bi-search"></i>
-                                                </button> Antiguo boton  -->
-                                            </div>
-                                        </td>
-                                    </tr>
-                                @endforeach
-                            </tbody>
-                            </tbody>
                         </table>
                     </div>
                 </div>
@@ -175,33 +109,11 @@
                                     <th>R.U.T</th>
                                     <th>Organización</th>
                                     <th>Decreto</th>
-                                    <th>Nro. Movimiento</th>
                                     <th>Monto</th>
+                                    <th>Estado</th>
                                     <th>Opciones</th>
                                 </tr>
                             </thead>
-                            <tbody>
-                                @foreach ($observadas as $item)
-                                    <tr>
-                                        <td class="td-5">{{ $index + 1 }}</td>
-                                        <td class="fecha" data-order="2025-05-29">29/05/2025</td>
-                                        <td>{{ $item->subvencion->rut_formateado }}</td>
-                                        <td>{{ $item->subvencion->nombre_organizacion }}</td>
-                                        <td>{{ $item->subvencion->decreto }}</td>
-                                        <td>346544</td>
-                                        <td class="monto" data-valor="{{ $item->subvencion->monto }}">
-                                            ${{ number_format($item->subvencion->monto, 0, ',', '.') }}</td>
-                                        <td class="td-5">
-                                            <div class="d-flex justify-content-center align-items-center">
-                                                <button type="button" class="btn btn-accion btn-link align-baseline">
-                                                    <i class="fas fa-search" data-id="{{ $item->id }}"
-                                                        {{-- Guarda el ID del registro para usarlo en JavaScript --}}></i>
-                                                </button>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                @endforeach
-                            </tbody>
                         </table>
                     </div>
                 </div>
@@ -220,32 +132,11 @@
                                     <th>R.U.T</th>
                                     <th>Organización</th>
                                     <th>Decreto</th>
-                                    <th>Nro. Movimiento</th>
                                     <th>Monto</th>
+                                    <th>Estado</th>
                                     <th>Opciones</th>
                                 </tr>
                             </thead>
-                            <tbody>
-                                @foreach ($rechazadas as $item)
-                                    <tr>
-                                        <td class="td-5">{{ $index + 1 }}</td>
-                                        <td class="fecha" data-order="2025-05-29">29/05/2025</td>
-                                        <td>{{ $item->subvencion->rut_formateado }}</td>
-                                        <td>{{ $item->subvencion->nombre_organizacion }}</td>
-                                        <td>{{ $item->subvencion->decreto }}</td>
-                                        <td>346544</td>
-                                        <td class="monto" data-valor="{{ $item->subvencion->monto }}">
-                                            ${{ number_format($item->subvencion->monto, 0, ',', '.') }}</td>
-                                        <td class="td-5">
-                                            <div class="d-flex justify-content-center align-items-center">
-                                                <button type="button" class="btn btn-accion btn-link align-baseline">
-                                                    <i class="fas fa-search" data-id="{{ $item->id }}"></i>
-                                                </button>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                @endforeach
-                            </tbody>
                         </table>
                     </div>
                 </div>
@@ -309,13 +200,8 @@
     </div>
 
 
-
-
-
-
-
     <!-- Modal Formulario -->
-    <div class="modal fade" id="modalForm" tabindex="-1">
+    <!-- <div class="modal fade" id="modalForm" tabindex="-1">
         <div class="modal-dialog modal-xl modal-dialog-centered">
             <div class="modal-content shadow-lg rounded-4 overflow-hidden">
                 <div class="modal-header modal-header-app">
@@ -354,8 +240,8 @@
                 </form>
             </div>
         </div>
-    </div>
-    <!-- /Modal Formulario -->
+    </div> -->
+
 
     <!-- Footer -->
     <div class="row fixed-bottom bg-light" style="border-top: 1px solid #eee">
@@ -383,64 +269,175 @@
 
         // Funcionalidad del buscador y ordenamiento para rendiciones
         document.addEventListener('DOMContentLoaded', function() {
+            
+            // Prueba Data tables - Pestaña Rendiciones
+            new DataTable('#table_revision', {
+                data: @json($revision),
+                order: [],
+                language: idioma ?? {},
+                deferRender: true,
+                responsive: true,
+                columns: [
+                    { data: 'id' },
+                    { 
+                        data: 'subvencion.fecha_asignacion',
+                        render: function(d){
+                            if (!d) return 'S/D';
+                            fecha = new Date(d)
+                            return fecha.toLocaleDateString()
+                        }
+                    },
+                    { 
+                        data: 'subvencion.rut',
+                        render: // Formatear RUT
+                            function formatearRut(rut){
+                                rut = rut.replace(/\./g, '').replace('-', '');
+                                cuerpo = rut.slice(0, -1)
+                                dv = rut.slice(-1)
+
+                                rutConPuntos = ''
+                                i = cuerpo.length
+                                while (i > 3){
+                                    rutConPuntos = '.' + cuerpo.slice(i-3, i) + rutConPuntos
+                                    i -= 3
+                                }
+                                rutConPuntos = cuerpo.slice(0, i) + rutConPuntos
+                                return `${rutConPuntos}-${dv}`
+                                }
+                    },
+                    { 
+                        data: '',
+                        defaultContent: 'S/D'
+                    },
+                    { data: 'subvencion.decreto' },
+                    { 
+                        data: 'subvencion.monto',
+                        render: function(monto){
+                            monto = monto.toString()
+                            montoFormateado = ''
+                            i = monto.length
+                            while(i > 3){
+                                montoFormateado = '.' + monto.slice(i-3, i) + montoFormateado
+                                i -= 3
+                            }
+                            montoFormateado = monto.slice(0, i) + montoFormateado
+                            return montoFormateado
+                        }
+                    },
+                    { data: 'subvencion.destino' },
+                    { data: 'estado_rendicion.nombre' },
+                    {
+                        data: null,
+                        ordeable: false,
+                        searchable: false,
+                        render: function(data, type, row){
+                            id = row.id
+                            return `
+                                <div class="d-flex justify-content-center align-items-center gap-1 flex-wrap">
+                                    <!-- Ver detalles -->
+                                    <button class="btn btn-accion" data-bs-target="#modalVerDetallesRendicion"
+                                        onclick="verDetalleRendicion(${id})"
+                                        data-bs-toggle="modal" title="Ver detalles" type="button">
+                                        <i class="fas fa-search"> </i>
+                                    </button>
+                                    <!-- Editar -->
+                                    <button class="btn btn-success btn-accion" 
+                                        title="Editar" type="button" 
+                                        onclick="abrirModalEditar(${id})">
+                                        <i class="fas fa-file-signature"> </i>
+                                    </button>
+                                    <!-- Eliminar -->
+                                    <button class="btn btn-success btn-accion btn-eliminar-subvencion" 
+                                        title="Eliminar" type="button" data-subvencion-id="${id}">
+                                        <i class="fas fa-times-circle"> </i>
+                                    </button>
+                                </div>
+
+                            `
+                        }
+                    }
+                ]
+            });
+
+            // Prueba Data Tables - Pestaña Pendientes //
+            new DataTable('#table_pendientes', {
+                order: [],
+                language: idioma ?? {},
+                deferRender: true,
+                responsive: true,
+            });
+
+            new DataTable('#table_observadas', {
+                order: [],
+                language: idioma ?? {},
+                deferRender: true,
+                responsive: true,
+            });
+
+            new DataTable('#table_rechazadas', {
+                order: [],
+                language: idioma ?? {},
+                deferRender: true,
+                responsive: true,
+            });
             const buscador = document.getElementById('buscadorRendiciones');
 
             // IDs de todas las tablas de rendiciones
             const tablasIds = ['table_id', 'table_pendientes', 'table_observadas', 'table_rechazadas'];
 
             // Función para filtrar filas en una tabla específica
-            function filtrarFilasEnTabla(tablaId, termino) {
-                const tabla = document.getElementById(tablaId);
-                if (!tabla) return;
+            // function filtrarFilasEnTabla(tablaId, termino) {
+            //     const tabla = document.getElementById(tablaId);
+            //     if (!tabla) return;
 
-                const filas = tabla.querySelectorAll('tbody tr');
-                const terminoLower = termino.toLowerCase();
+            //     const filas = tabla.querySelectorAll('tbody tr');
+            //     const terminoLower = termino.toLowerCase();
 
-                filas.forEach(fila => {
-                    const celdas = fila.querySelectorAll('td');
-                    let coincide = false;
+            //     filas.forEach(fila => {
+            //         const celdas = fila.querySelectorAll('td');
+            //         let coincide = false;
 
-                    // Buscar en todas las celdas excepto la última (opciones)
-                    for (let i = 0; i < celdas.length - 1; i++) {
-                        const texto = celdas[i].textContent.toLowerCase();
-                        if (texto.includes(terminoLower)) {
-                            coincide = true;
-                            break;
-                        }
-                    }
+            //         // Buscar en todas las celdas excepto la última (opciones)
+            //         for (let i = 0; i < celdas.length - 1; i++) {
+            //             const texto = celdas[i].textContent.toLowerCase();
+            //             if (texto.includes(terminoLower)) {
+            //                 coincide = true;
+            //                 break;
+            //             }
+            //         }
 
-                    // Mostrar u ocultar fila
-                    fila.style.display = coincide ? '' : 'none';
-                });
+            //         // Mostrar u ocultar fila
+            //         fila.style.display = coincide ? '' : 'none';
+            //     });
                 
-                // No actualizar numeración después de filtrar - mantener numeración original
-            }
+            //     // No actualizar numeración después de filtrar - mantener numeración original
+            // }
 
             // Función para filtrar todas las tablas
-            function filtrarTodasLasTablas(termino) {
-                tablasIds.forEach(tablaId => {
-                    filtrarFilasEnTabla(tablaId, termino);
-                });
-            }
+            // function filtrarTodasLasTablas(termino) {
+            //     tablasIds.forEach(tablaId => {
+            //         filtrarFilasEnTabla(tablaId, termino);
+            //     });
+            // }
 
-            // Inicializar ordenamiento para todas las tablas
-            tablasIds.forEach(tablaId => {
-                inicializarOrdenamiento(tablaId);
-            });
+            // // Inicializar ordenamiento para todas las tablas
+            // tablasIds.forEach(tablaId => {
+            //     inicializarOrdenamiento(tablaId);
+            // });
 
             // Evento de búsqueda en tiempo real
-            buscador.addEventListener('input', function() {
-                const termino = this.value.trim();
-                filtrarTodasLasTablas(termino);
-            });
+            // buscador.addEventListener('input', function() {
+            //     const termino = this.value.trim();
+            //     filtrarTodasLasTablas(termino);
+            // });
 
-            // Limpiar búsqueda con Escape
-            buscador.addEventListener('keydown', function(e) {
-                if (e.key === 'Escape') {
-                    this.value = '';
-                    filtrarTodasLasTablas('');
-                }
-            });
+            // // Limpiar búsqueda con Escape
+            // buscador.addEventListener('keydown', function(e) {
+            //     if (e.key === 'Escape') {
+            //         this.value = '';
+            //         filtrarTodasLasTablas('');
+            //     }
+            // });
         });
     </script>
 

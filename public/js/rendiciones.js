@@ -1,47 +1,85 @@
-/* Modal único para ver detalles de rendiciones */
-var modalVerDetallesRendicion = document.getElementById("modalVerDetallesRendicion");
-var modalRendicion = modalVerDetallesRendicion ? new bootstrap.Modal(modalVerDetallesRendicion) : null;
+var modalRendicion = new bootstrap.Modal(document.getElementById("modalVerDetallesRendicion"));
 
 /* Función para mostrar detalles de rendición */
-async function mostrarDetalleRendicion(id, subvencionId = null) {
-    // Llenar información básica de la rendición
-    document.getElementById('informacion_rendicion').innerHTML = 
-        `<i class="bi bi-clipboard-check me-1"></i>Rendición #${id}`;
-    
-    // Limpiar tablas
-    document.getElementById('tbody_acciones_rendicion').innerHTML = '';
-    document.getElementById('tbody_notificaciones_rendicion').innerHTML = '';
-    
-    try {
-        // Obtener datos de la rendición
-        const response = await fetch(`/rendiciones/detalleRendicion?id=${id}`, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-            }
-        });
+function verDetalleRendicion(id) {
+        // Obtener token CSRF
+        let csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
         
-        if (!response.ok) {
-            throw new Error('Error al obtener los detalles de la rendición');
+        // Si no se encuentra en meta, buscar en inputs
+        if (!csrfToken) {
+            csrfToken = document.querySelector('input[name="_token"]')?.value;
         }
         
-        const data = await response.json();
+        // Si aún no se encuentra, usar jQuery si está disponible
+        if (!csrfToken && typeof $ !== 'undefined') {
+            csrfToken = $('meta[name="csrf-token"]').attr('content');
+        }
         
-        // Llenar tabla de acciones
-        llenarTablaAcciones(data.acciones);
-        
-        // Llenar tabla de notificaciones
-        llenarTablaNotificaciones(data.notificaciones);
-        
-    } catch (error) {
-        console.error('Error:', error);
+        if (!csrfToken) {
+            console.error('No se pudo obtener el token CSRF');
+            Swal.fire({
+                title: "Error",
+                text: "Error de configuración: No se pudo obtener el token de seguridad",
+                icon: "error",
+                confirmButtonText: "Aceptar"
+            });
+            return;
+        } 
+    // Obtener datos de la subvención
+    fetch(`${window.apiBaseUrl}rendiciones/obtener`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-Requested-With': 'XMLHttpRequest',
+            'Accept': 'application/json',
+            'X-CSRF-TOKEN': csrfToken
+        },
+        body: JSON.stringify({ id: id })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            console.log(data)
+            // rendición con data subvención y organización
+            document.getElementById('rendicion_id').value = data.rendicion.id;
+            document.getElementById('detalle_fecha_decreto').textContent = data.rendicion.subvencion.fecha_decreto;
+            document.getElementById('detalle_decreto').textContent = data.rendicion.subvencion.decreto;
+            document.getElementById('detalle_monto').textContent = data.rendicion.subvencion.monto;
+
+            document.getElementById('detalle_fecha_asignacion').textContent = data.rendicion.subvencion.fecha_asignacion;
+            document.getElementById('detalle_destino').textContent = data.rendicion.subvencion.destino;
+            document.getElementById('detalle_estado_actual').textContent = data.rendicion.estado_rendicion.nombre;
+
+            // select de estados rendición
+            const estadosSelect = document.getElementById('estados_rendicion');
+            estadosSelect.innerHTML = '<option value="">Seleccione...</option>';
+            console.log(data)
+            data.estados_rendicion.forEach(estado => {
+                console.log(estado)
+                const option = document.createElement('option');
+                option.value = estado.id;
+                option.textContent = estado.nombre;
+                estadosSelect.appendChild(option);
+            });
+
+
+        } else {
+            Swal.fire({
+                title: "Error",
+                text: data.message || "Error al cargar los datos de la rendición",
+                icon: "error",
+                confirmButtonText: "Aceptar"
+            });
+        }
+    })
+    .catch (error =>
+        {console.error('Error:', error);
         // Mostrar mensaje de error en las tablas
         document.getElementById('tbody_acciones_rendicion').innerHTML = 
             '<tr><td colspan="5" class="text-center text-muted">Error al cargar las acciones</td></tr>';
         document.getElementById('tbody_notificaciones_rendicion').innerHTML = 
             '<tr><td colspan="5" class="text-center text-muted">Error al cargar las notificaciones</td></tr>';
-    }
+    })
     
     // Mostrar el modal
     if (modalRendicion) {
@@ -49,6 +87,81 @@ async function mostrarDetalleRendicion(id, subvencionId = null) {
     }
 }
 
+document.getElementById('btnCambiarEstado').addEventListener('click', async function(event) {
+    event.preventDefault();
+
+    // Obtener token CSRF
+    let csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+    
+    if (!csrfToken) {
+        csrfToken = document.querySelector('input[name="_token"]')?.value;
+    }
+    
+    if (!csrfToken && typeof $ !== 'undefined') {
+        csrfToken = $('meta[name="csrf-token"]').attr('content');
+    }
+    
+    if (!csrfToken) {
+        console.error('No se pudo obtener el token CSRF');
+        Swal.fire({
+            title: "Error",
+            text: "Error de configuración: No se pudo obtener el token de seguridad",
+            icon: "error",
+            confirmButtonText: "Aceptar"
+        });
+        return;
+    }
+
+    try{
+        data_estado = {
+            nuevo_estado: document.getElementById('estados_rendicion').value,
+            comentario: document.getElementById('comentario_detalle').value,
+            id: document.getElementById('rendicion_id').value
+        }
+
+        const response = await fetch(`${window.apiBaseUrl}rendiciones/cambiar-estado`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest',
+                'Accept': 'application/json',
+                'X-CSRF-TOKEN': csrfToken
+            },
+            body: JSON.stringify(data_estado)
+            });
+
+        const resultCambioEstado = await response.json();
+        
+        if (!response.ok || !resultCambioEstado.success) {
+            Swal.fire({
+                title: "Error",
+                text: resultRendicion.message || "Error al cambiar el estado de la rendición",
+                icon: "error",
+                confirmButtonText: "Aceptar"
+            });
+        } else {
+            Swal.fire({
+                title: "Éxito",
+                text: "Cambio de estado realizado exitosamente",
+                icon: "success",
+                confirmButtonText: "Aceptar"
+            }).then(() => {
+                // Cerrar modal y recargar página
+                //const modalRendir = bootstrap.Modal.getInstance(document.getElementById('modalRendirsubvencion'));
+                //modalRendir.hide();
+                window.location.reload();
+            });
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        Swal.fire({
+            title: "Error",
+            text: "Error inesperado al enviar los datos",
+            icon: "error",
+            confirmButtonText: "Aceptar"
+        });
+    }
+})
 /* Función para llenar la tabla de acciones */
 function llenarTablaAcciones(acciones) {
     const tbody = document.getElementById('tbody_acciones_rendicion');
@@ -111,38 +224,38 @@ function llenarTablaNotificaciones(notificaciones) {
     tbody.innerHTML = html;
 }
 
-/* Detalle de rendición - Tabla Rendidas */
-document.querySelector("#table_id")?.addEventListener("click", async function (e) {
-    if (e.target && e.target.matches("i.fa-search")) {
-        let id = e.target.getAttribute("data-id");
-        let subvencionId = e.target.getAttribute("data-subvencion");
-        mostrarDetalleRendicion(id, subvencionId);
-    }
-});
+// /* Detalle de rendición - Tabla Rendidas */
+// document.querySelector("#table_id")?.addEventListener("click", async function (e) {
+//     if (e.target && e.target.matches("i.fa-search")) {
+//         let id = e.target.getAttribute("data-id");
+//         let subvencionId = e.target.getAttribute("data-subvencion");
+//         mostrarDetalleRendicion(id, subvencionId);
+//     }
+// });
 
-/* Detalle de rendición - Tabla Pendientes */
-document.querySelector("#table_pendientes")?.addEventListener("click", async function (e) {
-    if (e.target && e.target.matches("i.fa-search")) {
-        let id = e.target.getAttribute("data-id");
-        mostrarDetalleRendicion(id);
-    }
-});
+// /* Detalle de rendición - Tabla Pendientes */
+// document.querySelector("#table_pendientes")?.addEventListener("click", async function (e) {
+//     if (e.target && e.target.matches("i.fa-search")) {
+//         let id = e.target.getAttribute("data-id");
+//         mostrarDetalleRendicion(id);
+//     }
+// });
 
-/* Detalle de rendición - Tabla Observadas */
-document.querySelector("#table_observadas")?.addEventListener("click", async function (e) {
-    if (e.target && e.target.matches("i.fa-search")) {
-        let id = e.target.getAttribute("data-id");
-        mostrarDetalleRendicion(id);
-    }
-});
+// /* Detalle de rendición - Tabla Observadas */
+// document.querySelector("#table_observadas")?.addEventListener("click", async function (e) {
+//     if (e.target && e.target.matches("i.fa-search")) {
+//         let id = e.target.getAttribute("data-id");
+//         mostrarDetalleRendicion(id);
+//     }
+// });
 
-/* Detalle de rendición - Tabla Rechazadas */
-document.querySelector("#table_rechazadas")?.addEventListener("click", async function (e) {
-    if (e.target && e.target.matches("i.fa-search")) {
-        let id = e.target.getAttribute("data-id");
-        mostrarDetalleRendicion(id);
-    }
-});
+// /* Detalle de rendición - Tabla Rechazadas */
+// document.querySelector("#table_rechazadas")?.addEventListener("click", async function (e) {
+//     if (e.target && e.target.matches("i.fa-search")) {
+//         let id = e.target.getAttribute("data-id");
+//         mostrarDetalleRendicion(id);
+//     }
+// });
 
 /* Event listener para botón eliminar rendición */
 document.addEventListener('click', function(e) {
@@ -266,32 +379,3 @@ function eliminarRendicionTemporalmente(id) {
     });
 }
 
-// Prueba Data tables - Pestaña Rendiciones
-new DataTable('#table_rendiciones', {
-    order: [],
-    language: idioma ?? {},
-    deferRender: true,
-    responsive: true,
-});
-
-// Prueba Data Tables - Pestaña Pendientes //
-new DataTable('#table_pendientes', {
-    order: [],
-    language: idioma ?? {},
-    deferRender: true,
-    responsive: true,
-});
-
-new DataTable('#table_observadas', {
-    order: [],
-    language: idioma ?? {},
-    deferRender: true,
-    responsive: true,
-});
-
-new DataTable('#table_rechazadas', {
-    order: [],
-    language: idioma ?? {},
-    deferRender: true,
-    responsive: true,
-});

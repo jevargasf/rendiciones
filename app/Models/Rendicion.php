@@ -47,9 +47,9 @@ class Rendicion extends Model
     /**
      * Relación con notificaciones a través de acciones
      */
-    public function notificaciones()
-    {
-        return $this->hasManyThrough(Notificacion::class, Accion::class, 'rendicion_id', 'accion_id');
-    }
+    // public function notificaciones()
+    // {
+    //     return $this->hasManyThrough(Notificacion::class, Accion::class, 'rendicion_id', 'accion_id');
+    // }
 }
 

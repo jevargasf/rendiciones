@@ -24,96 +24,8 @@
                 </div>
             </div>
 
-            <!-- Tabla con datos -->
-            <div class="table-responsive">
-                <table class="table table-striped mx-auto" id="table_id">
-                    <thead>
-                        <tr>
-                            <th class="text-center fw-normal">
-                                <i class="fas fa-sort me-1"> </i>
-                                #
-                            </th>
-                            <th class="fw-normal">
-                                <i class="fas fa-sort me-1"> </i>
-                                Fecha asignación
-                            </th>
-                            <th class="fw-normal">
-                                <i class="fas fa-sort me-1"> </i>
-                                R.U.T
-                            </th>
-                            <th class="fw-normal">
-                                <i class="fas fa-sort me-1"> </i>
-                                Organización
-                            </th>
-                            <th class="fw-normal">
-                                <i class="fas fa-sort me-1"> </i>
-                                Decreto
-                            </th>
-                            <th class="fw-normal">
-                                <i class="fas fa-sort me-1"> </i>
-                                Monto
-                            </th>
-                            <th class="fw-normal">
-                                Destino
-                            </th>
-                            <th class="text-center fw-normal">
-                                Opciones
-                            </th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @forelse ($subvenciones as $index => $item)
-                            <tr>
-                                <td class="text-center">{{ $index + 1 }}</td>
-                                <td>{{ $item->fecha_asignacion ? \Carbon\Carbon::parse($item->fecha_asignacion)->format('d/m/Y') : '-' }}</td>
-                                <td>{{ $item->rut_formateado }}</td>
-                                <td>{{ $item->data_organizacion['nombre_organizacion'] ?? 'S/D' }}</td>
-                                <td>{{ $item->decreto }}</td>
-                                <td>${{ number_format($item->monto, 0, ',', '.') }}</td>
-                                <td>{{ $item->destino }}</td>
-                                <td class="text-center" style="white-space: nowrap">
-                                    <div class="d-flex justify-content-center align-items-center gap-1 flex-wrap">
-                                        <!-- Ver detalles -->
-                                        <button class="btn btn-accion" data-bs-target="#modalVerDetalles"
-                                            onclick="verDetalleSubvencion({{ $item->id }})" data-bs-toggle="modal"
-                                            title="Ver detalles" type="button">
-                                            <i class="fas fa-search"> </i>
-                                        </button>
-                                        <!-- Editar -->
-                                        <button class="btn btn-success btn-accion" title="Editar" type="button"
-                                            onclick="abrirModalEditar({{ $item->id }})">
-                                            <i class="fas fa-file-signature"> </i>
-                                        </button>
-                                        <!-- Rendir subvención -->
-                                        <button class="btn btn-success btn-accion"
-                                            onclick="abrirModalRendir({{ $item->id }})" title="Rendir subvención"
-                                            type="button">
-                                            <i class="fas fa-clipboard-check icon-static-blue"></i>
-                                        </button>
-                                        <!-- Eliminar -->
-                                        <button class="btn btn-success btn-accion btn-eliminar-subvencion"
-                                            title="Eliminar" type="button" data-subvencion-id="{{ $item->id }}">
-                                            <i class="fas fa-times-circle"> </i>
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
-                        @empty
-                            <tr>
-                                <td colspan="8" class="text-center py-4">
-                                    <div class="text-muted">
-                                        <i class="fas fa-inbox fa-2x mb-2"></i>
-                                        <p class="mb-0">No hay subvenciones</p>
-                                    </div>
-                                </td>
-                            </tr>
-                        @endforelse
-                    </tbody>
-                </table>
-            </div>
-
-
             <!--Tabla Datos Subvenciones con data table -->
+
             <div class="table-responsive">
                 <table id="table_subvenciones" class="table table-striped align-middle w-100">
                     <thead>
@@ -128,56 +40,6 @@
                             <th>Opciones</th>
                         </tr>
                     </thead>
-                    <tbody>
-                        @forelse ($subvenciones as $item)
-                            <tr>
-                                <td class="text-center">{{ $item->id }}</td>
-                                <td class="text-nowrap">
-                                    {{ $item->fecha_asignacion ? \Carbon\Carbon::parse($item->fecha_asignacion)->format('d/m/Y') : '-' }}
-                                </td>
-                                <td class="text-nowrap">{{ $item->rut }}</td>
-                                <td class="text-break">{{ $item->organizacion }}</td>
-                                <td>{{ $item->decreto }}</td>
-                                <td>${{ number_format($item->monto, 0, ',', '.') }}</td>
-                                <td>{{ $item->destino }}</td>
-                                <td class="text-center" style="white-space: nowrap">
-                                    <div class="d-flex justify-content-center align-items-center gap-1 flex-wrap">
-                                        <!-- Ver detalles -->
-                                        <button class="btn btn-accion" data-bs-target="#modalVerDetalles"
-                                            onclick="verDetalleSubvencion({{ $item->id }})" data-bs-toggle="modal"
-                                            title="Ver detalles" type="button">
-                                            <i class="fas fa-search"> </i>
-                                        </button>
-                                        <!-- Editar -->
-                                        <button class="btn btn-success btn-accion" title="Editar" type="button"
-                                            onclick="abrirModalEditar({{ $item->id }})">
-                                            <i class="fas fa-file-signature"> </i>
-                                        </button>
-                                        <!-- Rendir subvención -->
-                                        <button class="btn btn-success btn-accion"
-                                            onclick="abrirModalRendir({{ $item->id }})" title="Rendir subvención"
-                                            type="button">
-                                            <i class="fas fa-clipboard-check icon-static-blue"></i>
-                                        </button>
-                                        <!-- Eliminar -->
-                                        <button class="btn btn-success btn-accion btn-eliminar-subvencion"
-                                            title="Eliminar" type="button" data-subvencion-id="{{ $item->id }}">
-                                            <i class="fas fa-times-circle"> </i>
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
-                        @empty
-                            <tr>
-                                <td colspan="8" class="text-center py-4">
-                                    <div class="text-muted">
-                                        <i class="fas fa-inbox fa-2x mb-2"></i>
-                                        <p class="mb-0">No hay subvenciones</p>
-                                    </div>
-                                </td>
-                            </tr>
-                        @endforelse
-                    </tbody>
                 </table>
             </div>
 
@@ -208,132 +70,230 @@
                 }
             }
         });
+                // Data tables
+
+    $(document).ready(function(){
+        subvenciones = @json($subvenciones);
+        $('#table_subvenciones').DataTable({
+        data: subvenciones,
+        order: [],
+        language: idioma ?? {},
+        deferRender: true,
+        responsive: true,
+        columns: [
+            { data: 'id' },
+            { 
+                data: 'fecha_asignacion',
+                render: function(d){
+                    if (!d) return 'S/D';
+                    fecha = new Date(d)
+                    return fecha.toLocaleDateString()
+                }
+            },
+            { 
+                data: 'rut',
+                render: // Formatear RUT
+                    function formatearRut(rut){
+                        rut = rut.replace(/\./g, '').replace('-', '');
+                        cuerpo = rut.slice(0, -1)
+                        dv = rut.slice(-1)
+
+                        rutConPuntos = ''
+                        i = cuerpo.length
+                        while (i > 3){
+                            rutConPuntos = '.' + cuerpo.slice(i-3, i) + rutConPuntos
+                            i -= 3
+                        }
+                        rutConPuntos = cuerpo.slice(0, i) + rutConPuntos
+                        return `${rutConPuntos}-${dv}`
+                        }
+            },
+            { 
+                data: 'data_organizacion.nombre_organizacion',
+                defaultContent: 'S/D'
+            },
+            { data: 'decreto' },
+            { 
+                data: 'monto',
+                render: function(monto){
+                    monto = monto.toString()
+                    montoFormateado = ''
+                    i = monto.length
+                    while(i > 3){
+                        montoFormateado = '.' + monto.slice(i-3, i) + montoFormateado
+                        i -= 3
+                    }
+                    montoFormateado = monto.slice(0, i) + montoFormateado
+                    return montoFormateado
+                }
+            },
+            { data: 'destino' },
+            {
+                data: null,
+                ordeable: false,
+                searchable: false,
+                render: function(data, type, row){
+                    id = row.id
+                    return `
+                        <div class="d-flex justify-content-center align-items-center gap-1 flex-wrap">
+                            <!-- Ver detalles -->
+                            <button class="btn btn-accion" data-bs-target="#modalVerDetalles"
+                                onclick="verDetalleSubvencion(${id})"
+                                data-bs-toggle="modal" title="Ver detalles" type="button">
+                                <i class="fas fa-search"> </i>
+                            </button>
+                            <!-- Editar -->
+                            <button class="btn btn-success btn-accion" 
+                                title="Editar" type="button" 
+                                onclick="abrirModalEditar(${id})">
+                                <i class="fas fa-file-signature"> </i>
+                            </button>
+                            <!-- Rendir subvención -->
+                            <button class="btn btn-success btn-accion"
+                                onclick="abrirModalRendir(${id})"
+                                title="Rendir subvención" type="button">
+                                <i class="fas fa-clipboard-check icon-static-blue"></i>
+                            </button>
+                            <!-- Eliminar -->
+                            <button class="btn btn-success btn-accion btn-eliminar-subvencion" 
+                                title="Eliminar" type="button" data-subvencion-id="${id}">
+                                <i class="fas fa-times-circle"> </i>
+                            </button>
+                        </div>
+
+                    `
+                }
+            }
+        ]
+    });
+
+})                
     </script>
 
     <script src="{{ asset('js/subvenciones.js') }}" defer></script>
 
     <script>
         // Funcionalidad del buscador y ordenamiento
-        document.addEventListener('DOMContentLoaded', function() {
-            const buscador = document.getElementById('buscadorSubvenciones');
-            const tabla = document.getElementById('table_id');
-            const filas = tabla.querySelectorAll('tbody tr');
-            const headers = tabla.querySelectorAll('thead th');
+        // document.addEventListener('DOMContentLoaded', function() {
+        //     const buscador = document.getElementById('buscadorSubvenciones');
+        //     const tabla = document.getElementById('table_id');
+        //     const filas = tabla.querySelectorAll('tbody tr');
+        //     const headers = tabla.querySelectorAll('thead th');
             
-            // Variables para el ordenamiento
-            let ordenActual = {};
-            let filasOriginales = Array.from(filas);
+        //     // Variables para el ordenamiento
+        //     let ordenActual = {};
+        //     let filasOriginales = Array.from(filas);
 
-            // Función para filtrar filas
-            function filtrarFilas(termino) {
-                const terminoLower = termino.toLowerCase();
+        //     // Función para filtrar filas
+        //     function filtrarFilas(termino) {
+        //         const terminoLower = termino.toLowerCase();
 
-                filas.forEach(fila => {
-                    const celdas = fila.querySelectorAll('td');
-                    let coincide = false;
+        //         filas.forEach(fila => {
+        //             const celdas = fila.querySelectorAll('td');
+        //             let coincide = false;
 
-                    // Buscar en todas las celdas excepto la última (opciones)
-                    for (let i = 0; i < celdas.length - 1; i++) {
-                        const texto = celdas[i].textContent.toLowerCase();
-                        if (texto.includes(terminoLower)) {
-                            coincide = true;
-                            break;
-                        }
-                    }
+        //             // Buscar en todas las celdas excepto la última (opciones)
+        //             for (let i = 0; i < celdas.length - 1; i++) {
+        //                 const texto = celdas[i].textContent.toLowerCase();
+        //                 if (texto.includes(terminoLower)) {
+        //                     coincide = true;
+        //                     break;
+        //                 }
+        //             }
 
-                    // Mostrar u ocultar fila
-                    fila.style.display = coincide ? '' : 'none';
-                });
-            }
+        //             // Mostrar u ocultar fila
+        //             fila.style.display = coincide ? '' : 'none';
+        //         });
+        //     }
 
             // Función para ordenar la tabla
-            function ordenarTabla(columna, direccion) {
-                const tbody = tabla.querySelector('tbody');
-                const filasArray = Array.from(filas).filter(fila => fila.style.display !== 'none');
+        //     function ordenarTabla(columna, direccion) {
+        //         const tbody = tabla.querySelector('tbody');
+        //         const filasArray = Array.from(filas).filter(fila => fila.style.display !== 'none');
                 
-                filasArray.sort((a, b) => {
-                    const valorA = a.cells[columna].textContent.trim();
-                    const valorB = b.cells[columna].textContent.trim();
+        //         filasArray.sort((a, b) => {
+        //             const valorA = a.cells[columna].textContent.trim();
+        //             const valorB = b.cells[columna].textContent.trim();
                     
-                    // Manejar diferentes tipos de datos
-                    let comparacion = 0;
+        //             // Manejar diferentes tipos de datos
+        //             let comparacion = 0;
                     
-                    if (columna === 0) { // Columna # (números)
-                        comparacion = parseInt(valorA) - parseInt(valorB);
-                    } else if (columna === 1) { // Fecha
-                        const fechaA = new Date(valorA.split('/').reverse().join('-'));
-                        const fechaB = new Date(valorB.split('/').reverse().join('-'));
-                        comparacion = fechaA - fechaB;
-                    } else if (columna === 5) { // Monto
-                        const montoA = parseFloat(valorA.replace(/[^0-9]/g, ''));
-                        const montoB = parseFloat(valorB.replace(/[^0-9]/g, ''));
-                        comparacion = montoA - montoB;
-                    } else { // Texto
-                        comparacion = valorA.localeCompare(valorB, 'es', { numeric: true });
-                    }
+        //             if (columna === 0) { // Columna # (números)
+        //                 comparacion = parseInt(valorA) - parseInt(valorB);
+        //             } else if (columna === 1) { // Fecha
+        //                 const fechaA = new Date(valorA.split('/').reverse().join('-'));
+        //                 const fechaB = new Date(valorB.split('/').reverse().join('-'));
+        //                 comparacion = fechaA - fechaB;
+        //             } else if (columna === 5) { // Monto
+        //                 const montoA = parseFloat(valorA.replace(/[^0-9]/g, ''));
+        //                 const montoB = parseFloat(valorB.replace(/[^0-9]/g, ''));
+        //                 comparacion = montoA - montoB;
+        //             } else { // Texto
+        //                 comparacion = valorA.localeCompare(valorB, 'es', { numeric: true });
+        //             }
                     
-                    return direccion === 'asc' ? comparacion : -comparacion;
-                });
+        //             return direccion === 'asc' ? comparacion : -comparacion;
+        //         });
                 
-                // Reorganizar las filas en el DOM
-                filasArray.forEach(fila => tbody.appendChild(fila));
+        //         // Reorganizar las filas en el DOM
+        //         filasArray.forEach(fila => tbody.appendChild(fila));
                 
-                // Actualizar numeración secuencial
-                actualizarNumeracion();
-            }
+        //         // Actualizar numeración secuencial
+        //         actualizarNumeracion();
+        //     }
 
-            // Función para actualizar la numeración secuencial
-            function actualizarNumeracion() {
-                const filasVisibles = Array.from(filas).filter(fila => fila.style.display !== 'none');
-                filasVisibles.forEach((fila, index) => {
-                    fila.cells[0].textContent = index + 1;
-                });
-            }
+        //     // Función para actualizar la numeración secuencial
+        //     function actualizarNumeracion() {
+        //         const filasVisibles = Array.from(filas).filter(fila => fila.style.display !== 'none');
+        //         filasVisibles.forEach((fila, index) => {
+        //             fila.cells[0].textContent = index + 1;
+        //         });
+        //     }
 
-            // Función para actualizar iconos de ordenamiento
-            function actualizarIconos(columna, direccion) {
-                headers.forEach((header, index) => {
-                    const icono = header.querySelector('i.fas');
-                    if (icono) {
-                        if (index === columna) {
-                            icono.className = direccion === 'asc' ? 'fas fa-sort-up me-1' : 'fas fa-sort-down me-1';
-                        } else {
-                            icono.className = 'fas fa-sort me-1';
-                        }
-                    }
-                });
-            }
+        //     // Función para actualizar iconos de ordenamiento
+        //     function actualizarIconos(columna, direccion) {
+        //         headers.forEach((header, index) => {
+        //             const icono = header.querySelector('i.fas');
+        //             if (icono) {
+        //                 if (index === columna) {
+        //                     icono.className = direccion === 'asc' ? 'fas fa-sort-up me-1' : 'fas fa-sort-down me-1';
+        //                 } else {
+        //                     icono.className = 'fas fa-sort me-1';
+        //                 }
+        //             }
+        //         });
+        //     }
 
-            // Agregar event listeners a los headers (excepto Destino y Opciones)
-            headers.forEach((header, index) => {
-                // No agregar ordenamiento a Destino (índice 6) y Opciones (índice 7)
-                if (index < 6) {
-                    header.style.cursor = 'pointer';
-                    header.addEventListener('click', function() {
-                        const direccion = ordenActual[index] === 'asc' ? 'desc' : 'asc';
-                        ordenActual = { [index]: direccion };
-                        ordenarTabla(index, direccion);
-                        actualizarIconos(index, direccion);
-                    });
-                }
-            });
+        //     // Agregar event listeners a los headers (excepto Destino y Opciones)
+        //     headers.forEach((header, index) => {
+        //         // No agregar ordenamiento a Destino (índice 6) y Opciones (índice 7)
+        //         if (index < 6) {
+        //             header.style.cursor = 'pointer';
+        //             header.addEventListener('click', function() {
+        //                 const direccion = ordenActual[index] === 'asc' ? 'desc' : 'asc';
+        //                 ordenActual = { [index]: direccion };
+        //                 ordenarTabla(index, direccion);
+        //                 actualizarIconos(index, direccion);
+        //             });
+        //         }
+        //     });
 
-            // Evento de búsqueda en tiempo real
-            buscador.addEventListener('input', function() {
-                const termino = this.value.trim();
-                filtrarFilas(termino);
-                actualizarNumeracion();
-            });
+        //     // Evento de búsqueda en tiempo real
+        //     buscador.addEventListener('input', function() {
+        //         const termino = this.value.trim();
+        //         filtrarFilas(termino);
+        //         actualizarNumeracion();
+        //     });
 
-            // Limpiar búsqueda con Escape
-            buscador.addEventListener('keydown', function(e) {
-                if (e.key === 'Escape') {
-                    this.value = '';
-                    filtrarFilas('');
-                    actualizarNumeracion();
-                }
-            });
-        });
+        //     // Limpiar búsqueda con Escape
+        //     buscador.addEventListener('keydown', function(e) {
+        //         if (e.key === 'Escape') {
+        //             this.value = '';
+        //             filtrarFilas('');
+        //             actualizarNumeracion();
+        //         }
+        //     });
+        // });
 
         // Funcionalidad para eliminar subvenciones
         document.addEventListener('click', function(e) {

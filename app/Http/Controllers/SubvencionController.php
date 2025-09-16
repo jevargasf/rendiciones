@@ -34,7 +34,7 @@ class SubvencionController extends BaseController
             if ($rut_json == $subvencion_objeto['rut']){
                 $subvencion_objeto->data_organizacion = $json_organizacion[0];
             } else {
-                $subvencion_objeto->data_organizacion = ['error' => 'S/D'];
+                $subvencion_objeto->data_organizacion = ['nombre_organizacion' => 'S/D'];
             }
         return $subvencion_objeto;
     }
@@ -42,12 +42,20 @@ class SubvencionController extends BaseController
     public function index()
     {
         //dd(Session::all());
-        $subvenciones = Subvencion::where('estado', 1) // Excluir subvenciones eliminadas (estado = 9)
-            ->get();
+        // Subvenciones no eliminadas y no iniciadas (estado rendición = 1)
+        
+        $subvenciones = Subvencion::where('estado', 1)
+        ->whereHas('rendiciones', function ($query) {
+            $query->where('estado_rendicion_id', 1);
+        })
+        ->get();
+
         if($subvenciones->isEmpty()){
             return view(
                 'subvenciones.index',
-                compact('subvenciones')
+                [
+                    'subvenciones' => $subvenciones
+                ]
             );  
         }else{
             // Realiza consulta al json de datos para cada subvención
@@ -55,10 +63,11 @@ class SubvencionController extends BaseController
                 $subvencion = $this->conseguirDetalleOrganizacion($subvencion, '/resources/data/endpoint.json');
 
             }
-            //dd($subvenciones);
             return view(
                 'subvenciones.index',
-                compact('subvenciones')
+                                [
+                    'subvenciones' => $subvenciones
+                ]
             );  
         }
     }
@@ -181,7 +190,8 @@ class SubvencionController extends BaseController
                     ]);
 
                     // Crear acción automática de subvención creada 
-                    $km_data = session('usuario');                   
+                    $km_data = session('usuario');   
+     
                     if ($km_data) {
                         $nombre_completo = trim($km_data['nombres'] ?? '') . ' ' . 
                                                ($km_data['apellido_paterno'] ?? '') . ' ' . 
@@ -195,9 +205,14 @@ class SubvencionController extends BaseController
                             'rendicion_id' => $rendicion->id,
                             'estado' => 1
                         ]);
+                        $subvencionesCreadas++;
+                    } else{
+                        return response()->json([
+                            'success' => false,
+                            'message' => 'Debe iniciar sesión para realizar esta acción'
+                        ]); 
                     }
 
-                    $subvencionesCreadas++;
 
                 } catch (Exception $e) {
                     $errores[] = "Fila $row: Error al procesar - " . $e->getMessage();
@@ -345,12 +360,7 @@ class SubvencionController extends BaseController
                 ['subvenciones.estado', '=', 1], 
                 ['subvenciones.id', '=', $request->id]
                 ])
-            ->get();       
-
-            // foreach($subvencion[0]->rendiciones[0]->acciones as $accion){
-            //     $fecha_accion = \Carbon\Carbon::parse($accion->fecha)->format('d/m/Y');
-            //     $accion->fecha = $accion->fecha->format('d/m/Y');
-            // }
+            ->get();
 
             // Agregar data organización
             $subvencion = $this->conseguirDetalleOrganizacion($subvencion[0], '/resources/data/endpoint.json');
@@ -373,7 +383,7 @@ class SubvencionController extends BaseController
                 foreach($consulta_anteriores as $anterior){
                     $fecha_anterior_formateada = \Carbon\Carbon::parse($anterior->fecha)->format('d/m/Y');
 
-                    array_push($anteriores, [
+                    array_push($historial, [
                         'id'=>$anterior->id,
                         'decreto'=>$anterior->decreto,
                         'monto'=>$anterior->monto,
@@ -511,29 +521,36 @@ class SubvencionController extends BaseController
     public function obtenerDatosRendir(Request $request)
     {
         try {
+            //dd($request->all());
             $request->validate([
                 'id' => 'required|integer|exists:subvenciones,id'
             ]);
 
-            $subvencion = Subvencion::findOrFail($request->id);
+            // aquí por qué no funciona con el where?
+            $subvencion = Subvencion::with(['rendiciones' => function ($query) {
+                        $query->where([
+                            ['estado', '=', 1], 
+                            ['estado_rendicion_id', '=', 1]
+                        ]);
+                    }]
+            )->where([
+                ['id', '=', $request->id],
+                ['estado', '=', 1],
+                //['rendiciones.estado_rendicion_id', '=', 1],
+                //['rendiciones.estado', '=', 1]
+            ])->get();
+            
+            // aquí si la rendición tiene estado diferente de 1, entonces no dejar que se vuelva a rendir
+            // si la rendición no existe, entonces algo falló, pero habría que crear una
+
+            $subvencion = $this->conseguirDetalleOrganizacion($subvencion[0], '/resources/data/endpoint.json');
+
             $cargos = Cargo::where('estado', 1)->get();
-            $personas = Persona::where('estado', 1)->get();
             
             return response()->json([
                 'success' => true,
-                'data' => [
-                    'subvencion' => [
-                        'id' => $subvencion->id,
-                        'decreto' => $subvencion->decreto,
-                        'monto' => $subvencion->monto,
-                        'destino' => $subvencion->destino,
-                        'rut' => $subvencion->rut,
-                        'organizacion' => $subvencion->nombre_organizacion,
-                        'fecha_asignacion' => $subvencion->fecha_asignacion
-                    ],
-                    'cargos' => $cargos,
-                    'personas' => $personas
-                ]
+                'subvencion' => $subvencion,
+                'cargos' => $cargos
             ]);
 
         } catch (Exception $e) {
@@ -544,83 +561,5 @@ class SubvencionController extends BaseController
         }
     }
 
-    /**
-     * Guardar rendición de subvención
-     */
-    public function guardarRendicion(Request $request)
-    {
-        try {
-            $request->validate([
-                'subvencion_id' => 'required|integer|exists:subvenciones,id',
-                'persona_id' => 'required|integer|exists:personas,id',
-                'persona_cargo_id' => 'required|integer|exists:cargos,id',
-                'comentario' => 'required|string|max:1000'
-            ]);
 
-            // Buscar la persona
-            $persona = Persona::findOrFail($request->persona_id);
-
-            // Buscar la rendición existente o crear una nueva
-            $subvencion = Subvencion::findOrFail($request->subvencion_id);
-            $rendicion = $subvencion->rendiciones()->where('estado', 1)->first();
-            
-            if (!$rendicion) {
-                $rendicion = Rendicion::create([
-                    'subvencion_id' => $request->subvencion_id,
-                    'estado_rendicion_id' => 2, // Estado "En Revisión" (ID 2)
-                    'estado' => 1
-                ]);
-            } else {
-                // Actualizar estado de rendición existente a "En Revisión"
-                $rendicion->update([
-                    'estado_rendicion_id' => 2 // Estado "En Revisión" (ID 2)
-                ]);
-            }
-            
-            // Cambiar el estado de la subvención a 2 (rendida)
-            $subvencion->update([
-                'estado' => 2
-            ]);
-
-            // Obtener datos del usuario autenticado desde la sesión
-            $usuarioAutenticado = session('usuario');
-            $nombreCompletoUsuario = trim(($usuarioAutenticado['nombres'] ?? '') . ' ' . 
-                                   ($usuarioAutenticado['apellido_paterno'] ?? '') . ' ' . 
-                                   ($usuarioAutenticado['apellido_materno'] ?? ''));
-            
-            // Crear acción de rendición usando datos del usuario autenticado
-            $accion = Accion::create([
-                'fecha' => now(),
-                'comentario' => $request->comentario,
-                'km_rut' => $usuarioAutenticado['run'] ?? '',
-                'km_nombre' => $nombreCompletoUsuario,
-                'rendicion_id' => $rendicion->id,
-                'persona_id' => $persona->id,
-                'cargo_id' => $request->persona_cargo_id,
-                'estado' => 1
-            ]);
-            
-            // Crear notificación para la acción de rendición
-            // Notificacion::create([
-            //     'fecha_envio' => now(),
-            //     'fecha_lectura' => null,
-            //     'estado_notificacion' => false, // No leída
-            //     'accion_id' => $accion->id,
-            //     'estado' => 1
-            // ]);
-
-            // No se actualiza el destino de la subvención ya que es información original
-
-            return response()->json([
-                'success' => true,
-                'message' => 'Rendición guardada correctamente'
-            ]);
-
-        } catch (Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Error al guardar la rendición: ' . $e->getMessage()
-            ]);
-        }
-    }
 }

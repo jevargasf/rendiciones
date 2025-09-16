@@ -37,7 +37,7 @@ Route::prefix('subvenciones')->group(function () {
     Route::post('eliminar', [SubvencionController::class, 'eliminar'])->name('subvenciones.eliminar');
 
     Route::post('obtener-datos-rendir', [SubvencionController::class, 'obtenerDatosRendir'])->name('subvenciones.obtener-datos-rendir');
-    Route::post('guardar-rendicion', [SubvencionController::class, 'guardarRendicion'])->name('subvenciones.guardar-rendicion');
+    //Route::post('guardar-rendicion', [SubvencionController::class, 'guardarRendicion'])->name('subvenciones.guardar-rendicion');
 
 });
 
@@ -45,19 +45,19 @@ Route::prefix('subvenciones')->group(function () {
 Route::prefix('rendiciones')->group(function () {
 
     Route::get('/', [RendicionController::class, 'index'])->name('rendiciones');
-
-    Route::get('/detalleRendicion',[RendicionController::class, 'detalleRendicion'])->name('rendiciones.detalleRendicion'); 
-
+    Route::post('crear', [RendicionController::class, 'crear'])->name('rendiciones.crear');
+    Route::post('/obtener',[RendicionController::class, 'obtener'])->name('rendiciones.obtener'); 
+    Route::post('/cambiar-estado',[RendicionController::class, 'cambiarEstado'])->name('rendiciones.cambiarEstado'); 
     Route::post('/eliminar-temporalmente', [RendicionController::class, 'eliminarTemporalmente'])->name('rendiciones.eliminar-temporalmente');
 
 });
 
-Route::prefix('personas')->group(function () {
+// Route::prefix('personas')->group(function () {
 
-    Route::post('obtener', [PersonaController::class, 'obtener'])->name('personas.obtener');
-    Route::post('buscar', [PersonaController::class, 'buscar'])->name('personas.buscar');
-    Route::post('guardar', [PersonaController::class, 'guardar'])->name('personas.guardar');
+//     Route::post('obtener', [PersonaController::class, 'obtener'])->name('personas.obtener');
+//     Route::post('buscar', [PersonaController::class, 'buscar'])->name('personas.buscar');
+//     Route::post('guardar', [PersonaController::class, 'guardar'])->name('personas.guardar');
 
-});
+// });
 
 //});  

@@ -9,9 +9,8 @@
             </div>
 
             <div class="border rounded m-3 p-3 bg-light flex-grow-1">
-                <!-- Campo oculto para ID de subvención -->
-                <input type="hidden" id="subvencion_id" />
-                
+                <!-- Campo oculto para ID de rendición -->
+                <input type="hidden" id="rendicion_id" />
                 <!-- Información de la subvención (no editable) -->
                 <div class="row mt-2 mb-3">
                     <div class="col-md-6">
@@ -64,8 +63,7 @@
                         <div class="col-md-3">
                             <label class="fw-bold small mb-1" for="persona_rut">RUT</label>
                             <input class="form-control form-control-sm shadow-sm" id="persona_rut"
-                                placeholder="Ingrese RUT..." style="min-width: 160px" 
-                                oninput="buscarPersonas(this.value)" />
+                                placeholder="Ingrese RUT..." style="min-width: 160px" />
                             <div id="sugerencias_rut" class="list-group position-absolute" style="z-index: 1000; display: none; max-height: 200px; overflow-y: auto; width: 100%; border: 1px solid #dee2e6; border-radius: 0.375rem; box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);">
                                 <!-- Las sugerencias se cargarán aquí -->
                             </div>
@@ -81,7 +79,7 @@
                                 placeholder="Ingrese apellido..." style="min-width: 160px" required />
                         </div>
                         <div class="col-md-3">
-                            <label class="fw-bold small mb-1" for="persona_cargo">Cargo</label>
+                            <label class="fw-bold small mb-1" for="cargo">Cargo</label>
                             <select class="form-select form-select-sm shadow-sm" id="persona_cargo"
                                 style="min-width: 160px" required>
                                 <option value="">Seleccione...</option>

@@ -65,6 +65,6 @@ class Subvencion extends Model
      */
     public function rendiciones()
     {
-        return $this->hasMany(Rendicion::class, 'subvencion_id');
+        return $this->hasOne(Rendicion::class, 'subvencion_id');
     }
 }
