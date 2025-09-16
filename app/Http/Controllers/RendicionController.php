@@ -91,7 +91,7 @@ class RendicionController extends BaseController
             ->get();
 
         // Objetadas (estado_rendicion_id = 3)
-        $pendientes = Rendicion::with(['subvencion', 'estadoRendicion'])
+        $objetadas = Rendicion::with(['subvencion', 'estadoRendicion'])
             ->where('estado', 1)
             ->where('estado_rendicion_id', 3) // Objetadas
             ->get();
@@ -103,14 +103,14 @@ class RendicionController extends BaseController
             ->get();
 
         // Aprobadas (estado_rendicion_id = 5)
-        $observadas = Rendicion::with(['subvencion', 'estadoRendicion'])
+        $aprobadas = Rendicion::with(['subvencion', 'estadoRendicion'])
             ->where('estado', 1)
             ->where('estado_rendicion_id', 5) // Aprobadas
             ->get();
 
         return view(
             'rendiciones.index',
-            compact('revision', 'pendientes', 'observadas', 'rechazadas')
+            compact('revision', 'objetadas', 'rechazadas', 'aprobadas')
         );
     }
 
@@ -287,13 +287,62 @@ class RendicionController extends BaseController
 
     public function cambiarEstado(Request $request){
         try{
-            dd($request->all());
             $data_validada = $request->validate([
                 'id' => 'required|integer|exists:rendiciones,id',
                 'nuevo_estado_id' => 'required|integer|exists:estados_rendiciones,id',
                 'comentario' => 'required|string|max:400'
             ]);
-            dd($data_validada);
+            // buscar rendición por id
+            $rendicion = Rendicion::with('estadoRendicion')->where('id', $data_validada['id'])->first();
+            
+            // capturar estado actual
+            $estado_actual_nombre = $rendicion->estadoRendicion->nombre;
+            $estado_nuevo_nombre = EstadoRendicion::where('id', $data_validada['nuevo_estado_id'])->first()->nombre;
+            // actualizar el estado de la rendición
+            $rendicion->update([
+                'estado_rendicion_id' => $data_validada['nuevo_estado_id']
+            ]);
+            
+                // Crear acción automática de subvención creada 
+                $km_data = session('usuario');   
+    
+                if ($km_data) {
+                    $nombre_completo = trim($km_data['nombres'] ?? '') . ' ' . 
+                                            ($km_data['apellido_paterno'] ?? '') . ' ' . 
+                                            ($km_data['apellido_materno'] ?? '');
+                
+                // registrar la acción
+                $accion = Accion::create([
+                    'fecha' => now(),
+                    'comentario' => $data_validada['comentario'],
+                    'km_rut' => $km_data['run'],
+                    'km_nombre' => $nombre_completo,
+                    'rendicion_id' => $rendicion->id,
+                    'estado' => 1
+                ]);
+
+                // falta: generar la notificación
+
+                // registrar la notificación 
+                Notificacion::create([
+                    'fecha_envio' => now(),
+                    'accion_id' => $accion->id,
+                    'estado_notificacion' => 0,
+                    'estado' => 1
+                ]);
+
+                // retornar la respuesta
+                return response()->json([
+                            'success' => true,
+                            'message' => "Rendición actualizada exitosamente de estado: {$estado_actual_nombre} a estado: {$estado_nuevo_nombre}"
+                        ]); 
+                    }else{
+                        return response()->json([
+                            'success' => false,
+                            'message' => 'Debe iniciar sesión para realizar esta acción'
+                        ]); 
+                }
+                
         } catch(Exception $e) {
             return response()->json([
                 'success' => false,

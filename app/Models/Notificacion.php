@@ -23,8 +23,7 @@ class Notificacion extends Model
     
     protected $casts = [
         'fecha_envio' => 'datetime',
-        'fecha_lectura' => 'datetime',
-        'estado_notificacion' => 'boolean'
+        'fecha_lectura' => 'datetime'
     ];
     
     

@@ -1,7 +1,7 @@
 var modalRendicion = new bootstrap.Modal(document.getElementById("modalVerDetallesRendicion"));
 
 /* Función para mostrar detalles de rendición */
-function verDetalleRendicion(id) {
+function verDetalleRendicion(id, button) {
         // Obtener token CSRF
         let csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
         
@@ -39,7 +39,6 @@ function verDetalleRendicion(id) {
     .then(response => response.json())
     .then(data => {
         if (data.success) {
-            console.log(data)
             // rendición con data subvención y organización
             document.getElementById('rendicion_id').value = data.rendicion.id;
             document.getElementById('detalle_fecha_decreto').textContent = data.rendicion.subvencion.fecha_decreto;
@@ -50,18 +49,42 @@ function verDetalleRendicion(id) {
             document.getElementById('detalle_destino').textContent = data.rendicion.subvencion.destino;
             document.getElementById('detalle_estado_actual').textContent = data.rendicion.estado_rendicion.nombre;
 
-            // select de estados rendición
             const estadosSelect = document.getElementById('estados_rendicion');
-            estadosSelect.innerHTML = '<option value="">Seleccione...</option>';
-            console.log(data)
-            data.estados_rendicion.forEach(estado => {
-                console.log(estado)
-                const option = document.createElement('option');
-                option.value = estado.id;
-                option.textContent = estado.nombre;
-                estadosSelect.appendChild(option);
-            });
+            const comentario = document.getElementById('comentario_detalle')
+            const btnCambiarEstado = document.getElementById('btnCambiarEstado')
 
+            // si la tabla es en revisión u objetadas, renderizar select de cambio de estado
+            if(button.dataset.btnEstado == 'revision'){
+                // select de estados rendición
+                btnCambiarEstado.disabled = false
+                estadosSelect.disabled = false
+                comentario.disabled = false
+                estadosSelect.innerHTML = '<option value="">Seleccione...</option>';
+                data.estados_rendicion.forEach(estado => {
+                    console.log(estado)
+                    const option = document.createElement('option');
+                    option.value = estado.id;
+                    option.textContent = estado.nombre;
+                    estadosSelect.appendChild(option);
+                });
+            }else if(button.dataset.btnEstado =='objetadas'){
+                btnCambiarEstado.disabled = false
+                estadosSelect.disabled = false
+                comentario.disabled = false
+                estadosSelect.innerHTML = '<option value="">Seleccione...</option>';
+                data.estados_rendicion.forEach(estado => {
+                    if(estado.id != 3){
+                        const option = document.createElement('option');
+                        option.value = estado.id;
+                        option.textContent = estado.nombre;
+                        estadosSelect.appendChild(option);
+                    }
+                });
+            }else{
+                btnCambiarEstado.disabled = true
+                estadosSelect.disabled = true
+                comentario.disabled = true
+            }
 
         } else {
             Swal.fire({
@@ -114,7 +137,7 @@ document.getElementById('btnCambiarEstado').addEventListener('click', async func
 
     try{
         data_estado = {
-            nuevo_estado: document.getElementById('estados_rendicion').value,
+            nuevo_estado_id: document.getElementById('estados_rendicion').value,
             comentario: document.getElementById('comentario_detalle').value,
             id: document.getElementById('rendicion_id').value
         }
@@ -135,14 +158,14 @@ document.getElementById('btnCambiarEstado').addEventListener('click', async func
         if (!response.ok || !resultCambioEstado.success) {
             Swal.fire({
                 title: "Error",
-                text: resultRendicion.message || "Error al cambiar el estado de la rendición",
+                text: resultCambioEstado.message || "Error al cambiar el estado de la rendición",
                 icon: "error",
                 confirmButtonText: "Aceptar"
             });
         } else {
             Swal.fire({
                 title: "Éxito",
-                text: "Cambio de estado realizado exitosamente",
+                text: resultCambioEstado.message,
                 icon: "success",
                 confirmButtonText: "Aceptar"
             }).then(() => {

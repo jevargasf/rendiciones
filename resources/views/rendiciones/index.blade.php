@@ -25,28 +25,28 @@
             <!-- Tablas -->
             <nav>
                 <div class="nav nav-tabs" id="nav-tab" role="tablist">
-                    <button class="nav-link active" id="nav-rendidas-tab" data-bs-toggle="tab"
-                        data-bs-target="#nav-rendidas" type="button" role="tab" aria-controls="nav-rendidas"
+                    <button class="nav-link active" id="nav-revision-tab" data-bs-toggle="tab"
+                        data-bs-target="#nav-revision" type="button" role="tab" aria-controls="nav-revision"
                         aria-selected="true">
                         En revisión
                     </button>
 
-                    <button class="nav-link" id="nav-pendientes-tab" data-bs-toggle="tab"
-                        data-bs-target="#nav-pendientes" type="button" role="tab" aria-controls="nav-pendientes"
+                    <button class="nav-link" id="nav-objetadas-tab" data-bs-toggle="tab"
+                        data-bs-target="#nav-objetadas" type="button" role="tab" aria-controls="nav-objetadas"
                         aria-selected="false">
-                        Objetada
-                    </button>
-
-                    <button class="nav-link" id="nav-observadas-tab" data-bs-toggle="tab"
-                        data-bs-target="#nav-observadas" type="button" role="tab" aria-controls="nav-observadas"
-                        aria-selected="false">
-                        Aprobada
+                        Objetadas
                     </button>
 
                     <button class="nav-link" id="nav-rechazadas-tab" data-bs-toggle="tab"
                         data-bs-target="#nav-rechazadas" type="button" role="tab" aria-controls="nav-rechazadas"
                         aria-selected="false">
-                        Rechazada
+                        Rechazadas
+                    </button>
+
+                    <button class="nav-link" id="nav-aprobadas-tab" data-bs-toggle="tab"
+                        data-bs-target="#nav-aprobadas" type="button" role="tab" aria-controls="nav-aprobadas"
+                        aria-selected="false">
+                        Aprobadas
                     </button>
                 </div>
             </nav>
@@ -54,8 +54,8 @@
             <!-- Tabla de contenidos -->
             <div class="tab-content" id="nav-tabContent">
                 <!-- EN REVISIÓN -->
-                <div class="tab-pane fade show active" id="nav-rendidas" role="tabpanel"
-                    aria-labelledby="nav-rendidas-tab" tabindex="0">
+                <div class="tab-pane fade show active" id="nav-revision" role="tabpanel"
+                    aria-labelledby="nav-revision-tab" tabindex="0">
                     <div class="table-responsive mt-3">
                         <table id="table_revision" class="table table-striped align-middle w-100">
                             <thead>
@@ -76,18 +76,19 @@
                 </div>
 
                 <!-- PESTAÑA PENDIENTES DATATABLE -->
-                <div class="tab-pane fade" id="nav-pendientes" role="tabpanel" aria-labelledby="nav-pendientes-tab"
+                <div class="tab-pane fade" id="nav-objetadas" role="tabpanel" aria-labelledby="nav-objetadas-tab"
                     tabindex="0">
                     <div class="table-responsive mt-3">
-                        <table id="table_pendientes" class="table table-striped align-middle w-100">
+                        <table id="table_objetadas" class="table table-striped align-middle w-100">
                             <thead>
                                 <tr>
                                     <th>#</th>
                                     <th>Fecha</th>
-                                    <th>R.U.T</th>
+                                    <th>RUT</th>
                                     <th>Organización</th>
                                     <th>Decreto</th>
                                     <th>Monto</th>
+                                    <th>Destino</th>
                                     <th>Estado</th>
                                     <th>Opciones</th>
                                 </tr>
@@ -97,19 +98,20 @@
                 </div>
 
                 <!-- OBSERVADAS DATATABLE-->
-                <div class="tab-pane fade" id="nav-observadas" role="tabpanel" aria-labelledby="nav-observadas-tab"
+                <div class="tab-pane fade" id="nav-rechazadas" role="tabpanel" aria-labelledby="nav-rechazadas-tab"
                     tabindex="0">
                     <div class="table-responsive mt-3">
-                        <table id="table_observadas" class="table table-striped align-middle w-100">
+                        <table id="table_rechazadas" class="table table-striped align-middle w-100">
                             <!-- nombre de tabla llamada en archivo JS document.querySelector("#table_observadas")?.addEventListener("click", async function (e)-->
                             <thead>
                                 <tr>
                                     <th>#</th>
                                     <th>Fecha</th>
-                                    <th>R.U.T</th>
+                                    <th>RUT</th>
                                     <th>Organización</th>
                                     <th>Decreto</th>
                                     <th>Monto</th>
+                                    <th>Destino</th>
                                     <th>Estado</th>
                                     <th>Opciones</th>
                                 </tr>
@@ -120,19 +122,20 @@
 
                 <!--Pestaña Tabla Rechazadas con DATATABLE-->
 
-                <div class="tab-pane fade" id="nav-rechazadas" role="tabpanel" aria-labelledby="nav-rechazadas-tab"
+                <div class="tab-pane fade" id="nav-aprobadas" role="tabpanel" aria-labelledby="nav-aprobadas-tab"
                     tabindex="0">
                     <div class="table-responsive mt-3">
-                        <table id="table_rechazadas" class="table table-striped align-middle w-100">
+                        <table id="table_aprobadas" class="table table-striped align-middle w-100">
                             <!-- nombre de tabla llamada en archivo JS document.querySelector("#table_rechazadas")?.addEventListener("click", async function (e)-->
                             <thead>
                                 <tr>
                                     <th>#</th>
                                     <th>Fecha</th>
-                                    <th>R.U.T</th>
+                                    <th>RUT</th>
                                     <th>Organización</th>
                                     <th>Decreto</th>
                                     <th>Monto</th>
+                                    <th>Destino</th>
                                     <th>Estado</th>
                                     <th>Opciones</th>
                                 </tr>
@@ -269,7 +272,6 @@
 
         // Funcionalidad del buscador y ordenamiento para rendiciones
         document.addEventListener('DOMContentLoaded', function() {
-            
             // Prueba Data tables - Pestaña Rendiciones
             new DataTable('#table_revision', {
                 data: @json($revision),
@@ -336,19 +338,22 @@
                                 <div class="d-flex justify-content-center align-items-center gap-1 flex-wrap">
                                     <!-- Ver detalles -->
                                     <button class="btn btn-accion" data-bs-target="#modalVerDetallesRendicion"
-                                        onclick="verDetalleRendicion(${id})"
-                                        data-bs-toggle="modal" title="Ver detalles" type="button">
+                                        onclick="verDetalleRendicion(${id}, this)" data-btn-estado="revision" 
+                                        data-bs-toggle="modal" title="Ver detalles" type="button"
+                                        data-btn-estado="revision">
                                         <i class="fas fa-search"> </i>
                                     </button>
                                     <!-- Editar -->
                                     <button class="btn btn-success btn-accion" 
-                                        title="Editar" type="button" 
-                                        onclick="abrirModalEditar(${id})">
+                                        title="Editar" type="button"
+                                        onclick="abrirModalEditar(${id}, this)"
+                                        data-btn-estado="revision">
                                         <i class="fas fa-file-signature"> </i>
                                     </button>
                                     <!-- Eliminar -->
                                     <button class="btn btn-success btn-accion btn-eliminar-subvencion" 
-                                        title="Eliminar" type="button" data-subvencion-id="${id}">
+                                        title="Eliminar" type="button" data-subvencion-id="${id}"
+                                        data-btn-estado="revision">
                                         <i class="fas fa-times-circle"> </i>
                                     </button>
                                 </div>
@@ -360,25 +365,245 @@
             });
 
             // Prueba Data Tables - Pestaña Pendientes //
-            new DataTable('#table_pendientes', {
+            new DataTable('#table_objetadas', {
+                data: @json($objetadas),
                 order: [],
                 language: idioma ?? {},
                 deferRender: true,
                 responsive: true,
-            });
+                columns: [
+                    { data: 'id' },
+                    { 
+                        data: 'subvencion.fecha_asignacion',
+                        render: function(d){
+                            if (!d) return 'S/D';
+                            fecha = new Date(d)
+                            return fecha.toLocaleDateString()
+                        }
+                    },
+                    { 
+                        data: 'subvencion.rut',
+                        render: // Formatear RUT
+                            function formatearRut(rut){
+                                rut = rut.replace(/\./g, '').replace('-', '');
+                                cuerpo = rut.slice(0, -1)
+                                dv = rut.slice(-1)
 
-            new DataTable('#table_observadas', {
-                order: [],
-                language: idioma ?? {},
-                deferRender: true,
-                responsive: true,
+                                rutConPuntos = ''
+                                i = cuerpo.length
+                                while (i > 3){
+                                    rutConPuntos = '.' + cuerpo.slice(i-3, i) + rutConPuntos
+                                    i -= 3
+                                }
+                                rutConPuntos = cuerpo.slice(0, i) + rutConPuntos
+                                return `${rutConPuntos}-${dv}`
+                                }
+                    },
+                    { 
+                        data: '',
+                        defaultContent: 'S/D'
+                    },
+                    { data: 'subvencion.decreto' },
+                    { 
+                        data: 'subvencion.monto',
+                        render: function(monto){
+                            monto = monto.toString()
+                            montoFormateado = ''
+                            i = monto.length
+                            while(i > 3){
+                                montoFormateado = '.' + monto.slice(i-3, i) + montoFormateado
+                                i -= 3
+                            }
+                            montoFormateado = monto.slice(0, i) + montoFormateado
+                            return montoFormateado
+                        }
+                    },
+                    { data: 'subvencion.destino' },
+                    { data: 'estado_rendicion.nombre' },
+                    {
+                        data: null,
+                        ordeable: false,
+                        searchable: false,
+                        render: function(data, type, row){
+                            id = row.id
+                            return `
+                                <div class="d-flex justify-content-center align-items-center gap-1 flex-wrap">
+                                    <!-- Ver detalles -->
+                                    <button class="btn btn-accion" data-bs-target="#modalVerDetallesRendicion"
+                                        onclick="verDetalleRendicion(${id}, this)"
+                                        data-bs-toggle="modal" title="Ver detalles" type="button"
+                                        data-btn-estado="objetadas">
+                                        <i class="fas fa-search"> </i>
+                                    </button>
+                                    <!-- Editar -->
+                                    <button class="btn btn-success btn-accion" 
+                                        title="Editar" type="button" 
+                                        onclick="abrirModalEditar(${id}, this)"
+                                        data-btn-estado="objetadas">
+                                        <i class="fas fa-file-signature"> </i>
+                                    </button>
+                                </div>
+
+                            `
+                        }
+                    }
+                ]
             });
 
             new DataTable('#table_rechazadas', {
+                data: @json($rechazadas),
                 order: [],
                 language: idioma ?? {},
                 deferRender: true,
                 responsive: true,
+                columns: [
+                    { data: 'id' },
+                    { 
+                        data: 'subvencion.fecha_asignacion',
+                        render: function(d){
+                            if (!d) return 'S/D';
+                            fecha = new Date(d)
+                            return fecha.toLocaleDateString()
+                        }
+                    },
+                    { 
+                        data: 'subvencion.rut',
+                        render: // Formatear RUT
+                            function formatearRut(rut){
+                                rut = rut.replace(/\./g, '').replace('-', '');
+                                cuerpo = rut.slice(0, -1)
+                                dv = rut.slice(-1)
+
+                                rutConPuntos = ''
+                                i = cuerpo.length
+                                while (i > 3){
+                                    rutConPuntos = '.' + cuerpo.slice(i-3, i) + rutConPuntos
+                                    i -= 3
+                                }
+                                rutConPuntos = cuerpo.slice(0, i) + rutConPuntos
+                                return `${rutConPuntos}-${dv}`
+                                }
+                    },
+                    { 
+                        data: '',
+                        defaultContent: 'S/D'
+                    },
+                    { data: 'subvencion.decreto' },
+                    { 
+                        data: 'subvencion.monto',
+                        render: function(monto){
+                            monto = monto.toString()
+                            montoFormateado = ''
+                            i = monto.length
+                            while(i > 3){
+                                montoFormateado = '.' + monto.slice(i-3, i) + montoFormateado
+                                i -= 3
+                            }
+                            montoFormateado = monto.slice(0, i) + montoFormateado
+                            return montoFormateado
+                        }
+                    },
+                    { data: 'subvencion.destino' },
+                    { data: 'estado_rendicion.nombre' },
+                    {
+                        data: null,
+                        ordeable: false,
+                        searchable: false,
+                        render: function(data, type, row){
+                            id = row.id
+                            return `
+                                <div class="d-flex justify-content-center align-items-center gap-1 flex-wrap">
+                                    <!-- Ver detalles -->
+                                    <button class="btn btn-accion" data-bs-target="#modalVerDetallesRendicion"
+                                        onclick="verDetalleRendicion(${id}, this)"
+                                        data-bs-toggle="modal" title="Ver detalles" type="button"
+                                        data-btn-estado="rechazadas">
+                                        <i class="fas fa-search"> </i>
+                                    </button>
+                                </div>
+
+                            `
+                        }
+                    }
+                ]
+            });
+
+            new DataTable('#table_aprobadas', {
+                data: @json($aprobadas),
+                order: [],
+                language: idioma ?? {},
+                deferRender: true,
+                responsive: true,
+                columns: [
+                    { data: 'id' },
+                    { 
+                        data: 'subvencion.fecha_asignacion',
+                        render: function(d){
+                            if (!d) return 'S/D';
+                            fecha = new Date(d)
+                            return fecha.toLocaleDateString()
+                        }
+                    },
+                    { 
+                        data: 'subvencion.rut',
+                        render: // Formatear RUT
+                            function formatearRut(rut){
+                                rut = rut.replace(/\./g, '').replace('-', '');
+                                cuerpo = rut.slice(0, -1)
+                                dv = rut.slice(-1)
+
+                                rutConPuntos = ''
+                                i = cuerpo.length
+                                while (i > 3){
+                                    rutConPuntos = '.' + cuerpo.slice(i-3, i) + rutConPuntos
+                                    i -= 3
+                                }
+                                rutConPuntos = cuerpo.slice(0, i) + rutConPuntos
+                                return `${rutConPuntos}-${dv}`
+                                }
+                    },
+                    { 
+                        data: '',
+                        defaultContent: 'S/D'
+                    },
+                    { data: 'subvencion.decreto' },
+                    { 
+                        data: 'subvencion.monto',
+                        render: function(monto){
+                            monto = monto.toString()
+                            montoFormateado = ''
+                            i = monto.length
+                            while(i > 3){
+                                montoFormateado = '.' + monto.slice(i-3, i) + montoFormateado
+                                i -= 3
+                            }
+                            montoFormateado = monto.slice(0, i) + montoFormateado
+                            return montoFormateado
+                        }
+                    },
+                    { data: 'subvencion.destino' },
+                    { data: 'estado_rendicion.nombre' },
+                    {
+                        data: null,
+                        ordeable: false,
+                        searchable: false,
+                        render: function(data, type, row){
+                            id = row.id
+                            return `
+                                <div class="d-flex justify-content-center align-items-center gap-1 flex-wrap">
+                                    <!-- Ver detalles -->
+                                    <button class="btn btn-accion" data-bs-target="#modalVerDetallesRendicion"
+                                        onclick="verDetalleRendicion(${id}, this)"
+                                        data-bs-toggle="modal" title="Ver detalles" type="button"
+                                        data-btn-estado="aprobadas">
+                                        <i class="fas fa-search"> </i>
+                                    </button>
+                                </div>
+
+                            `
+                        }
+                    }
+                ]
             });
             const buscador = document.getElementById('buscadorRendiciones');
 

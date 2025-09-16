@@ -431,7 +431,7 @@ class SubvencionController extends BaseController
                 ]);
             }
 
-            // Actualizar la subvención (sin modificar decreto ni monto)
+            // Actualizar la subvención
             $subvencion->update([
                 'destino' => $request->destino,
                 'rut' => $rutNormalizado,
