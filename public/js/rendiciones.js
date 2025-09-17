@@ -39,6 +39,7 @@ function verDetalleRendicion(id, button) {
     .then(response => response.json())
     .then(data => {
         if (data.success) {
+            console.log(data)
             // rendición con data subvención y organización
             document.getElementById('rendicion_id').value = data.rendicion.id;
             document.getElementById('detalle_fecha_decreto').textContent = data.rendicion.subvencion.fecha_decreto;
@@ -56,19 +57,18 @@ function verDetalleRendicion(id, button) {
             // si la tabla es en revisión u objetadas, renderizar select de cambio de estado
             if(button.dataset.btnEstado == 'revision'){
                 // select de estados rendición
-                btnCambiarEstado.disabled = false
+                btnCambiarEstado.hidden = false
                 estadosSelect.disabled = false
                 comentario.disabled = false
                 estadosSelect.innerHTML = '<option value="">Seleccione...</option>';
                 data.estados_rendicion.forEach(estado => {
-                    console.log(estado)
                     const option = document.createElement('option');
                     option.value = estado.id;
                     option.textContent = estado.nombre;
                     estadosSelect.appendChild(option);
                 });
             }else if(button.dataset.btnEstado =='objetadas'){
-                btnCambiarEstado.disabled = false
+                btnCambiarEstado.hidden = false
                 estadosSelect.disabled = false
                 comentario.disabled = false
                 estadosSelect.innerHTML = '<option value="">Seleccione...</option>';
@@ -81,10 +81,52 @@ function verDetalleRendicion(id, button) {
                     }
                 });
             }else{
-                btnCambiarEstado.disabled = true
+                btnCambiarEstado.hidden = true
                 estadosSelect.disabled = true
                 comentario.disabled = true
             }
+
+
+            // tabla acciones rendición
+            tabla_acciones_rendicion = document.getElementById('tbody_acciones_rendicion')
+            filas_acciones_rendicion = ''
+            tabla_notificaciones_rendicion = document.getElementById('tbody_notificaciones_rendicion')
+            filas_notificaciones_rendicion = ''
+            data.rendicion.acciones.forEach((accion)=>{
+                filas_acciones_rendicion +=`
+                    <tr>
+                        <td>${accion.id}</td>
+                        <td>${accion.fecha}</td>
+                        <td>${accion.fecha}</td>
+                        <td>${accion.comentario}</td>
+                        <td>${accion.km_nombre}</td>
+                    </tr>
+                `
+                if (accion.notificacion){
+                    document.getElementById('tab3-rendicion-tab').classList.remove('d-none')
+
+                    filas_notificaciones_rendicion +=`
+                        <tr>
+                            <td>${accion.notificacion.id}</td>
+                            <td>${accion.notificacion.fecha_envio}</td>
+                            <td>${accion.notificacion.fecha_envio}</td>
+                            <td>${accion.notificacion.leido}</td>
+                            <td>${accion.notificacion.fecha_lectura}</td>
+                            <td>${accion.notificacion.fecha_lectura}</td>
+                        </tr>
+                    `
+                }else{
+                    // ocultar la tab de notificaciones si estamos pidiendo una rendición tipo
+                    // en revisión
+                    document.getElementById('tab3-rendicion-tab').classList.add('d-none')
+                }
+            })
+            tabla_acciones_rendicion.innerHTML = filas_acciones_rendicion
+            tabla_notificaciones_rendicion.innerHTML = filas_notificaciones_rendicion
+
+
+            // tabla notificaciones rendición
+
 
         } else {
             Swal.fire({

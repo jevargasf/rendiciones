@@ -156,9 +156,9 @@
                                             <th class="px-2">
                                                 <i class="fas fa-sort me-1"></i> Hora envío
                                             </th>
-                                            <th class="px-2">
+                                            <!-- <th class="px-2">
                                                 <i class="fas fa-sort me-1"></i> Resolución
-                                            </th>
+                                            </th> -->
                                             <th class="px-2">
                                                 <i class="fas fa-sort me-1"></i> Leído
                                             </th>

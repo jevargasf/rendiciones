@@ -82,6 +82,7 @@ class RendicionController extends BaseController
             }
         return $subvencion_objeto;
     }
+
     public function index()
     {
         // En revisión (estado_rendicion_id = 2)
@@ -234,10 +235,6 @@ class RendicionController extends BaseController
             $request->validate([
                 'id' => 'required|integer|exists:rendiciones,id'
             ]);
-            
-            // if (!$rendicionId) {
-            //     return response()->json(['error' => 'ID de rendición requerido'], 400);
-            // }
 
             // Obtener acciones
             $rendicion = Rendicion::with([
@@ -254,6 +251,9 @@ class RendicionController extends BaseController
                     $query->where('estado', 1);
                 },
                 'estadoRendicion' => function ($query){
+                    $query->where('estado', 1);
+                },
+                'acciones.notificacion' => function ($query){
                     $query->where('estado', 1);
                 }
             ])
@@ -343,7 +343,7 @@ class RendicionController extends BaseController
                         ]); 
                 }
                 
-        } catch(Exception $e) {
+        }catch(Exception $e){
             return response()->json([
                 'success' => false,
                 'message' => 'Error al cambiar el estado de la rendición: ' . $e->getMessage()
@@ -394,11 +394,10 @@ class RendicionController extends BaseController
             ]);
 
         } catch (Exception $e) {
-            \Log::error('Error en eliminarTemporalmente: ' . $e->getMessage());
             return response()->json([
                 'success' => false,
-                'message' => 'Error al eliminar la rendición: ' . $e->getMessage()
-            ], 500);
+                'message' => 'Error al cambiar el estado de la rendición: ' . $e->getMessage()
+            ]);
         }
     }
 
