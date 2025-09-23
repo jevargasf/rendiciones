@@ -138,35 +138,35 @@
                                     <table class="table table-borderless">
                                         <tbody>
                                             <tr>
-                                                <td>PJ Municipal</td>
+                                                <td><b>PJ Municipal:</td></b>
                                                 <td id="organizacion_pj_municipal"></td>
                                             </tr>
                                             <tr>
-                                                <td>PJ Registro Civil</td>
+                                                <td><b>PJ Registro Civil:</td></b>
                                                 <td id="organizacion_pj_reg_civil"></td>
                                             </tr>
                                             <tr>
-                                                <td>Nombre</td>
+                                                <td><b>Nombre:</td></b>
                                                 <td id="organizacion_nombre"></td>
                                             </tr>
                                             <tr>
-                                                <td>Dirección</td>
+                                                <td><b>Dirección:</td></b>
                                                 <td id="organizacion_direccion"></td>
                                             </tr>
                                             <tr>
-                                                <td>RUT</td>
+                                                <td><b>RUT:</td></b>
                                                 <td id="organizacion_rut"></td>
                                             </tr>
                                             <tr>
-                                                <td>Tipo</td>
+                                                <td><b>Tipo:</td></b>
                                                 <td id="organizacion_tipo"></td>
                                             </tr>
                                             <tr>
-                                                <td>Teléfono</td>
+                                                <td><b>Teléfono:</td></b>
                                                 <td id="organizacion_telefono"></td>
                                             </tr>
                                             <tr>
-                                                <td>Correo electrónico</td>
+                                                <td><b>Correo electrónico:</td></b>
                                                 <td id="organizacion_correo"></td>
                                             </tr>
                                         </tbody>
@@ -177,15 +177,15 @@
                                     <table class="table table-borderless">
                                         <tbody>
                                             <tr>
-                                                <td>Presidente</td>
+                                                <td><b>Presidente:</td></b>
                                                 <td id="organizacion_presidente"></td>
                                             </tr>
                                             <tr>
-                                                <td>Tesorero</td>
+                                                <td><b>Tesorero:</td></b>
                                                 <td id="organizacion_tesorero"></td>
                                             </tr>
                                             <tr>
-                                                <td>Secretario</td>
+                                                <td><b>Secretario:</td></b>
                                                 <td id="organizacion_secretario"></td>
                                             </tr>
                                         </tbody>

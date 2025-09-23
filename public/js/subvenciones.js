@@ -51,6 +51,13 @@ function validarDigitoVerificador(numero, dv) {
     return dv === dvCalculado;
 }
 
+//Helpers del formato detalle de subvención, parte del rut y nombre de la organización
+function sentenceCase(s = '') {
+    if (!s) return '';
+    s = String(s).toLowerCase();
+    const i= s.search(0, i) + s[i].toUpperCase() + s.slice(i + 1);
+    return s.replace(/([.!?]\s+)([a-záéíóúñü])/gi, (_, p1, p2) => p1 + p2.toUpperCase());
+}
 
 /*Formulario*/
 
@@ -183,12 +190,38 @@ function verDetalleSubvencion(subvencionId){
             // iterar con los nuevos nombres y estructura del arreglo data
             fecha_decreto = new Date(data.subvencion.fecha_decreto).toLocaleDateString()
             fecha_asignacion = new Date(data.subvencion.fecha_asignacion).toLocaleDateString()
-            if(data.subvencion.data_organizacion.error){
-                document.getElementById('informacion_organizacion').innerText = `(${data.subvencion.rut})`;
-
-            }else{
-                document.getElementById('informacion_organizacion').innerText = `(${data.subvencion.rut}) ${data.subvencion.data_organizacion.nombre_organizacion}`;
+            
+            if (data.subvencion.data_organizacion.error){
+            document.getElementById('informacion_organizacion').innerText = `(${data.subvencion.rut})`;
+            } else {
+            document.getElementById('informacion_organizacion').innerText =
+                `(${data.subvencion.rut}) ${data.subvencion.data_organizacion.nombre_organizacion}`;
             }
+
+           
+            if (data.subvencion.data_organizacion.error) {
+            document.getElementById('informacion_organizacion').textContent = `(${data.subvencion.rut})`;
+            } else {
+            const raw = (data.subvencion.data_organizacion.nombre_organizacion || '').trim();
+            
+            const normalizado = raw.replace(/\s+/g, '').toUpperCase().replace(/[.\-]/g, '/');
+
+            let nombreOracion;
+            if (normalizado === 'S/D') {
+                // excepción: dejar S/D en mayúsculas
+                nombreOracion = 'S/D';
+            } else {
+                // primera letra mayúscula, resto minúsculas
+                nombreOracion = raw ? raw.charAt(0).toUpperCase() + raw.slice(1).toLowerCase() : '';
+            }
+
+            const info = nombreOracion
+                ? `(${data.subvencion.rut}) ${nombreOracion}`
+                : `(${data.subvencion.rut})`;
+
+            document.getElementById('informacion_organizacion').textContent = info;
+            }
+
             document.getElementById('detalle_fecha_decreto').innerText = fecha_decreto;
             document.getElementById('detalle_decreto').innerText = data.subvencion.decreto;
             document.getElementById('detalle_monto').innerText = data.subvencion.monto;
@@ -357,30 +390,42 @@ function verDetalleSubvencion(subvencionId){
 
             // detalle_anteriores.innerHTML = filas_anteriores
             // ficha detalles organización
-            if(Object.keys(data.subvencion.data_organizacion).length > 1){
-                // declarar variables
-                nombre_presidente = data.subvencion.data_organizacion.directivas[0].nombre_persona[0].toUpperCase() + data.subvencion.data_organizacion.directivas[0].nombre_persona.substring(1).toLowerCase()
+            if(Object.keys(data.subvencion.data_organizacion).length > 1) {
+                const org = data.subvencion.data_organizacion;
 
 
-                // inyectar datos al elemento correspondiente en el DOM
-                document.getElementById('detalle_organizacion').hidden = false
-                document.getElementById('detalle_sin_datos').hidden = true
+                const cap = s => s ? s.charAt(0).toUpperCase() + s.slice(1).toLowerCase() : '';
                 
-                document.getElementById('organizacion_pj_municipal').textContent = data.subvencion.data_organizacion.pj_municipal
-                document.getElementById('organizacion_pj_reg_civil').textContent = data.subvencion.data_organizacion.pj_registro_civil
-                document.getElementById('organizacion_nombre').textContent = data.subvencion.data_organizacion.nombre_organizacion
-                document.getElementById('organizacion_direccion').textContent = data.subvencion.data_organizacion.direccion
-                document.getElementById('organizacion_rut').textContent = data.subvencion.data_organizacion.rut
-                document.getElementById('organizacion_tipo').textContent = data.subvencion.data_organizacion.tipo_organizacion
-                document.getElementById('organizacion_telefono').textContent = data.subvencion.data_organizacion.telefono
-                document.getElementById('organizacion_correo').textContent = data.subvencion.data_organizacion.correo
-                document.getElementById('organizacion_presidente').textContent = nombre_presidente + ' ' + data.subvencion.data_organizacion.directivas[0].apellido_persona
-                document.getElementById('organizacion_tesorero').textContent = data.subvencion.data_organizacion.directivas[2].nombre_persona + ' ' + data.subvencion.data_organizacion.directivas[2].apellido_persona
-                document.getElementById('organizacion_secretario').textContent = data.subvencion.data_organizacion.directivas[1].nombre_persona + ' ' + data.subvencion.data_organizacion.directivas[1].apellido_persona
 
-            }else{
+                //Buscar el cargo y armar un nombre completo
+                const dir = Array.isArray(org.directivas) ? org.directivas: [];
+                const byCargo = c => dir.find(d => (d.cargo || '').toLowerCase() === c); 
+                const full = p => p ? `${cap(p.nombre_persona)} ${cap(p.apellido_persona)}` : '-';
+
+                //Mostrando los bloques con datos
+
+                document.getElementById('detalle_organizacion').hidden = false;
+                document.getElementById('detalle_sin_datos').hidden = true;
+                                    
+                // inyectar datos al elemento correspondiente en el DOM
+                
+                document.getElementById('organizacion_pj_municipal').textContent = org.pj_municipal || '';
+                document.getElementById('organizacion_pj_reg_civil').textContent = org.pj_registro_civil || '';
+                document.getElementById('organizacion_nombre').textContent = cap(org.nombre_organizacion || '');
+                document.getElementById('organizacion_direccion').textContent = cap(org.direccion || '');
+                document.getElementById('organizacion_rut').textContent = org.rut || '';
+                document.getElementById('organizacion_tipo').textContent =cap(org.tipo_organizacion || '');
+                document.getElementById('organizacion_telefono').textContent = org.telefono || '';
+                document.getElementById('organizacion_correo').textContent = org.correo || '';
+
+                // Cargos de la directiva con mayuscula al inicio de nombre y apellido
+                document.getElementById('organizacion_presidente').textContent = full(byCargo('presidente'));
+                document.getElementById('organizacion_tesorero').textContent = full(byCargo('tesorero'));
+                document.getElementById('organizacion_secretario').textContent = full(byCargo('secretario'));
+
+            } else {
                 // AQUÍ PASA QUE SI CLICKEO UNA ORGANIZACIÓN SIN DATOS, BORRO TODOS LOS ELEMENTOS DEL DOM
-                // escribir un mensaje de que no se pudo recuperar la data de la organización
+                // escribir un mensaje de que no se pudo recuperar la data de la organización 
                 document.getElementById('detalle_organizacion').hidden = true
                 document.getElementById('detalle_sin_datos').hidden = false
                 document.getElementById('detalle_sin_datos').textContent = `
@@ -389,6 +434,7 @@ function verDetalleSubvencion(subvencionId){
 
 
             }
+
         } else {
             Swal.fire({
                 title: "Error",
