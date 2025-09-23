@@ -16,6 +16,7 @@ class Accion extends Model
     protected $fillable = [
         'fecha',
         'comentario',
+        'estado_rendicion',
         'km_rut',
         'km_nombre',
         'rendicion_id',

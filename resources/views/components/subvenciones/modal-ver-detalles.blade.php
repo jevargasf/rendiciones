@@ -39,7 +39,7 @@
                     <li class="nav-item" role="presentation">
                         <button class="nav-link" id="tab3-tab" data-bs-toggle="tab" data-bs-target="#tab3"
                             type="button" role="tab">
-                            Subvenciones anteriores
+                            Otras subvenciones
                         </button>
                     </li>
                     <li class="nav-item" role="presentation">
@@ -96,112 +96,35 @@
                     <!-- Pestaña acciones -->
                     <div class="tab-pane fade" id="tab2" role="tabpanel">
                         <div class="bg-white border rounded-4 p-3 mb-0 min-vh-50">
-                            <div class="table-responsive">
-                                <table
-                                    id="table_acciones_realizadas"
-                                    class="table table-striped"
-                                >
-                                    <thead>
-                                        <tr>
-                                            <th class="text-center px-2">
-                                                <i class="fas fa-sort me-1"></i> Fecha
-                                            </th>
-                                            <th class="px-2">
-                                                <i class="fas fa-sort me-1"></i> Acción realizada
-                                            </th>
-                                            <th class="px-2">
-                                                <i class="fas fa-sort me-1"></i> Usuario
-                                            </th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="detalle_acciones">
-                                        <!-- Formato fila -->
-
-                                    </tbody>
-                                </table>
-                            </div>
+                            <table id="table_acciones_subvencion" class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Fecha</th>
+                                        <th>Hora</th>
+                                        <th>Estado</th>
+                                        <th>Comentario</th>
+                                        <th>Usuario</th>
+                                    </tr>
+                                </thead>
+                            </table>
                         </div>
                     </div>
-
-                    <!-- Overlay detalle acción (no aparece botón) -->
-                    <!-- <div id="ver-detalle" class="overlay-detalle d-none">
-                        <div
-                            class="detalle-box modal-content shadow-md rounded-4 overflow-hidden"
-                        >
-                            <div class="modal-header modal-header-app">
-                                <h6 class="modal-title fw-bold">Detalle de acción</h6>
-                                <button
-                                    type="button"
-                                    class="btn-close btn-close-white"
-                                    onclick="cerrarDetalle()"
-                                    aria-label="Cerrar"
-                                ></button>
-                            </div>
-                            <div class="p-4">
-                                <p>
-                                    <strong>Usuario:</strong>
-                                    <span id="detalle-usuario">—</span>
-                                </p>
-                                <div class="row mt-4 align-items-start">
-                                    <label
-                                        for="detalle-comentario"
-                                        class="col-sm-2 col-form-label fw-bold"
-                                        >Comentario</label
-                                    >
-                                    <div class="col-sm-10">
-                                        <textarea
-                                            id="detalle-comentario"
-                                            class="form-control"
-                                            rows="4"
-                                            readonly
-                                            placeholder="Lorem ipsum…"
-                                        ></textarea>
-                                    </div>
-                                </div>
-                                <div class="text-muted small mt-4">
-                                    <span id="detalle-fecha">Fecha: —</span>
-                                    <span class="mx-2">|</span>
-                                    <span id="detalle-hora">Hora: —</span>
-                                </div>
-                                <div class="mt-4 d-flex justify-content-end gap-2">
-                                    <button type="button" class="btn btn-sm btn-outline-secondary"
-                                        onclick="cerrarDetalle()">
-                                        Cerrar
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div> -->
-
                     <!-- Pestaña subvenciones anteriores -->
                     <div class="tab-pane fade" id="tab3" role="tabpanel">
                         <div class="bg-white border rounded-4 p-3 mb-0 min-vh-50">
-                            <div class="table-responsive">
-                                <table id="table_subvenciones_anteriores" class="table table-striped">
-                                    <thead>
-                                        <tr>
-                                            <th class="text-center px-2">
-                                                <i class="fas fa-sort me-1"></i>#
-                                            </th>
-                                            <th class="text-center px-2">
-                                                <i class="fas fa-sort me-1"></i>Fecha
-                                            </th>
-                                            <th class="px-2">
-                                                <i class="fas fa-sort me-1"></i>Decreto
-                                            </th>
-                                            <th class="px-2">
-                                                <i class="fas fa-sort me-1"></i>Monto
-                                            </th>
-                                            <th class="px-2">
-                                                <i class="fas fa-sort me-1"></i>Destino
-                                            </th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="detalle_anteriores">
-
-                                    </tbody>
-                                </table>
-                            </div>
+                            <table id="table_subvenciones_anteriores" class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Fecha</th>
+                                        <th>Decreto</th>
+                                        <th>Monto</th>
+                                        <th>Destino</th>
+                                        <!-- <th>Estado</th> -->
+                                    </tr>
+                                </thead>
+                            </table>
                         </div>
                     </div>
 

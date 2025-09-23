@@ -13,8 +13,8 @@
 
             <!-- Información general -->
             <div class="modal-body p-3 d-flex flex-column">
-                <label for="informacion_rendicion" class="form-label fw-bold"></label>
-                <p id="informacion_rendicion" class="form-control shadow-sm" readonly rows="4">
+                <label for="informacion_organizacion" class="form-label fw-bold"></label>
+                <p id="informacion_organizacion" class="form-control shadow-sm" readonly rows="4">
                     <i class="bi bi-clipboard-check me-1"></i>
                     
                 </p>
@@ -40,6 +40,12 @@
                         <button class="nav-link" id="tab3-rendicion-tab" data-bs-toggle="tab"
                             data-bs-target="#tab3-rendicion" type="button" role="tab">
                             Notificaciones
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="tab4-rendicion-tab" data-bs-toggle="tab" data-bs-target="#tab4-rendicion"
+                            type="button" role="tab">
+                            Otras subvenciones
                         </button>
                     </li>
                 </ul>
@@ -77,30 +83,39 @@
                                 </div>
                             </div>
 
-                            <div class="row mt-4 align-items-start">
-                                <label for="comentario_destino"
-                                    class="col-sm-2 col-form-label fw-bold">Destino</label>
-                                <div class="col-sm-10">
-                                    <textarea id="detalle_destino" class="form-control shadow-sm" rows="2" readonly>
-                                    </textarea>
+                            <div class="row mt-4">
+                                <div class="col-sm-6">
+                                    <div class="row">
+                                        <label for="comentario_destino"
+                                        class="col-sm-4 col-form-label fw-bold">Destino
+                                        </label>
+                                        <div class="col-sm-8">
+                                            <textarea id="detalle_destino" class="form-control shadow-sm" rows="2" readonly>
+                                            </textarea>
+                                        </div>
+                                    </div>
                                 </div>
+                            <div class="col-sm-6">
+                                <div class="row">
+                                    <label class="col-sm-4 col-form-label fw-bold" for="estado_rendicion">Cambiar estado</label>
+                                    <div class="col-sm-8">
+                                        <select class="form-select form-select-sm shadow-sm" id="estados_rendicion"
+                                            style="min-width: 160px" required>
+                                            <option value="">Seleccione...</option>
+                                        </select>
+                                    </div>
+                                </div>
+
                             </div>
-                            <div class="col-md-3">
-                            <label class="fw-bold small mb-1" for="estado_rendicion">Cambiar estado</label>
-                            <select class="form-select form-select-sm shadow-sm" id="estados_rendicion"
-                                style="min-width: 160px" required>
-                                <option value="">Seleccione...</option>
-                            </select>
                             </div>
-                            <div class="ps-3 ps-sm-4 ps-md-5">
-                                <div class="row gy-2 gx-0 align-items-start mt-2">
+                            <div class="row mt-4 align-items-start">
                                     <label for="comentario_detalle"
-                                        class="col-3 col-sm-2 col-form-label fw-bold small mb-0">
-                                        Comentario</label>
-                                    <div class="col-9 col-sm-10 ps-0 pull-left-sm pull-left-md">
+                                        class="col-sm-2 col-form-label fw-bold">
+                                        Comentario
+                                    </label>
+                                    <div class="col-sm-10">
                                         <textarea class="form-control form-control-sm shadow-sm" id="comentario_detalle" rows="3" 
                                             placeholder="Descripción que se desee comentar o detalle de documentos adjuntos que serán validados" required></textarea>
-                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -108,76 +123,55 @@
                     <!-- Pestaña 1 - Acciones realizadas -->
                     <div class="tab-pane fade" id="tab2-rendicion" role="tabpanel">
                         <div class="bg-white border rounded-4 p-3 mb-0 min-vh-50">
-                            <div class="table-responsive">
-                                <table
-                                    id="table_acciones_rendicion"
-                                    class="table table-striped"
-                                >
+                                <table id="table_acciones_rendicion" class="table table-striped">
                                     <thead>
                                         <tr>
-                                            <th class="text-center px-2">
-                                                <i class="fas fa-sort me-1"></i> #
-                                            </th>
-                                            <th class="text-center px-2">
-                                                <i class="fas fa-sort me-1"></i> Fecha
-                                            </th>
-                                            <th class="px-2">
-                                                <i class="fas fa-sort me-1"></i> Hora
-                                            </th>
-                                            <th class="px-2">
-                                                <i class="fas fa-sort me-1"></i> Acción realizada
-                                            </th>
-                                            <th class="px-2">
-                                                <i class="fas fa-sort me-1"></i> Usuario
-                                            </th>
+                                            <th>#</th>
+                                            <th>Fecha</th>
+                                            <th>Hora</th>
+                                            <th>Estado</th>
+                                            <th>Comentario</th>
+                                            <th>Usuario</th>
                                         </tr>
                                     </thead>
-                                    <tbody id="tbody_acciones_rendicion">
-                                        <!-- Los datos se cargarán dinámicamente aquí -->
-                                    </tbody>
                                 </table>
-                            </div>
                         </div>
                     </div>
 
                     <!-- Pestaña 3 - Notificaciones -->
                     <div class="tab-pane fade" id="tab3-rendicion" role="tabpanel">
                         <div class="bg-white border rounded-4 p-3 mb-0 min-vh-50">
-                            <div class="table-responsive">
                                 <table id="table_notificaciones_rendicion" class="table table-striped">
                                     <thead>
                                         <tr>
-                                            <th class="text-center px-2">
-                                                <i class="fas fa-sort me-1"></i> #
-                                            </th>
-                                            <th class="text-center px-2">
-                                                <i class="fas fa-sort me-1"></i> Fecha envío
-                                            </th>
-                                            <th class="px-2">
-                                                <i class="fas fa-sort me-1"></i> Hora envío
-                                            </th>
-                                            <!-- <th class="px-2">
-                                                <i class="fas fa-sort me-1"></i> Resolución
-                                            </th> -->
-                                            <th class="px-2">
-                                                <i class="fas fa-sort me-1"></i> Leído
-                                            </th>
-                                            <th class="text-center px-2">
-                                                <i class="fas fa-sort me-1"></i> Fecha lectura
-                                            </th>
-                                            <th class="px-2">
-                                                <i class="fas fa-sort me-1"></i> Hora lectura
-                                            </th>
+                                            <th>#</th>
+                                            <!-- <th>Destinatario</th> -->
+                                            <th>Fecha envío</th>
+                                            <th>Hora envío</th>
+                                            <th>Leído</th>
+                                            <th>Fecha lectura</th>
+                                            <th>Hora lectura</th>
                                         </tr>
                                     </thead>
-                                    <tbody id="tbody_notificaciones_rendicion">
-                                        <!-- Los datos se cargarán dinámicamente aquí -->
-                                    </tbody>
                                 </table>
-                            </div>
                         </div>
                     </div>
-
+                    <!-- Pestaña subvenciones anteriores -->
+                    <div class="tab-pane fade" id="tab4-rendicion" role="tabpanel">
+                        <div class="bg-white border rounded-4 p-3 mb-0 min-vh-50">
+                                <table id="table_anteriores_rendicion" class="table table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th>#</th>
+                                            <th>Fecha</th>
+                                            <th>Decreto</th>
+                                            <th>Monto</th>
+                                            <th>Destino</th>
+                                            <!-- <th>Estado</th> -->
+                                        </tr>
+                                </table>
+                        </div>
+                    </div>
                 </div>
             </div>
 

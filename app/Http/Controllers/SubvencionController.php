@@ -199,6 +199,7 @@ class SubvencionController extends BaseController
                     
                         Accion::create([
                             'fecha' => now(),
+                            'estado_rendicion' => 'Recepcionada',
                             'comentario' => 'Subvención registrada en el sistema.',
                             'km_rut' => $km_data['run'] ?? '',
                             'km_nombre' => $nombre_completo,
@@ -364,7 +365,7 @@ class SubvencionController extends BaseController
 
             // Agregar data organización
             $subvencion = $this->conseguirDetalleOrganizacion($subvencion[0], '/resources/data/endpoint.json');
-
+            
             // Otras subvenciones asociadas al mismo rut
             $consulta_anteriores = Subvencion::where([
                 ['rut', '=', $subvencion->rut],

@@ -260,7 +260,7 @@
                         <th class="text-center"><i class="fas fa-sort me-1"></i> #</th>
                         <th><i class="fas fa-sort me-1"></i> Fecha</th>
                         <th><i class="fas fa-sort me-1"></i> Hora</th>
-                        <th><i class="fas fa-sort me-1"></i> Acción realizada</th>
+                        <th><i class="fas fa-sort me-1"></i> Comentario</th>
                         <th><i class="fas fa-sort me-1"></i> Usuario</th>
                       </tr>
                     </thead>

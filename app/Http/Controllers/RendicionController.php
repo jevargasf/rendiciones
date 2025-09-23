@@ -12,7 +12,10 @@ use Exception;
 use Illuminate\Routing\Controller as BaseController;
 use App\Models\Persona;
 use App\Http\Controllers\SubvencionController;
+use App\Http\Resources\RendicionResource;
 use Illuminate\Support\Facades\File as FileReader;
+
+use function PHPSTORM_META\type;
 
 class RendicionController extends BaseController
 {
@@ -91,10 +94,10 @@ class RendicionController extends BaseController
             ->where('estado_rendicion_id', 2) // En revisión
             ->get();
 
-        // Objetadas (estado_rendicion_id = 3)
+        // Observadas (estado_rendicion_id = 3)
         $objetadas = Rendicion::with(['subvencion', 'estadoRendicion'])
             ->where('estado', 1)
-            ->where('estado_rendicion_id', 3) // Objetadas
+            ->where('estado_rendicion_id', 3) // Observadas
             ->get();
 
         // Rechazadas (estado_rendicion_id = 4)
@@ -188,6 +191,7 @@ class RendicionController extends BaseController
             // Crear acción de rendición usando datos del usuario autenticado
             Accion::create([
                 'fecha' => now(),
+                'estado_rendicion' => 'En revisión',
                 'comentario' => $request->comentario,
                 'km_rut' => $usuarioAutenticado['run'] ?? 'S/D',
                 'km_nombre' => $nombreCompletoUsuario ?? 'S/D',
@@ -263,17 +267,13 @@ class RendicionController extends BaseController
             ])
             ->get();
 
-            // Obtener notificaciones a través de acciones
-            // $notificaciones = Notificacion::with(['accion'])
-            //     ->whereHas('accion', function($query) use ($rendicionId) {
-            //         $query->where('rendicion_id', $rendicionId);
-            //     })
-            //     ->orderBy('fecha_envio', 'desc')
-            //     ->get();
+            $resource = new RendicionResource($rendicion[0]);
+            
+            $rendicion[0]->setAttribute('subvencion', $this->conseguirDetalleOrganizacion($rendicion[0]->subvencion, '/resources/data/endpoint.json'));
             $estados_rendicion = EstadoRendicion::whereBetween('id', [3, 5])->get();
             return response()->json([
                 'success' => true,
-                'rendicion' => $rendicion[0],
+                'rendicion' => $resource,
                 'estados_rendicion' => $estados_rendicion
             ]);
         } catch(Exception $e) {
@@ -314,6 +314,7 @@ class RendicionController extends BaseController
                 // registrar la acción
                 $accion = Accion::create([
                     'fecha' => now(),
+                    'estado_rendicion' => $estado_nuevo_nombre,
                     'comentario' => $data_validada['comentario'],
                     'km_rut' => $km_data['run'],
                     'km_nombre' => $nombre_completo,
@@ -353,7 +354,7 @@ class RendicionController extends BaseController
     /**
      * Eliminar una rendición (cambiar estado de subvención a 1 y estado_rendicion_id a 1)
      */
-    public function eliminarTemporalmente(Request $request)
+    public function eliminar(Request $request)
     {
         try {
             $request->validate([
@@ -366,31 +367,31 @@ class RendicionController extends BaseController
             if ($rendicion->estado_rendicion_id != 2) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Solo se pueden eliminar las rendiciones en revisión'
+                    'message' => 'Solo se pueden eliminar las rendiciones en revisión.'
                 ]);
             }
 
-            // Actualizar estado de la subvención a 1
-            $rendicion->subvencion->update(['estado' => 1]);
-            
             // Actualizar estado_rendicion_id a 1 (Recepcionada)
             $rendicion->update(['estado_rendicion_id' => 1]);
-
+            $usuarioAutenticado = session('usuario');
+            $nombreCompletoUsuario = trim(($usuarioAutenticado['nombres'] ?? '') . ' ' . 
+                                   ($usuarioAutenticado['apellido_paterno'] ?? '') . ' ' . 
+                                   ($usuarioAutenticado['apellido_materno'] ?? ''));
+            
             // Registrar la acción
             Accion::create([
                 'rendicion_id' => $rendicion->id,
-                'persona_id' => auth()->user()->persona_id ?? 1, // Usar ID de persona del usuario autenticado o 1 por defecto
-                'cargo_id' => 1, // Asumir cargo por defecto
-                'comentario' => 'eliminada momentaneamente',
+                'estado_rendicion' => 'En revisión', 
+                'comentario' => 'Inicio de rendición anulado.',
                 'fecha' => now(),
                 'estado' => 1,
-                'km_rut' => session('usuario.rut'), // RUT del usuario de la sesión
-                'km_nombre' => session('usuario.nombres') . ' ' . session('usuario.apellido_paterno') . ' ' . session('usuario.apellido_materno') // Nombre completo del usuario
+                'km_rut' => $usuarioAutenticado['run'], // RUT del usuario de la sesión
+                'km_nombre' => $nombreCompletoUsuario // Nombre completo del usuario
             ]);
 
             return response()->json([
                 'success' => true,
-                'message' => 'Rendición eliminada correctamente. La subvención ha vuelto al estado inicial.'
+                'message' => 'Rendición eliminada correctamente. La subvención ha vuelto a su estado inicial.'
             ]);
 
         } catch (Exception $e) {

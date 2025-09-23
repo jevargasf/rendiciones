@@ -48,7 +48,7 @@ Route::prefix('rendiciones')->group(function () {
     Route::post('crear', [RendicionController::class, 'crear'])->name('rendiciones.crear');
     Route::post('/obtener',[RendicionController::class, 'obtener'])->name('rendiciones.obtener'); 
     Route::post('/cambiar-estado',[RendicionController::class, 'cambiarEstado'])->name('rendiciones.cambiarEstado'); 
-    Route::post('/eliminar-temporalmente', [RendicionController::class, 'eliminarTemporalmente'])->name('rendiciones.eliminar-temporalmente');
+    Route::post('/eliminar', [RendicionController::class, 'eliminar'])->name('rendiciones.eliminar');
 
 });
 

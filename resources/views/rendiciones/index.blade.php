@@ -10,16 +10,7 @@
             </h5>
 
             <!-- Buscador -->
-            <div class="row mb-3">
-                <div class="col-12">
-                    <div class="position-relative">
-                        <i class="fas fa-search position-absolute"
-                            style="left: 15px; top: 50%; transform: translateY(-50%); color: #6c757d; z-index: 10;"></i>
-                        <input type="text" class="form-control ps-5" id="buscadorRendiciones"
-                            placeholder="Buscar en rendiciones (RUT, organización, decreto, monto...)"
-                            autocomplete="off" style="padding-left: 45px;">
-                    </div>
-                </div>
+            <div class="row mb-3" id="contenedor_busqueda">
             </div>
 
             <!-- Tablas -->
@@ -34,7 +25,7 @@
                     <button class="nav-link" id="nav-objetadas-tab" data-bs-toggle="tab"
                         data-bs-target="#nav-objetadas" type="button" role="tab" aria-controls="nav-objetadas"
                         aria-selected="false">
-                        Objetadas
+                        Observadas
                     </button>
 
                     <button class="nav-link" id="nav-rechazadas-tab" data-bs-toggle="tab"
@@ -67,7 +58,7 @@
                                     <th>Decreto</th>
                                     <th>Monto</th>
                                     <th>Destino</th>
-                                    <th>Estado</th>
+                                    <!-- <th>Estado</th> -->
                                     <th>Opciones</th>
                                 </tr>
                             </thead>
@@ -89,7 +80,7 @@
                                     <th>Decreto</th>
                                     <th>Monto</th>
                                     <th>Destino</th>
-                                    <th>Estado</th>
+                                    <!-- <th>Estado</th> -->
                                     <th>Opciones</th>
                                 </tr>
                             </thead>
@@ -112,7 +103,7 @@
                                     <th>Decreto</th>
                                     <th>Monto</th>
                                     <th>Destino</th>
-                                    <th>Estado</th>
+                                    <!-- <th>Estado</th> -->
                                     <th>Opciones</th>
                                 </tr>
                             </thead>
@@ -136,7 +127,7 @@
                                     <th>Decreto</th>
                                     <th>Monto</th>
                                     <th>Destino</th>
-                                    <th>Estado</th>
+                                    <!-- <th>Estado</th> -->
                                     <th>Opciones</th>
                                 </tr>
                             </thead>
@@ -275,7 +266,7 @@
             // Prueba Data tables - Pestaña Rendiciones
             new DataTable('#table_revision', {
                 data: @json($revision),
-                order: [],
+                order: [ 0, 'desc' ],
                 language: idioma ?? {},
                 deferRender: true,
                 responsive: true,
@@ -323,11 +314,11 @@
                                 i -= 3
                             }
                             montoFormateado = monto.slice(0, i) + montoFormateado
-                            return montoFormateado
+                            return `$${montoFormateado}`
                         }
                     },
                     { data: 'subvencion.destino' },
-                    { data: 'estado_rendicion.nombre' },
+                    // { data: 'estado_rendicion.nombre' },
                     {
                         data: null,
                         ordeable: false,
@@ -351,8 +342,8 @@
                                         <i class="fas fa-file-signature"> </i>
                                     </button>
                                     <!-- Eliminar -->
-                                    <button class="btn btn-success btn-accion btn-eliminar-subvencion" 
-                                        title="Eliminar" type="button" data-subvencion-id="${id}"
+                                    <button class="btn btn-success btn-accion btn-eliminar-rendicion" 
+                                        title="Eliminar" type="button" data-rendicion-id="${id}"
                                         data-btn-estado="revision">
                                         <i class="fas fa-times-circle"> </i>
                                     </button>
@@ -367,7 +358,7 @@
             // Prueba Data Tables - Pestaña Pendientes //
             new DataTable('#table_objetadas', {
                 data: @json($objetadas),
-                order: [],
+                order: [ 0, 'desc' ],
                 language: idioma ?? {},
                 deferRender: true,
                 responsive: true,
@@ -415,11 +406,11 @@
                                 i -= 3
                             }
                             montoFormateado = monto.slice(0, i) + montoFormateado
-                            return montoFormateado
+                            return `$${montoFormateado}`
                         }
                     },
                     { data: 'subvencion.destino' },
-                    { data: 'estado_rendicion.nombre' },
+                    // { data: 'estado_rendicion.nombre' },
                     {
                         data: null,
                         ordeable: false,
@@ -452,7 +443,7 @@
 
             new DataTable('#table_rechazadas', {
                 data: @json($rechazadas),
-                order: [],
+                order: [ 0, 'desc' ],
                 language: idioma ?? {},
                 deferRender: true,
                 responsive: true,
@@ -500,11 +491,11 @@
                                 i -= 3
                             }
                             montoFormateado = monto.slice(0, i) + montoFormateado
-                            return montoFormateado
+                            return `$${montoFormateado}`
                         }
                     },
                     { data: 'subvencion.destino' },
-                    { data: 'estado_rendicion.nombre' },
+                    // { data: 'estado_rendicion.nombre' },
                     {
                         data: null,
                         ordeable: false,
@@ -520,6 +511,13 @@
                                         data-btn-estado="rechazadas">
                                         <i class="fas fa-search"> </i>
                                     </button>
+                                    <!-- Editar -->
+                                    <button class="btn btn-success btn-accion" 
+                                        title="Editar" type="button" 
+                                        onclick="abrirModalEditar(${id}, this)"
+                                        data-btn-estado="rechazadas">
+                                        <i class="fas fa-file-signature"> </i>
+                                    </button>
                                 </div>
 
                             `
@@ -530,7 +528,7 @@
 
             new DataTable('#table_aprobadas', {
                 data: @json($aprobadas),
-                order: [],
+                order: [ 0, 'desc' ],
                 language: idioma ?? {},
                 deferRender: true,
                 responsive: true,
@@ -578,11 +576,11 @@
                                 i -= 3
                             }
                             montoFormateado = monto.slice(0, i) + montoFormateado
-                            return montoFormateado
+                            return `$${montoFormateado}`
                         }
                     },
                     { data: 'subvencion.destino' },
-                    { data: 'estado_rendicion.nombre' },
+                    // { data: 'estado_rendicion.nombre' },
                     {
                         data: null,
                         ordeable: false,
@@ -598,6 +596,13 @@
                                         data-btn-estado="aprobadas">
                                         <i class="fas fa-search"> </i>
                                     </button>
+                                    <!-- Editar -->
+                                    <button class="btn btn-success btn-accion" 
+                                        title="Editar" type="button" 
+                                        onclick="abrirModalEditar(${id}, this)"
+                                        data-btn-estado="aceptadas">
+                                        <i class="fas fa-file-signature"> </i>
+                                    </button>
                                 </div>
 
                             `
@@ -607,7 +612,16 @@
             });
             const buscador = document.getElementById('buscadorRendiciones');
 
-            // IDs de todas las tablas de rendiciones
+
+            $('.dataTables_filter input')
+                .addClass('w-100 shadow-sm')
+                .css({
+                    'font-size': '0.875rem',
+                    'margin-left': '0'
+                }).attr('placeholder', 'Buscar en subvenciones (RUT, organización, decreto, destino, monto...)');
+            $('.dataTables_filter label').addClass('w-100').css('margin-bottom', '0');
+
+                // IDs de todas las tablas de rendiciones
             const tablasIds = ['table_id', 'table_pendientes', 'table_observadas', 'table_rechazadas'];
 
             // Función para filtrar filas en una tabla específica

@@ -196,44 +196,166 @@ function verDetalleSubvencion(subvencionId){
             document.getElementById('detalle_fecha_asignacion').innerText = fecha_asignacion;
             document.getElementById('detalle_destino').innerText = data.subvencion.destino;
 
-            tabla_detalle = document.getElementById('detalle_acciones')
-            filas_acciones = ''
-            console.log(data.subvencion.rendiciones)
-            data.subvencion.rendiciones.acciones.forEach((accion) =>{
-                fecha_accion = new Date(accion.fecha).toLocaleDateString()
-                filas_acciones += `
-                                                        <tr>
-                                                <td class="text-center px-2">${fecha_accion}</td>
-                                                <td class="px-2">${accion.comentario}</td>
-                                                <td class="px-2">${accion.km_nombre}</td>
-                                                <td>    
-                                            </tr>
-                `
+            console.log(data)
+            document.addEventListener('shown.bs.tab', (e)=>{
+                if (e.target.id === 'tab2-tab'){
+                    if ($.fn.DataTable.isDataTable('#table_acciones_subvencion')) {
+                        $('#table_acciones_subvencion').DataTable().destroy();
+                    }
+                    // tabla acciones rendición
+                    new DataTable('#table_acciones_subvencion', {
+                        data: data.subvencion.rendiciones.acciones,
+                        searching: false,
+                        lengthChange: false,
+                        order: [],
+                        language: idioma ?? {},
+                        deferRender: true,
+                        autoWidth: false,
+                        responsive: true,
+                        paging: false,
+                        order: [[ 1, 'desc' ], [ 2, 'desc' ]],
+                        columns: [
+                            { data: 'id' },
+                            { 
+                                data: 'fecha',
+                                render: function(d){
+                                    if (!d) return 'S/D';
+                                    fecha = new Date(d)
+                                    return fecha.toLocaleDateString()
+                                }
+                            },
+                            { 
+                                data: 'fecha',
+                                render: function(d){
+                                    if (!d) return 'S/D';
+                                    fecha = new Date(d)
+                                    return fecha.toLocaleTimeString('es-CL', {
+                                        hour: '2-digit',
+                                        minute: '2-digit',
+                                        hour12: false
+                                    })
+                                }
+                            },
+                            { data: 'estado_rendicion' },
+                            { data: 'comentario' },
+                            { data: 'km_nombre' }
+                        ]
+                    });
+                } else if (e.target.id === 'tab3-tab') {
+                    if ($.fn.DataTable.isDataTable('#table_subvenciones_anteriores')) {
+                        $('#table_subvenciones_anteriores').DataTable().destroy();
+                    }
+                    $.fn.dataTable.ext.search.push(function (settings, data, dataIndex, rowData, counter) {
+                        // Accede directamente al objeto de datos completo (si está disponible)
+                        const notificacion_row = rowData?.notificacion;
+                        
+                        // Solo mostrar si nombre no es nulo, undefined ni cadena vacía
+                        return !!notificacion_row;
+                    });
+
+                    // tabla acciones rendición
+                    new DataTable('#table_subvenciones_anteriores', {
+                        data: data.anteriores,
+                        searching: false,
+                        lengthChange: false,
+                        language: idioma ?? {},
+                        deferRender: true,
+                        autoWidth: false,
+                        responsive: true,
+                        paging: false,
+                        order: [[ 1, 'desc' ], [ 2, 'desc' ]],
+                        columns: [
+                            { data: 'id' },
+                            { 
+                                data: 'fecha',
+                                render: function(d){
+                                    if (!d) return 'S/D';
+                                    fecha = new Date(d)
+                                    return fecha.toLocaleDateString()
+                                }
+                            },
+                            { 
+                                data: 'fecha',
+                                render: function(d){
+                                    if (!d) return 'S/D';
+                                    fecha = new Date(d)
+                                    return fecha.toLocaleTimeString('es-CL', {
+                                        hour: '2-digit',
+                                        minute: '2-digit',
+                                        hour12: false
+                                    })
+                                }
+                            },
+                            { 
+                                data: 'decreto',
+                                render: function(d){
+                                    if (!d) return 'No leído';
+                                }
+                            },
+                            { 
+                                data: 'monto',
+                                render: function(d){
+                                    if (!d) return 'N/A';
+                                    fecha = new Date(d)
+                                    return fecha.toLocaleDateString({
+                                        hour: '2-digit',
+                                        minute: '2-digit'
+                                    })
+                                }
+                            },
+                            { 
+                                data: 'destino',
+                                render: function(d){
+                                    if (!d) return 'N/A';
+                                    fecha = new Date(d)
+                                    return fecha.toLocaleTimeString()
+                                }
+                            },
+                        ]
+                    });
+
+
+                }
+
+
             })
-            tabla_detalle.innerHTML = filas_acciones
+            // filas_acciones = ''
+            // console.log(data.subvencion.rendiciones)
+            // data.subvencion.rendiciones.acciones.forEach((accion) =>{
+            //     fecha_accion = new Date(accion.fecha).toLocaleDateString()
+            //     filas_acciones += `
+            //                                             <tr>
+            //                                     <td class="text-center px-2">${fecha_accion}</td>
+            //                                     <td class="px-2">${accion.comentario}</td>
+            //                                     <td class="px-2">${accion.km_nombre}</td>
+            //                                     <td>    
+            //                                 </tr>
+            //     `
+            // })
+            // tabla_detalle.innerHTML = filas_acciones
 
             // historial
-            detalle_anteriores = document.getElementById('detalle_anteriores')
-            filas_anteriores = ''
-            if(data.historial.length == 0){
-                filas_anteriores = `<p>No hay otras subvenciones asociadas a esta organización.</p>`
-            } else {
-                console.log(data.historial)
-                data.historial.forEach((anterior)=>{
-                    filas_anteriores +=
-                        `
-                            <tr>
-                                <td class="text-center px-2">${anterior.id}</td>
-                                <td>29/05/2025</td>
-                                <td class="px-2">${anterior.decreto}</td>
-                                <td class="px-2">${anterior.monto}</td>
-                                <td class="px-2">${anterior.destino}</td>
-                            </tr>
-                        `
-                })
-            }
+            // detalle_anteriores = document.getElementById('detalle_anteriores')
+            // filas_anteriores = ''
+            // if(data.historial.length == 0){
+            //     filas_anteriores = `<p>No hay otras subvenciones asociadas a esta organización.</p>`
+            // } else {
+            //     console.log(data.historial)
+            //     data.historial.forEach((anterior)=>{
+            //         filas_anteriores +=
+            //             `
+            //                 <tr>
+            //                     <td class="text-center px-2">${anterior.id}</td>
+            //                     <td>29/05/2025</td>
+            //                     <td class="px-2">${anterior.decreto}</td>
+            //                     <td class="px-2">${anterior.monto}</td>
+            //                     <td class="px-2">${anterior.destino}</td>
+            //                 </tr>
+            //             `
+            //     })
+            // }
 
-            detalle_anteriores.innerHTML = filas_anteriores
+            // detalle_anteriores.innerHTML = filas_anteriores
             // ficha detalles organización
             if(Object.keys(data.subvencion.data_organizacion).length > 1){
                 // declarar variables

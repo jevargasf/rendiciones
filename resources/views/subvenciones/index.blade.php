@@ -12,17 +12,9 @@
             </h5>
 
             <!-- Buscador -->
-            <div class="row mb-3">
-                <div class="col-12">
-                    <div class="position-relative">
-                        <i class="fas fa-search position-absolute"
-                            style="left: 15px; top: 50%; transform: translateY(-50%); color: #6c757d; z-index: 10;"></i>
-                        <input type="text" class="form-control ps-5" id="buscadorSubvenciones"
-                            placeholder="Buscar en subvenciones (RUT, organización, decreto, destino, monto...)"
-                            autocomplete="off" style="padding-left: 45px;">
+                    <div class="col-md-12 w-100 mt-4" id="contenedor_busqueda">
                     </div>
-                </div>
-            </div>
+
 
             <!--Tabla Datos Subvenciones con data table -->
 
@@ -76,8 +68,8 @@
         subvenciones = @json($subvenciones);
         $('#table_subvenciones').DataTable({
         data: subvenciones,
-        order: [],
-        language: idioma ?? {},
+        order: [ 0, 'desc' ],
+        language: idioma,
         deferRender: true,
         responsive: true,
         columns: [
@@ -124,7 +116,7 @@
                         i -= 3
                     }
                     montoFormateado = monto.slice(0, i) + montoFormateado
-                    return montoFormateado
+                    return `$${montoFormateado}`
                 }
             },
             { data: 'destino' },
@@ -166,7 +158,15 @@
             }
         ]
     });
-
+    $('#contenedor_busqueda').append($('.dataTables_filter'));
+    $('.dataTables_filter').addClass('d-flex mb-0');
+    $('.dataTables_filter input')
+        .addClass('form-control w-100 shadow-sm')
+        .css({
+            'padding': '0.375rem 0.75rem',
+            'font-size': '0.875rem'
+        }).attr('placeholder', 'Buscar en subvenciones (RUT, organización, decreto, destino, monto...)');
+    $('.dataTables_filter label').addClass('w-100').css('margin-bottom', '0');
 })                
     </script>
 

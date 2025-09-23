@@ -16,8 +16,7 @@ class Rendicion extends Model
     protected $fillable = [
         'subvencion_id',
         'estado_rendicion_id',
-        'estado',
-        'motivo_eliminacion'
+        'estado'
     ];
     
     /**
