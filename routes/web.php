@@ -48,16 +48,7 @@ Route::prefix('rendiciones')->group(function () {
     Route::post('crear', [RendicionController::class, 'crear'])->name('rendiciones.crear');
     Route::post('/obtener',[RendicionController::class, 'obtener'])->name('rendiciones.obtener'); 
     Route::post('/cambiar-estado',[RendicionController::class, 'cambiarEstado'])->name('rendiciones.cambiarEstado'); 
+    Route::post('/actualizar',[RendicionController::class, 'actualizar'])->name('rendiciones.actualizar'); 
     Route::post('/eliminar', [RendicionController::class, 'eliminar'])->name('rendiciones.eliminar');
 
 });
-
-// Route::prefix('personas')->group(function () {
-
-//     Route::post('obtener', [PersonaController::class, 'obtener'])->name('personas.obtener');
-//     Route::post('buscar', [PersonaController::class, 'buscar'])->name('personas.buscar');
-//     Route::post('guardar', [PersonaController::class, 'guardar'])->name('personas.guardar');
-
-// });
-
-//});  

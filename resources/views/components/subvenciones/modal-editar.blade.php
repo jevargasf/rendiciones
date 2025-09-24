@@ -40,7 +40,7 @@
                                     Nro decreto
                                 </label>
                                 <div class="col-sm-8">
-                                    <input class="form-control form-control-sm shadow-sm" id="decreto_editar" name="numero_decreto"
+                                    <input class="form-control form-control-sm shadow-sm" id="decreto_editar" name="decreto"
                                         type="text" placeholder="324-2500"/>
                                 </div>
                             </div>
