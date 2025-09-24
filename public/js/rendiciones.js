@@ -58,8 +58,8 @@ function verDetalleRendicion(id, button) {
             const comentario = document.getElementById('comentario_detalle')
             const btnCambiarEstado = document.getElementById('btnCambiarEstado')
 
-            // si la tabla es en revisión u objetadas, renderizar select de cambio de estado
-            if(button.dataset.btnEstado == 'revision' || button.dataset.btnEstado == 'objetadas'){
+            // si la tabla es en revisión u observadas, renderizar select de cambio de estado
+            if(button.dataset.btnEstado == 'revision' || button.dataset.btnEstado == 'observadas'){
                 // select de estados rendición
                 btnCambiarEstado.hidden = false
                 estadosSelect.disabled = false

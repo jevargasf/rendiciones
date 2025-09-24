@@ -22,8 +22,8 @@
                         En revisión
                     </button>
 
-                    <button class="nav-link" id="nav-objetadas-tab" data-bs-toggle="tab"
-                        data-bs-target="#nav-objetadas" type="button" role="tab" aria-controls="nav-objetadas"
+                    <button class="nav-link" id="nav-observadas-tab" data-bs-toggle="tab"
+                        data-bs-target="#nav-observadas" type="button" role="tab" aria-controls="nav-observadas"
                         aria-selected="false">
                         Observadas
                     </button>
@@ -67,10 +67,10 @@
                 </div>
 
                 <!-- PESTAÑA PENDIENTES DATATABLE -->
-                <div class="tab-pane fade" id="nav-objetadas" role="tabpanel" aria-labelledby="nav-objetadas-tab"
+                <div class="tab-pane fade" id="nav-observadas" role="tabpanel" aria-labelledby="nav-observadas-tab"
                     tabindex="0">
                     <div class="table-responsive mt-3">
-                        <table id="table_objetadas" class="table table-striped align-middle w-100">
+                        <table id="table_observadas" class="table table-striped align-middle w-100">
                             <thead>
                                 <tr>
                                     <th>#</th>
@@ -359,8 +359,8 @@
             });
 
             // Prueba Data Tables - Pestaña Pendientes //
-            new DataTable('#table_objetadas', {
-                data: @json($objetadas),
+            new DataTable('#table_observadas', {
+                data: @json($observadas),
                 order: [ 0, 'desc' ],
                 language: idioma ?? {},
                 deferRender: true,
@@ -426,14 +426,14 @@
                                     <button class="btn btn-accion" data-bs-target="#modalVerDetallesRendicion"
                                         onclick="verDetalleRendicion(${id}, this)"
                                         data-bs-toggle="modal" title="Ver detalles" type="button"
-                                        data-btn-estado="objetadas">
+                                        data-btn-estado="observadas">
                                         <i class="fas fa-search"> </i>
                                     </button>
                                     <!-- Editar -->
                                     <button class="btn btn-success btn-accion" 
                                         title="Editar" type="button" 
                                         onclick="abrirModalEditar(${id}, this)"
-                                        data-btn-estado="objetadas">
+                                        data-btn-estado="observadas">
                                         <i class="fas fa-file-signature"> </i>
                                     </button>
                                 </div>

@@ -93,28 +93,50 @@ class RendicionController extends BaseController
             ->where('estado', 1)
             ->where('estado_rendicion_id', 2) // En revisión
             ->get();
-
+        
+        if(!$revision->isEmpty()){
+            foreach($revision as $rendicion){
+                $rendicion = $this->conseguirDetalleOrganizacion($rendicion, '/resources/data/endpoint.json');
+            }
+        }
+        
         // Observadas (estado_rendicion_id = 3)
-        $objetadas = Rendicion::with(['subvencion', 'estadoRendicion'])
+        $observadas = Rendicion::with(['subvencion', 'estadoRendicion'])
             ->where('estado', 1)
             ->where('estado_rendicion_id', 3) // Observadas
             ->get();
 
+        if(!$observadas->isEmpty()){
+            foreach($observadas as $rendicion){
+                $rendicion = $this->conseguirDetalleOrganizacion($rendicion, '/resources/data/endpoint.json');
+            }
+        }
         // Rechazadas (estado_rendicion_id = 4)
         $rechazadas = Rendicion::with(['subvencion', 'estadoRendicion'])
             ->where('estado', 1)
             ->where('estado_rendicion_id', 4) // Rechazadas
             ->get();
 
+        if(!$rechazadas->isEmpty()){
+            foreach($rechazadas as $rendicion){
+                $rendicion = $this->conseguirDetalleOrganizacion($rendicion, '/resources/data/endpoint.json');
+            }
+        }
         // Aprobadas (estado_rendicion_id = 5)
         $aprobadas = Rendicion::with(['subvencion', 'estadoRendicion'])
             ->where('estado', 1)
             ->where('estado_rendicion_id', 5) // Aprobadas
             ->get();
-
+        
+        if(!$aprobadas->isEmpty()){
+            foreach($aprobadas as $rendicion){
+                $rendicion = $this->conseguirDetalleOrganizacion($rendicion, '/resources/data/endpoint.json');
+            }
+        }
+        
         return view(
             'rendiciones.index',
-            compact('revision', 'objetadas', 'rechazadas', 'aprobadas')
+            compact('revision', 'observadas', 'rechazadas', 'aprobadas')
         );
     }
 
@@ -163,19 +185,6 @@ class RendicionController extends BaseController
             
             // Buscar rendición solo estado 1 = Creada
             $rendicion = Rendicion::where([['id', '=', $data_validada['id']], ['estado', '=', 1], ['estado_rendicion_id', '=', 1]])->first();
-            
-            // if (!$rendicion) {
-            //     $rendicion = Rendicion::create([
-            //         'subvencion_id' => $request->subvencion_id,
-            //         'estado_rendicion_id' => 2, // Estado "En Revisión" (ID 2)
-            //         'estado' => 1
-            //     ]);
-            // } else {
-            //     // Actualizar estado de rendición existente a "En Revisión"
-            //     $rendicion->update([
-            //         'estado_rendicion_id' => 2 // Estado "En Revisión" (ID 2)
-            //     ]);
-            // }
             
             // Cambiar el estado de la rendición a 2 (en revisión)
             $rendicion->update([
@@ -270,6 +279,7 @@ class RendicionController extends BaseController
             $resource = new RendicionResource($rendicion[0]);
             
             $rendicion[0]->setAttribute('subvencion', $this->conseguirDetalleOrganizacion($rendicion[0]->subvencion, '/resources/data/endpoint.json'));
+            
             $estados_rendicion = EstadoRendicion::whereBetween('id', [3, 5])->get();
             return response()->json([
                 'success' => true,
