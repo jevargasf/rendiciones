@@ -78,7 +78,7 @@ class SubvencionController extends BaseController
             // Validar formulario
             $request->validate([
                 'fecha_decreto' => 'required|date',
-                'numero_decreto' => 'required|string|max:255',
+                'decreto' => 'required|string|max:255',
                 'seleccionar_archivo' => 'required|file|mimes:xls,xlsx|max:10240' // 10MB máximo
             ]);
 
@@ -172,7 +172,7 @@ class SubvencionController extends BaseController
                     // o validar si es un rut correcto antes de escribirlo en la bd
                     // porque escribe campo vacío hasta el momento
                     $subvencion = Subvencion::create([
-                        'decreto' => $request->numero_decreto,
+                        'decreto' => $request->decreto,
                         'fecha_decreto' => $request->fecha_decreto,
                         'monto' => $fila_validada['monto'],
                         'fecha_asignacion' => $fila_validada['fecha'],
@@ -417,7 +417,8 @@ class SubvencionController extends BaseController
                 'destino' => 'required|string|max:1000',
                 'rut' => 'required|regex:/^[0-9]{1,2}[0-9]{6}-[0-9kK]$/',
                 'fecha_decreto' => 'required|date',
-                'numero_decreto' => 'required|string|max:255',
+                'fecha_asignacion' => 'required|date',
+                'decreto' => 'required|string|max:255',
                 'monto' => 'required|integer'
             ]);
 
@@ -436,9 +437,9 @@ class SubvencionController extends BaseController
             $subvencion->update([
                 'destino' => $request->destino,
                 'rut' => $rutNormalizado,
-                'numero_decreto' => $request->decreto,
+                'decreto' => $request->decreto,
                 'fecha_decreto' => $request->fecha_decreto,
-                'numero_decreto' => $request->numero_decreto,
+                'fecha_asignacion' => $request->fecha_asignacion,
                 'monto' => $request->monto
             ]);
 

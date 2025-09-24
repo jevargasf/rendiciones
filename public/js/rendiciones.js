@@ -309,6 +309,171 @@ document.getElementById('btnCambiarEstado').addEventListener('click', async func
         });
     }
 })
+
+/*Editar*/
+// Función para abrir modal de edición con datos de la rendición
+function abrirModalEditar(rendicionId) {
+    // Obtener token CSRF
+    let csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+    
+    // Si no se encuentra en meta, buscar en inputs
+    if (!csrfToken) {
+        csrfToken = document.querySelector('input[name="_token"]')?.value;
+    }
+    
+    // Si aún no se encuentra, usar jQuery si está disponible
+    if (!csrfToken && typeof $ !== 'undefined') {
+        csrfToken = $('meta[name="csrf-token"]').attr('content');
+    }
+    
+    if (!csrfToken) {
+        console.error('No se pudo obtener el token CSRF');
+        Swal.fire({
+            title: "Error",
+            text: "Error de configuración: No se pudo obtener el token de seguridad",
+            icon: "error",
+            confirmButtonText: "Aceptar"
+        });
+        return;
+    }
+    
+    // Obtener datos de la subvención
+    fetch(`${window.apiBaseUrl}rendiciones/obtener`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-Requested-With': 'XMLHttpRequest',
+            'Accept': 'application/json',
+            'X-CSRF-TOKEN': csrfToken
+        },
+        body: JSON.stringify({ id: rendicionId })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            console.log(data)
+            fecha_decreto = new Date(data.rendicion.subvencion.fecha_decreto).toLocaleDateString()
+            fecha_asignacion = new Date(data.rendicion.subvencion.fecha_asignacion).toLocaleDateString()
+            // Llenar el formulario con los datos
+            document.getElementById('subvencion_id').value = data.rendicion.subvencion.id;
+            document.getElementById('rut_editar').value = data.rendicion.subvencion.rut;
+            document.getElementById('organizacion_editar').value = data.rendicion.subvencion.organizacion;
+            document.getElementById('decreto_editar').value = data.rendicion.subvencion.decreto;
+            document.getElementById('fecha_decreto_editar').value = fecha_decreto;
+            document.getElementById('fecha_asignacion_editar').value = fecha_asignacion;
+            document.getElementById('destino_editar').value = data.rendicion.subvencion.destino;
+            document.getElementById('monto_editar').value = data.rendicion.subvencion.monto;
+            
+            // Mostrar el modal
+            const modalEditar = new bootstrap.Modal(document.getElementById('modalEditar'));
+            modalEditar.show();
+        } else {
+            Swal.fire({
+                title: "Error",
+                text: data.message || "Error al cargar los datos de la rendición",
+                icon: "error",
+                confirmButtonText: "Aceptar"
+            });
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        Swal.fire({
+            title: "Error",
+            text: "Error al cargar los datos de la rendición",
+            icon: "error",
+            confirmButtonText: "Aceptar"
+        });
+    });
+}
+
+// Event listener para el botón de editar
+document.querySelector("#btnFormEditar").addEventListener("click", async function(event) {
+    event.preventDefault();
+    
+    // Obtener token CSRF
+    let csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+    
+    // Si no se encuentra en meta, buscar en inputs
+    if (!csrfToken) {
+        csrfToken = document.querySelector('input[name="_token"]')?.value;
+    }
+    
+    // Si aún no se encuentra, usar jQuery si está disponible
+    if (!csrfToken && typeof $ !== 'undefined') {
+        csrfToken = $('meta[name="csrf-token"]').attr('content');
+    }
+    
+    if (!csrfToken) {
+        console.error('No se pudo obtener el token CSRF');
+        Swal.fire({
+            title: "Error",
+            text: "Error de configuración: No se pudo obtener el token de seguridad",
+            icon: "error",
+            confirmButtonText: "Aceptar"
+        });
+        return;
+    }
+    
+    const form = document.getElementById('formEditarRendicion');
+    const formData = new FormData(form);
+    
+    // Convertir FormData a JSON
+    const data = {};
+    for (let [key, value] of formData.entries()) {
+        data[key] = value;
+    }
+    // Formatear fechas
+    fechaDecretoSeparada = data['fecha_decreto'].split('/')
+    fechaAsignacionSeparada = data['fecha_asignacion'].split('/')
+    data['fecha_decreto'] = new Date(fechaDecretoSeparada[0], fechaDecretoSeparada[1], fechaDecretoSeparada[2])
+    data['fecha_asignacion'] = new Date(fechaAsignacionSeparada[0], fechaAsignacionSeparada[1], fechaAsignacionSeparada[2])
+    try {
+        const response = await fetch(`${window.apiBaseUrl}rendiciones/actualizar`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest',
+                'Accept': 'application/json',
+                'X-CSRF-TOKEN': csrfToken
+            },
+            body: JSON.stringify(data)
+        });
+        
+        const result = await response.json();
+        
+        if (!response.ok || !result.success) {
+            Swal.fire({
+                title: "Error",
+                text: result.message || "Error al actualizar la rendición",
+                icon: "error",
+                confirmButtonText: "Aceptar"
+            });
+        } else {
+            Swal.fire({
+                title: "Éxito",
+                text: result.message || "Rendición actualizada correctamente",
+                icon: "success",
+                confirmButtonText: "Aceptar"
+            }).then(() => {
+                // Cerrar modal y recargar página
+                const modalEditar = bootstrap.Modal.getInstance(document.getElementById('modalEditar'));
+                modalEditar.hide();
+                window.location.reload();
+            });
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        Swal.fire({
+            title: "Error",
+            text: "Error inesperado al actualizar la rendición",
+            icon: "error",
+            confirmButtonText: "Aceptar"
+        });
+    }
+});
+
+
 /* Función para llenar la tabla de acciones */
 // function llenarTablaAcciones(acciones) {
 //     const tbody = document.getElementById('tbody_acciones_rendicion');
@@ -450,13 +615,13 @@ document.addEventListener('click', function(e) {
         const rendicionId = e.target.getAttribute('data-rendicion-id');
         
         if (rendicionId) {
-            eliminarRendicionTemporalmente(rendicionId);
+            eliminarRendicion(rendicionId);
         }
     }
 });
 
 /* Función para eliminar rendición */
-function eliminarRendicionTemporalmente(id) {
+function eliminarRendicion(id) {
     // Cerrar el modal primero
     console.log("llegó acá")
     const modal = bootstrap.Modal.getInstance(document.getElementById('modalEliminarRendicion'));

@@ -143,6 +143,9 @@
     <!-- Modal Ver Detalles de Rendición -->
     <x-rendiciones.modal-ver-detalles />
 
+    <!-- Modal Editar -->
+    <x-rendiciones.modal-editar />
+
     <!-- Modal Eliminar Rendición -->
     <div class="modal fade" id="modalEliminarRendicion" tabindex="-1" aria-labelledby="modalEliminarRendicionLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">

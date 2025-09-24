@@ -27,13 +27,13 @@
                                 </div>
                             </div>
                             <div class="row tight flex-nowrap align-items-center mb-3">
-                                <label class="col-label fw-bold mb-0" for="numero_decreto">
+                                <label class="col-label fw-bold mb-0" for="decreto">
                                     N.° Decreto
                                     <span class="text-danger"> * </span>
                                 </label>
                                 <div class="col-field">
-                                    <input class="form-control form-control-sm input-compact-220" id="numero_decreto"
-                                        name="numero_decreto" placeholder="Ej: 2025-458" required=""
+                                    <input class="form-control form-control-sm input-compact-220" id="decreto"
+                                        name="decreto" placeholder="Ej: 2025-458" required=""
                                         type="text" />
                                 </div>
                             </div>

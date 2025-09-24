@@ -351,9 +351,53 @@ class RendicionController extends BaseController
             ]);
         }
     }
-    /**
-     * Eliminar una rendición (cambiar estado de subvención a 1 y estado_rendicion_id a 1)
-     */
+
+    public function actualizar(Request $request){
+        try{
+            $request->validate([
+                'id' => 'required|integer|exists:subvenciones,id',
+                'destino' => 'required|string|max:1000',
+                'rut' => 'required|regex:/^[0-9]{1,2}[0-9]{6}-[0-9kK]$/',
+                'fecha_decreto' => 'required|date',
+                'fecha_asignacion' => 'required|date',
+                'decreto' => 'required|string|max:255',
+                'monto' => 'required|integer'
+            ]);
+
+            $rendicion = Rendicion::findOrFail($request->id);
+
+            // Normalizar RUT si es necesario
+            $rutNormalizado = $this->normalizarRut($request->rut);
+            if (!$rutNormalizado) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'RUT inválido'
+                ]);
+            }
+
+            // Actualizar los datos subvención
+            $rendicion->subvencion->update([
+                'destino' => $request->destino,
+                'rut' => $rutNormalizado,
+                'decreto' => $request->decreto,
+                'fecha_decreto' => $request->fecha_decreto,
+                'fecha_asignacion' => $request->fecha_asignacion,
+                'monto' => $request->monto
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Rendición actualizada correctamente',
+                'data' => $rendicion
+            ]);
+        }catch(Exception $e){
+            return response()->json([
+                'success' => false,
+                'message' => 'Error al actualizar la subvención: ' . $e->getMessage()
+            ]);
+        }
+    }
+
     public function eliminar(Request $request)
     {
         try {
