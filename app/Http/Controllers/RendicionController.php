@@ -345,14 +345,14 @@ class RendicionController extends BaseController
                         $correo = $persona->correo;
                         if(!in_array($correo, $correos)){
                             $correos[] = $correo;
+                            Notificacion::create([
+                                'destinatario' => $correo,
+                                'fecha_envio' => now(),
+                                'accion_id' => $accion->id,
+                                'estado_notificacion' => 0,
+                                'estado' => 1
+                            ]);
                         }
-                        Notificacion::create([
-                            'destinatario' => $correo,
-                            'fecha_envio' => now(),
-                            'accion_id' => $accion->id,
-                            'estado_notificacion' => 0,
-                            'estado' => 1
-                        ]);
                         // El payload de la notificación sale del modelo
                         // notificación + la referencia a la acción que lo generó
                     }

@@ -146,6 +146,9 @@
     <!-- Modal Editar -->
     <x-rendiciones.modal-editar />
 
+    <!-- Modal Cambiar Estado -->
+    <x-rendiciones.modal-cambiar-estado/>
+    
     <!-- Modal Eliminar Rendición -->
     <div class="modal fade" id="modalEliminarRendicion" tabindex="-1" aria-labelledby="modalEliminarRendicionLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
@@ -328,6 +331,7 @@
                         searchable: false,
                         render: function(data, type, row){
                             id = row.id
+                            subvencion_id = row.subvencion.id
                             return `
                                 <div class="d-flex justify-content-center align-items-center gap-1 flex-wrap">
                                     <!-- Ver detalles -->
@@ -343,6 +347,12 @@
                                         onclick="abrirModalEditar(${id}, this)"
                                         data-btn-estado="revision">
                                         <i class="fas fa-file-signature"> </i>
+                                    </button>
+                                    <!-- Rendir subvención -->
+                                    <button class="btn btn-success btn-accion"
+                                        onclick="abrirModalCambiarEstado(${subvencion_id})"
+                                        title="Cambiar estado" type="button">
+                                        <i class="fas fa-clipboard-check icon-static-blue"></i>
                                     </button>
                                     <!-- Eliminar -->
                                     <button class="btn btn-success btn-accion btn-eliminar-rendicion" 
@@ -420,6 +430,7 @@
                         searchable: false,
                         render: function(data, type, row){
                             id = row.id
+                            subvencion_id = row.subvencion.id
                             return `
                                 <div class="d-flex justify-content-center align-items-center gap-1 flex-wrap">
                                     <!-- Ver detalles -->
@@ -435,6 +446,12 @@
                                         onclick="abrirModalEditar(${id}, this)"
                                         data-btn-estado="observadas">
                                         <i class="fas fa-file-signature"> </i>
+                                    </button>
+                                    <!-- Rendir subvención -->
+                                    <button class="btn btn-success btn-accion"
+                                        onclick="abrirModalCambiarEstado(${subvencion_id})"
+                                        title="Cambiar estado" type="button">
+                                        <i class="fas fa-clipboard-check icon-static-blue"></i>
                                     </button>
                                 </div>
 

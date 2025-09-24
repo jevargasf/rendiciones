@@ -474,6 +474,105 @@ document.querySelector("#btnFormEditar").addEventListener("click", async functio
 });
 
 
+/* Cambiar estado */
+// Función para abrir modal de rendir subvención con datos reales
+function abrirModalCambiarEstado(rendicionId) {
+    // Obtener token CSRF
+    let csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+    
+    // Si no se encuentra en meta, buscar en inputs
+    if (!csrfToken) {
+        csrfToken = document.querySelector('input[name="_token"]')?.value;
+    }
+    
+    // Si aún no se encuentra, usar jQuery si está disponible
+    if (!csrfToken && typeof $ !== 'undefined') {
+        csrfToken = $('meta[name="csrf-token"]').attr('content');
+    }
+    
+    if (!csrfToken) {
+        console.error('No se pudo obtener el token CSRF');
+        Swal.fire({
+            title: "Error",
+            text: "Error de configuración: No se pudo obtener el token de seguridad",
+            icon: "error",
+            confirmButtonText: "Aceptar"
+        });
+        return;
+    }
+    
+    // Obtener datos de la subvención y opciones
+    fetch(`${window.apiBaseUrl}subvenciones/obtener-datos-rendir`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-Requested-With': 'XMLHttpRequest',
+            'Accept': 'application/json',
+            'X-CSRF-TOKEN': csrfToken
+        },
+        body: JSON.stringify({ id: rendicionId })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Llenar ID de subvención
+            document.getElementById('rendicion_id').value = data.subvencion.rendiciones.id;
+            // Llenar datos de la subvención
+            document.getElementById('rut_organizacion_rendir').textContent = data.subvencion.rut;
+            document.getElementById('nombre_organizacion_rendir').textContent = data.subvencion.data_organizacion.nombre_organizacion;
+            document.getElementById('decreto_rendir').textContent = data.subvencion.decreto;
+            document.getElementById('monto_rendir').textContent = '$' + data.subvencion.monto.toLocaleString('es-CL');
+            document.getElementById('destino_subvencion_rendir').textContent = data.subvencion.destino;
+            document.getElementById('estado_actual_rendir').textContent = data.subvencion.rendiciones.estado_rendicion.nombre;
+
+            // Llenar opciones de cargos
+            const cargoSelect = document.getElementById('persona_cargo');
+            const estadosSelect = document.getElementById('select_estados');
+            cargoSelect.innerHTML = '<option value="">Seleccione...</option>';
+            estadosSelect.innerHTML = '<option value="">Seleccione...</option>';
+            console.log(data)
+            data.cargos.forEach(cargo => {
+                const option = document.createElement('option');
+                option.value = cargo.id;
+                option.textContent = cargo.nombre;
+                cargoSelect.appendChild(option);
+            });
+            data.estados.forEach(estado => {
+                const optionEstados = document.createElement('option');
+                optionEstados.value = estado.id;
+                optionEstados.textContent = estado.nombre;
+                estadosSelect.appendChild(optionEstados);
+            })
+            
+            // Limpiar campos de persona
+            document.getElementById('persona_rut').value = '';
+            document.getElementById('persona_nombre').value = '';
+            document.getElementById('persona_apellido').value = '';
+            document.getElementById('persona_email').value = '';
+            
+            // Mostrar el modal
+            const modalRendir = new bootstrap.Modal(document.getElementById('modalCambiarEstado'));
+            modalRendir.show();
+        } else {
+            Swal.fire({
+                title: "Error",
+                text: data.message || "Error al cargar los datos de la subvención",
+                icon: "error",
+                confirmButtonText: "Aceptar"
+            });
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        Swal.fire({
+            title: "Error",
+            text: "Error al cargar los datos de la subvención",
+            icon: "error",
+            confirmButtonText: "Aceptar"
+        });
+    });
+}
+
 /* Función para llenar la tabla de acciones */
 // function llenarTablaAcciones(acciones) {
 //     const tbody = document.getElementById('tbody_acciones_rendicion');

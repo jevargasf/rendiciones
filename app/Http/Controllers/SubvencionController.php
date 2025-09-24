@@ -531,10 +531,9 @@ class SubvencionController extends BaseController
             // aquí por qué no funciona con el where?
             $subvencion = Subvencion::with(['rendiciones' => function ($query) {
                         $query->where([
-                            ['estado', '=', 1], 
-                            ['estado_rendicion_id', '=', 1]
+                            ['estado', '=', 1]
                         ]);
-                    }]
+                    }, 'rendiciones.estadoRendicion']
             )->where([
                 ['id', '=', $request->id],
                 ['estado', '=', 1],
@@ -548,11 +547,12 @@ class SubvencionController extends BaseController
             $subvencion = $this->conseguirDetalleOrganizacion($subvencion[0], '/resources/data/endpoint.json');
 
             $cargos = Cargo::where('estado', 1)->get();
-            
+            $estados = EstadoRendicion::where([['estado', '=', 1], ['id', '>', 2]])->get();
             return response()->json([
                 'success' => true,
                 'subvencion' => $subvencion,
-                'cargos' => $cargos
+                'cargos' => $cargos,
+                'estados' => $estados
             ]);
 
         } catch (Exception $e) {
