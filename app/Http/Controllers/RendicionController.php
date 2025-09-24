@@ -297,14 +297,15 @@ class RendicionController extends BaseController
 
     public function cambiarEstado(Request $request){
         try{
+            // agregar validación 3, 4, 5 aquí
             $data_validada = $request->validate([
                 'id' => 'required|integer|exists:rendiciones,id',
                 'nuevo_estado_id' => 'required|integer|exists:estados_rendiciones,id',
                 'comentario' => 'required|string|max:400'
             ]);
             // buscar rendición por id
-            $rendicion = Rendicion::with('estadoRendicion')->where('id', $data_validada['id'])->first();
-            
+            $rendicion = Rendicion::with(['estadoRendicion', 'acciones'])->where('id', $data_validada['id'])->first();
+
             // capturar estado actual
             $estado_actual_nombre = $rendicion->estadoRendicion->nombre;
             $estado_nuevo_nombre = EstadoRendicion::where('id', $data_validada['nuevo_estado_id'])->first()->nombre;
@@ -332,15 +333,33 @@ class RendicionController extends BaseController
                     'estado' => 1
                 ]);
 
-                // falta: generar la notificación
+                // array correos es una memoria temporal para no
+                // enviar la misma notificación dos veces
 
+                $correos = [];
                 // registrar la notificación 
-                Notificacion::create([
-                    'fecha_envio' => now(),
-                    'accion_id' => $accion->id,
-                    'estado_notificacion' => 0,
-                    'estado' => 1
-                ]);
+                $acciones = $rendicion->acciones;
+                foreach($acciones as $accion){
+                    if($accion->persona_id){
+                        $persona = Persona::findOrFail($accion->persona_id);
+                        $correo = $persona->correo;
+                        if(!in_array($correo, $correos)){
+                            $correos[] = $correo;
+                        }
+                        Notificacion::create([
+                            'destinatario' => $correo,
+                            'fecha_envio' => now(),
+                            'accion_id' => $accion->id,
+                            'estado_notificacion' => 0,
+                            'estado' => 1
+                        ]);
+                        // El payload de la notificación sale del modelo
+                        // notificación + la referencia a la acción que lo generó
+                    }
+                }
+
+
+
 
                 // retornar la respuesta
                 return response()->json([

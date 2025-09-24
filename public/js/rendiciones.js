@@ -357,7 +357,7 @@ function abrirModalEditar(rendicionId) {
             // Llenar el formulario con los datos
             document.getElementById('subvencion_id').value = data.rendicion.subvencion.id;
             document.getElementById('rut_editar').value = data.rendicion.subvencion.rut;
-            document.getElementById('organizacion_editar').value = data.rendicion.subvencion.organizacion;
+            document.getElementById('organizacion_editar').value = data.rendicion.subvencion.data_organizacion.nombre_organizacion;
             document.getElementById('decreto_editar').value = data.rendicion.subvencion.decreto;
             document.getElementById('fecha_decreto_editar').value = fecha_decreto;
             document.getElementById('fecha_asignacion_editar').value = fecha_asignacion;

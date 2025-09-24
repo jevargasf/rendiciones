@@ -14,6 +14,7 @@ class Notificacion extends Model
     public $timestamps = false;
     
     protected $fillable = [
+        'destinatario',
         'fecha_envio',
         'fecha_lectura',
         'estado_notificacion',
