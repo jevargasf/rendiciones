@@ -455,6 +455,47 @@ function verDetalleSubvencion(subvencionId){
     });
 }
 
+function comprobarPersona(rut){
+    // Realizar petición AJAX
+    fetch('/personas/obtener', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || 
+                           document.querySelector('input[name="_token"]')?.value
+        },
+        body: JSON.stringify({
+            rut: rut
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+            if (data.success){
+                document.getElementById('persona_rut').value = `${data.persona.rut.substr(-11,2)}.${data.persona.rut.substr(-8,3)}.${data.persona.rut.substr(-5)}`
+                document.getElementById('persona_nombre').value = data.persona.nombre
+                document.getElementById('persona_apellido').value = data.persona.apellido
+                document.getElementById('persona_email').value = data.persona.correo
+            } else {
+                document.getElementById('persona_nombre').value = ''
+                document.getElementById('persona_apellido').value = ''
+                document.getElementById('persona_email').value = ''
+            }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+    });
+}
+
+document.getElementById('persona_rut').addEventListener('input', function(){
+    this.value = this.value.trim().replace(/[^0-9kK.-]/g, '')
+    if (this.value.length >= 9 && this.value.length <= 12){
+        rutFormateado = normalizarRut(this.value)
+        if (rutFormateado != null){
+            comprobarPersona(rutFormateado)
+        }
+
+    }
+})
 
 /*Editar*/
 // Función para abrir modal de edición con datos de la subvención
