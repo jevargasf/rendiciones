@@ -84,38 +84,16 @@
                             </div>
 
                             <div class="row mt-4">
-                                <div class="col-sm-6">
+                                <div class="col-sm-12">
                                     <div class="row">
                                         <label for="comentario_destino"
-                                        class="col-sm-4 col-form-label fw-bold">Destino
+                                        class="col-sm-2 col-form-label fw-bold">Destino
                                         </label>
-                                        <div class="col-sm-8">
+                                        <div class="col-sm-10">
                                             <textarea id="detalle_destino" class="form-control shadow-sm" rows="2" readonly>
                                             </textarea>
                                         </div>
                                     </div>
-                                </div>
-                            <div class="col-sm-6">
-                                <div class="row">
-                                    <label class="col-sm-4 col-form-label fw-bold" for="estado_rendicion">Cambiar estado</label>
-                                    <div class="col-sm-8">
-                                        <select class="form-select form-select-sm shadow-sm" id="estados_rendicion"
-                                            style="min-width: 160px" required>
-                                            <option value="">Seleccione...</option>
-                                        </select>
-                                    </div>
-                                </div>
-
-                            </div>
-                            </div>
-                            <div class="row mt-4 align-items-start">
-                                    <label for="comentario_detalle"
-                                        class="col-sm-2 col-form-label fw-bold">
-                                        Comentario
-                                    </label>
-                                    <div class="col-sm-10">
-                                        <textarea class="form-control form-control-sm shadow-sm" id="comentario_detalle" rows="3" 
-                                            placeholder="Descripción que se desee comentar o detalle de documentos adjuntos que serán validados" required></textarea>
                                 </div>
                             </div>
                         </div>

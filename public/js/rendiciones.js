@@ -103,27 +103,14 @@ function verDetalleRendicion(id, button) {
             document.getElementById('detalle_destino').textContent = data.rendicion.subvencion.destino;
             document.getElementById('detalle_estado_actual').textContent = data.rendicion.estado_rendicion.nombre;
 
-            const estadosSelect = document.getElementById('estados_rendicion');
-            const comentario = document.getElementById('comentario_detalle')
             const btnCambiarEstado = document.getElementById('btnNavegacionCambiarEstado')
 
             // si la tabla es en revisión u observadas, renderizar select de cambio de estado
             if(button.dataset.btnEstado == 'revision' || button.dataset.btnEstado == 'observadas'){
                 // select de estados rendición
                 btnCambiarEstado.hidden = false
-                estadosSelect.disabled = false
-                comentario.disabled = false
-                estadosSelect.innerHTML = '<option value="">Seleccione...</option>';
-                data.estados_rendicion.forEach(estado => {
-                    const option = document.createElement('option');
-                    option.value = estado.id;
-                    option.textContent = estado.nombre;
-                    estadosSelect.appendChild(option);
-                });
             }else{
                 btnCambiarEstado.hidden = true
-                estadosSelect.disabled = true
-                comentario.disabled = true
             }
 
             document.addEventListener('shown.bs.tab', (e)=>{
@@ -253,10 +240,6 @@ function verDetalleRendicion(id, button) {
 
 
             })
-
-
-
-
 
 
         } else {
