@@ -14,21 +14,21 @@ class PersonaController
     public function obtener(Request $request)
     {
         try {
-            $request->validate([
-                'id' => 'required|integer|exists:personas,id'
+            $validated = $request->validate([
+                'rut' => 'required|regex:/^[0-9]{1,2}[0-9]{3}[0-9]{3}-[0-9kK]$/|exists:personas,rut'
             ]);
 
-            $persona = Persona::findOrFail($request->id);
+            $persona = Persona::where('rut', $validated['rut'])
+            ->where('estado', 1)
+            ->first();
             
             return response()->json([
                 'success' => true,
-                'data' => [
-                    'id' => $persona->id,
+                'persona' => [
                     'rut' => $persona->rut,
                     'nombre' => $persona->nombre,
                     'apellido' => $persona->apellido,
-                    'correo' => $persona->correo,
-                    'estado' => $persona->estado
+                    'correo' => $persona->correo
                 ]
             ]);
 

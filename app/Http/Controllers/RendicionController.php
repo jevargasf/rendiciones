@@ -300,6 +300,11 @@ class RendicionController extends BaseController
             // agregar validación 3, 4, 5 aquí
             $data_validada = $request->validate([
                 'id' => 'required|integer|exists:rendiciones,id',
+                'rut' => 'required|regex:/^[0-9]{1,2}\.[0-9]{3}\.[0-9]{3}-[0-9kK]$/',
+                'nombre' => 'required|string|max:50',
+                'apellido' => 'required|string|max:50',
+                'correo' => 'required|email|max:100',
+                'cargo' => 'required|integer|exists:cargos,id',
                 'nuevo_estado_id' => 'required|integer|exists:estados_rendiciones,id',
                 'comentario' => 'required|string|max:400'
             ]);
@@ -338,10 +343,10 @@ class RendicionController extends BaseController
 
                 $correos = [];
                 // registrar la notificación 
-                $acciones = $rendicion->acciones;
-                foreach($acciones as $accion){
-                    if($accion->persona_id){
-                        $persona = Persona::findOrFail($accion->persona_id);
+                $acciones_pasadas = $rendicion->acciones;
+                foreach($acciones_pasadas as $accion_pasada){
+                    if($accion_pasada->persona_id){
+                        $persona = Persona::findOrFail($accion_pasada->persona_id);
                         $correo = $persona->correo;
                         if(!in_array($correo, $correos)){
                             $correos[] = $correo;

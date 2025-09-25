@@ -107,11 +107,11 @@
                     <div class="row align-items-start mt-2">
                         <div class="col-sm-9">
                             
-                                <label for="comentario_detalle"
+                                <label for="comentario_cambiar_estado"
                                     class="col-2 col-sm-2 fw-bold small pb-1">
                                     Comentario</label>
                                 <div class="ps-0">
-                                    <textarea class="form-control form-control-sm shadow-sm" id="comentario_detalle" rows="3" 
+                                    <textarea class="form-control form-control-sm shadow-sm" id="comentario_cambiar_estado" rows="3" 
                                         placeholder="Descripción que se desee comentar o detalle de documentos adjuntos que serán validados" required></textarea>
                                 </div>
                             
@@ -136,7 +136,7 @@
                         type="button">
                         Cancelar
                     </button>
-                    <button class="btn btn-app px-4 py-2 rounded-pill shadow-sm" id="btnFormRendir"
+                    <button class="btn btn-app px-4 py-2 rounded-pill shadow-sm" id="btnCambiarEstado"
                         type="submit">
                         Cambiar estado de rendición
                     </button>

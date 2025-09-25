@@ -1,4 +1,53 @@
-var modalRendicion = new bootstrap.Modal(document.getElementById("modalVerDetallesRendicion"));
+// Función para normalizar RUT chileno
+function normalizarRut(rut) {
+    // Limpiar el RUT (quitar puntos, guiones y espacios)
+    let rutLimpio = rut.replace(/[^0-9kK]/g, '');
+    
+    // Un RUT válido debe tener entre 7 y 9 caracteres
+    if (rutLimpio.length < 7 || rutLimpio.length > 9) {
+        return null;
+    }
+    
+    // Separar número y dígito verificador
+    let numero = rutLimpio.slice(0, -1);
+    let dv = rutLimpio.slice(-1).toUpperCase();
+    
+    // Validar que el dígito verificador sea válido
+    if (!validarDigitoVerificador(numero, dv)) {
+        return null;
+    }
+    
+    // Formatear con guión
+    return numero + '-' + dv;
+}
+
+// Función para validar dígito verificador
+function validarDigitoVerificador(numero, dv) {
+    let suma = 0;
+    let multiplicador = 2;
+    
+    // Calcular desde el final hacia el principio
+    for (let i = numero.length - 1; i >= 0; i--) {
+        suma += parseInt(numero[i]) * multiplicador;
+        multiplicador = multiplicador === 7 ? 2 : multiplicador + 1;
+    }
+    
+    let resto = suma % 11;
+    let dvCalculado = 11 - resto;
+    
+    if (dvCalculado === 11) {
+        dvCalculado = '0';
+    } else if (dvCalculado === 10) {
+        dvCalculado = 'K';
+    } else {
+        dvCalculado = dvCalculado.toString();
+    }
+    
+    return dv === dvCalculado;
+}
+
+
+//var modalRendicion = new bootstrap.Modal(document.getElementById("modalVerDetallesRendicion"));
 
 /* Función para mostrar detalles de rendición */
 function verDetalleRendicion(id, button) {
@@ -56,7 +105,7 @@ function verDetalleRendicion(id, button) {
 
             const estadosSelect = document.getElementById('estados_rendicion');
             const comentario = document.getElementById('comentario_detalle')
-            const btnCambiarEstado = document.getElementById('btnCambiarEstado')
+            const btnCambiarEstado = document.getElementById('btnNavegacionCambiarEstado')
 
             // si la tabla es en revisión u observadas, renderizar select de cambio de estado
             if(button.dataset.btnEstado == 'revision' || button.dataset.btnEstado == 'observadas'){
@@ -228,10 +277,8 @@ function verDetalleRendicion(id, button) {
             '<tr><td colspan="5" class="text-center text-muted">Error al cargar las notificaciones</td></tr>';
     })
     
-    // Mostrar el modal
-    if (modalRendicion) {
-        modalRendicion.show();
-    }
+        const modalRendir = new bootstrap.Modal(document.getElementById('modalVerDetallesRendicion'));
+        modalRendir.show();
 }
 
 document.getElementById('btnCambiarEstado').addEventListener('click', async function(event) {
@@ -261,9 +308,14 @@ document.getElementById('btnCambiarEstado').addEventListener('click', async func
 
     try{
         data_estado = {
-            nuevo_estado_id: document.getElementById('estados_rendicion').value,
-            comentario: document.getElementById('comentario_detalle').value,
-            id: document.getElementById('rendicion_id').value
+            nuevo_estado_id: document.getElementById('select_estados').value,
+            comentario: document.getElementById('comentario_cambiar_estado').value,
+            id: document.getElementById('rendicion_id').value,
+            rut: document.getElementById('persona_rut').value,
+            nombre: document.getElementById('persona_nombre').value,
+            apellido: document.getElementById('persona_apellido').value,
+            cargo: document.getElementById('persona_cargo').value,
+            correo: document.getElementById('persona_email').value
         }
 
         const response = await fetch(`${window.apiBaseUrl}rendiciones/cambiar-estado`, {
@@ -310,6 +362,47 @@ document.getElementById('btnCambiarEstado').addEventListener('click', async func
     }
 })
 
+function comprobarPersona(rut){
+    // Realizar petición AJAX
+    fetch('/personas/obtener', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || 
+                           document.querySelector('input[name="_token"]')?.value
+        },
+        body: JSON.stringify({
+            rut: rut
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+            if (data.success){
+                document.getElementById('persona_rut').value = `${data.persona.rut.substr(-11,2)}.${data.persona.rut.substr(-8,3)}.${data.persona.rut.substr(-5)}`
+                document.getElementById('persona_nombre').value = data.persona.nombre
+                document.getElementById('persona_apellido').value = data.persona.apellido
+                document.getElementById('persona_email').value = data.persona.correo
+            } else {
+                document.getElementById('persona_nombre').value = ''
+                document.getElementById('persona_apellido').value = ''
+                document.getElementById('persona_email').value = ''
+            }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+    });
+}
+
+document.getElementById('persona_rut').addEventListener('input', function(){
+    this.value = this.value.trim().replace(/[^0-9kK.-]/g, '')
+    if (this.value.length >= 9 && this.value.length <= 12){
+        rutFormateado = normalizarRut(this.value)
+        if (rutFormateado != null){
+            comprobarPersona(rutFormateado)
+        }
+
+    }
+})
 /*Editar*/
 // Función para abrir modal de edición con datos de la rendición
 function abrirModalEditar(rendicionId) {
@@ -476,7 +569,7 @@ document.querySelector("#btnFormEditar").addEventListener("click", async functio
 
 /* Cambiar estado */
 // Función para abrir modal de rendir subvención con datos reales
-function abrirModalCambiarEstado(rendicionId) {
+function abrirModalCambiarEstado(subvencionId) {
     // Obtener token CSRF
     let csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
     
@@ -510,7 +603,7 @@ function abrirModalCambiarEstado(rendicionId) {
             'Accept': 'application/json',
             'X-CSRF-TOKEN': csrfToken
         },
-        body: JSON.stringify({ id: rendicionId })
+        body: JSON.stringify({ id: subvencionId })
     })
     .then(response => response.json())
     .then(data => {
@@ -551,8 +644,9 @@ function abrirModalCambiarEstado(rendicionId) {
             document.getElementById('persona_email').value = '';
             
             // Mostrar el modal
-            const modalRendir = new bootstrap.Modal(document.getElementById('modalCambiarEstado'));
-            modalRendir.show();
+            bootstrap.Modal.getOrCreateInstance(document.getElementById('modalCambiarEstado')).show();
+            
+
         } else {
             Swal.fire({
                 title: "Error",
@@ -573,101 +667,6 @@ function abrirModalCambiarEstado(rendicionId) {
     });
 }
 
-/* Función para llenar la tabla de acciones */
-// function llenarTablaAcciones(acciones) {
-//     const tbody = document.getElementById('tbody_acciones_rendicion');
-    
-//     if (acciones.length === 0) {
-//         tbody.innerHTML = '<tr><td colspan="5" class="text-center text-muted">No hay acciones registradas</td></tr>';
-//         return;
-//     }
-    
-//     let html = '';
-//     acciones.forEach((accion, index) => {
-//         const fecha = new Date(accion.fecha);
-//         const fechaFormateada = fecha.toLocaleDateString('es-ES');
-//         const horaFormateada = fecha.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
-//         const nombreCompleto = accion.km_nombre || 'Sistema';
-        
-//         html += `
-//             <tr>
-//                 <td class="text-center px-2">${index + 1}</td>
-//                 <td class="text-center px-2">${fechaFormateada}</td>
-//                 <td class="px-2">${horaFormateada}</td>
-//                 <td class="px-2">${accion.estado_rendicion}</td>
-//                 <td class="px-2">${accion.comentario || 'Sin comentario'}</td>
-//                 <td class="px-2">${nombreCompleto}</td>
-//             </tr>
-//         `;
-//     });
-    
-//     tbody.innerHTML = html;
-// }
-
-/* Función para llenar la tabla de notificaciones */
-// function llenarTablaNotificaciones(notificaciones) {
-//     const tbody = document.getElementById('tbody_notificaciones_rendicion');
-    
-//     if (notificaciones.length === 0) {
-//         tbody.innerHTML = '<tr><td colspan="5" class="text-center text-muted">No hay notificaciones registradas</td></tr>';
-//         return;
-//     }
-    
-//     let html = '';
-//     notificaciones.forEach((notificacion, index) => {
-//         const fecha = new Date(notificacion.fecha_envio);
-//         const fechaFormateada = fecha.toLocaleDateString('es-ES');
-//         const horaFormateada = fecha.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
-//         const estadoBadge = notificacion.fecha_lectura ? 
-//             '<span class="badge bg-success">Leído</span>' : 
-//             '<span class="badge bg-warning">No leído</span>';
-        
-//         html += `
-//             <tr>
-//                 <td class="text-center px-2">${notificacion.id}</td>
-//                 <td class="text-center px-2">${fechaFormateada}</td>
-//                 <td class="px-2">${horaFormateada}</td>
-//                 <td class="px-2">Notificación</td>
-//                 <td class="px-2">${estadoBadge}</td>
-//             </tr>
-//         `;
-//     });
-    
-//     tbody.innerHTML = html;
-// }
-
-// /* Detalle de rendición - Tabla Rendidas */
-// document.querySelector("#table_id")?.addEventListener("click", async function (e) {
-//     if (e.target && e.target.matches("i.fa-search")) {
-//         let id = e.target.getAttribute("data-id");
-//         let subvencionId = e.target.getAttribute("data-subvencion");
-//         mostrarDetalleRendicion(id, subvencionId);
-//     }
-// });
-
-// /* Detalle de rendición - Tabla Pendientes */
-// document.querySelector("#table_pendientes")?.addEventListener("click", async function (e) {
-//     if (e.target && e.target.matches("i.fa-search")) {
-//         let id = e.target.getAttribute("data-id");
-//         mostrarDetalleRendicion(id);
-//     }
-// });
-
-// /* Detalle de rendición - Tabla Observadas */
-// document.querySelector("#table_observadas")?.addEventListener("click", async function (e) {
-//     if (e.target && e.target.matches("i.fa-search")) {
-//         let id = e.target.getAttribute("data-id");
-//         mostrarDetalleRendicion(id);
-//     }
-// });
-
-// /* Detalle de rendición - Tabla Rechazadas */
-// document.querySelector("#table_rechazadas")?.addEventListener("click", async function (e) {
-//     if (e.target && e.target.matches("i.fa-search")) {
-//         let id = e.target.getAttribute("data-id");
-//         mostrarDetalleRendicion(id);
-//     }
-// });
 
 /* Event listener para botón eliminar rendición */
 document.addEventListener('click', function(e) {
@@ -722,7 +721,6 @@ document.addEventListener('click', function(e) {
 /* Función para eliminar rendición */
 function eliminarRendicion(id) {
     // Cerrar el modal primero
-    console.log("llegó acá")
     const modal = bootstrap.Modal.getInstance(document.getElementById('modalEliminarRendicion'));
     modal.hide();
     
@@ -791,3 +789,37 @@ function eliminarRendicion(id) {
     });
 }
 
+// Reiniciar pestañas modal ver detalles
+document.getElementById('modalVerDetallesRendicion').addEventListener('hidden.bs.modal', function (e) {
+    // Tabs nav
+  const tabs = document.querySelectorAll('#modalVerDetallesRendicion button.nav-link');
+  // Tab panes
+  const panes = document.querySelectorAll('#modalVerDetallesRendicion .tab-content .tab-pane');
+
+  // Quitar active y show de todas
+  tabs.forEach(tab => tab.classList.remove('active'));
+  panes.forEach(pane => {
+    pane.classList.remove('active');
+    pane.classList.remove('show');
+  });
+
+  // Poner active y show en el primero
+  if(tabs.length > 0)
+  {
+    tabs[0].classList.add('active');
+    tabs[0].classList.add('show');
+  }
+  if(panes.length > 0) {
+    panes[0].classList.add('active');
+    panes[0].classList.add('show');
+  }
+  console.log(e);
+  
+});
+
+// Rellenar datos modal cambiar estado al cerrar modal ver detalles
+document.getElementById('btnNavegacionCambiarEstado').addEventListener('click', ()=>{
+    rendicion_id = document.getElementById('rendicion_id')
+    abrirModalCambiarEstado(rendicion_id.value)
+    
+})

@@ -181,9 +181,9 @@
                     data-bs-dismiss="modal">
                     <i class="fa-solid fa-xmark me-2"></i>Cerrar
                 </button>
-                <button class="btn btn-app px-4 py-2 rounded-pill shadow-sm" id="btnCambiarEstado"
-                    type="submit">
-                    Cambiar estado
+
+                <button class="btn btn-app px-4 py-2 rounded-pill shadow-sm" id="btnNavegacionCambiarEstado" data-bs-target="#modalCambiarEstado" data-bs-toggle="modal" data-bs-dismiss="modal">
+                    Ir a cambiar estado
                 </button>
             </div>
         </div>

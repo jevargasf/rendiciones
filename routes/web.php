@@ -52,3 +52,9 @@ Route::prefix('rendiciones')->group(function () {
     Route::post('/eliminar', [RendicionController::class, 'eliminar'])->name('rendiciones.eliminar');
 
 });
+
+Route::prefix('personas')->group(function () {
+
+    Route::post('/obtener',[PersonaController::class, 'obtener'])->name('personas.obtener'); 
+
+});

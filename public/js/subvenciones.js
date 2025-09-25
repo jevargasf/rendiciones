@@ -1003,7 +1003,7 @@ document.getElementById('btnFormRendir').addEventListener('click', async functio
 
 
 document.getElementById('modalVerDetalles').addEventListener('hidden.bs.modal', function (e) {
-    // Tabs nav
+// Tabs nav
   const tabs = document.querySelectorAll('#modalVerDetalles button.nav-link');
   // Tab panes
   const panes = document.querySelectorAll('.tab-content .tab-pane');

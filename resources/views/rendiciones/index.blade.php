@@ -199,50 +199,6 @@
         </div>
     </div>
 
-
-    <!-- Modal Formulario -->
-    <!-- <div class="modal fade" id="modalForm" tabindex="-1">
-        <div class="modal-dialog modal-xl modal-dialog-centered">
-            <div class="modal-content shadow-lg rounded-4 overflow-hidden">
-                <div class="modal-header modal-header-app">
-                    <h5 class="modal-title fw-bold" id="modalFormTitulo">Cargando...</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
-                        aria-label="Close"></button>
-                </div>
-
-                <form id="form">
-                    <div class="modal-body p-4">
-                        <div class="container">
-                            <div class="p-4 rounded">
-                                <div class="mb-3">
-                                    <label for="titulo" class="form-label required fw-bold">Título</label>
-                                    <input type="text" class="form-control shadow-sm" id="titulo"
-                                        name="titulo" required placeholder="Ej: Educación Rancagua empoderado..." />
-                                </div>
-
-                                <div class="mb-3">
-                                    <label for="descripcion" class="form-label required fw-bold">Descripción</label>
-                                    <textarea class="form-control shadow-sm" id="descripcion" name="descripcion" rows="8" required
-                                        placeholder="Ej: Potenciar y fomentar la educación ambiental..."></textarea>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="modal-footer d-flex justify-content-between p-3 border-top bg-light">
-                        <button type="button" class="btn btn-outline-secondary px-4 py-2 rounded-pill"
-                            data-bs-dismiss="modal">
-                            <i class="fa-solid fa-arrow-left me-2"></i>Cerrar
-                        </button>
-                        <button type="submit" class="btn btn-app px-4 py-2 rounded-pill shadow-sm"
-                            id="btnForm">Registrar</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div> -->
-
-
     <!-- Footer -->
     <div class="row fixed-bottom bg-light" style="border-top: 1px solid #eee">
         <div class="col-md-12">
@@ -335,9 +291,9 @@
                             return `
                                 <div class="d-flex justify-content-center align-items-center gap-1 flex-wrap">
                                     <!-- Ver detalles -->
-                                    <button class="btn btn-accion" data-bs-target="#modalVerDetallesRendicion"
+                                    <button class="btn btn-accion"
                                         onclick="verDetalleRendicion(${id}, this)" data-btn-estado="revision" 
-                                        data-bs-toggle="modal" title="Ver detalles" type="button"
+                                        title="Ver detalles" type="button"
                                         data-btn-estado="revision">
                                         <i class="fas fa-search"> </i>
                                     </button>
@@ -434,9 +390,9 @@
                             return `
                                 <div class="d-flex justify-content-center align-items-center gap-1 flex-wrap">
                                     <!-- Ver detalles -->
-                                    <button class="btn btn-accion" data-bs-target="#modalVerDetallesRendicion"
+                                    <button class="btn btn-accion"
                                         onclick="verDetalleRendicion(${id}, this)"
-                                        data-bs-toggle="modal" title="Ver detalles" type="button"
+                                        title="Ver detalles" type="button"
                                         data-btn-estado="observadas">
                                         <i class="fas fa-search"> </i>
                                     </button>
@@ -525,9 +481,9 @@
                             return `
                                 <div class="d-flex justify-content-center align-items-center gap-1 flex-wrap">
                                     <!-- Ver detalles -->
-                                    <button class="btn btn-accion" data-bs-target="#modalVerDetallesRendicion"
+                                    <button class="btn btn-accion"
                                         onclick="verDetalleRendicion(${id}, this)"
-                                        data-bs-toggle="modal" title="Ver detalles" type="button"
+                                        title="Ver detalles" type="button"
                                         data-btn-estado="rechazadas">
                                         <i class="fas fa-search"> </i>
                                     </button>
@@ -610,9 +566,9 @@
                             return `
                                 <div class="d-flex justify-content-center align-items-center gap-1 flex-wrap">
                                     <!-- Ver detalles -->
-                                    <button class="btn btn-accion" data-bs-target="#modalVerDetallesRendicion"
+                                    <button class="btn btn-accion"
                                         onclick="verDetalleRendicion(${id}, this)"
-                                        data-bs-toggle="modal" title="Ver detalles" type="button"
+                                        title="Ver detalles" type="button"
                                         data-btn-estado="aprobadas">
                                         <i class="fas fa-search"> </i>
                                     </button>
@@ -620,7 +576,7 @@
                                     <button class="btn btn-success btn-accion" 
                                         title="Editar" type="button" 
                                         onclick="abrirModalEditar(${id}, this)"
-                                        data-btn-estado="aceptadas">
+                                        data-btn-estado="aprobadas">
                                         <i class="fas fa-file-signature"> </i>
                                     </button>
                                 </div>
@@ -630,8 +586,6 @@
                     }
                 ]
             });
-            const buscador = document.getElementById('buscadorRendiciones');
-
 
             $('.dataTables_filter input')
                 .addClass('w-100 shadow-sm')
@@ -641,62 +595,6 @@
                 }).attr('placeholder', 'Buscar en subvenciones (RUT, organización, decreto, destino, monto...)');
             $('.dataTables_filter label').addClass('w-100').css('margin-bottom', '0');
 
-                // IDs de todas las tablas de rendiciones
-            const tablasIds = ['table_id', 'table_pendientes', 'table_observadas', 'table_rechazadas'];
-
-            // Función para filtrar filas en una tabla específica
-            // function filtrarFilasEnTabla(tablaId, termino) {
-            //     const tabla = document.getElementById(tablaId);
-            //     if (!tabla) return;
-
-            //     const filas = tabla.querySelectorAll('tbody tr');
-            //     const terminoLower = termino.toLowerCase();
-
-            //     filas.forEach(fila => {
-            //         const celdas = fila.querySelectorAll('td');
-            //         let coincide = false;
-
-            //         // Buscar en todas las celdas excepto la última (opciones)
-            //         for (let i = 0; i < celdas.length - 1; i++) {
-            //             const texto = celdas[i].textContent.toLowerCase();
-            //             if (texto.includes(terminoLower)) {
-            //                 coincide = true;
-            //                 break;
-            //             }
-            //         }
-
-            //         // Mostrar u ocultar fila
-            //         fila.style.display = coincide ? '' : 'none';
-            //     });
-                
-            //     // No actualizar numeración después de filtrar - mantener numeración original
-            // }
-
-            // Función para filtrar todas las tablas
-            // function filtrarTodasLasTablas(termino) {
-            //     tablasIds.forEach(tablaId => {
-            //         filtrarFilasEnTabla(tablaId, termino);
-            //     });
-            // }
-
-            // // Inicializar ordenamiento para todas las tablas
-            // tablasIds.forEach(tablaId => {
-            //     inicializarOrdenamiento(tablaId);
-            // });
-
-            // Evento de búsqueda en tiempo real
-            // buscador.addEventListener('input', function() {
-            //     const termino = this.value.trim();
-            //     filtrarTodasLasTablas(termino);
-            // });
-
-            // // Limpiar búsqueda con Escape
-            // buscador.addEventListener('keydown', function(e) {
-            //     if (e.key === 'Escape') {
-            //         this.value = '';
-            //         filtrarTodasLasTablas('');
-            //     }
-            // });
         });
     </script>
 
