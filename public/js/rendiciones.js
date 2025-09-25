@@ -46,11 +46,16 @@ function verDetalleRendicion(id, button) {
             }
             // rendición con data subvención y organización
             document.getElementById('rendicion_id').value = data.rendicion.id;
-            document.getElementById('detalle_fecha_decreto').textContent = data.rendicion.subvencion.fecha_decreto;
-            document.getElementById('detalle_decreto').textContent = data.rendicion.subvencion.decreto;
-            document.getElementById('detalle_monto').textContent = data.rendicion.subvencion.monto;
+         // document.getElementById('detalle_fecha_decreto').textContent = data.rendicion.subvencion.fecha_decreto; //Corrección fecha decreto para que aparezca sólo día, mes y año
+            document.getElementById('detalle_fecha_decreto').textContent = new Date(data.rendicion.subvencion.fecha_decreto).toLocaleDateString('es-CL');
 
-            document.getElementById('detalle_fecha_asignacion').textContent = data.rendicion.subvencion.fecha_asignacion;
+            document.getElementById('detalle_decreto').textContent = data.rendicion.subvencion.decreto;
+           // document.getElementById('detalle_monto').textContent = data.rendicion.subvencion.monto; Se reemplaza con el código de abajo para que aparezca signo peso y punto
+            document.getElementById('detalle_monto').textContent = `$${data.rendicion.subvencion.monto.toLocaleString('es-CL')}`;  
+
+         // document.getElementById('detalle_fecha_asignacion').textContent = data.rendicion.subvencion.fecha_asignacion; Se reemplaza con el código de abajo
+            document.getElementById('detalle_fecha_asignacion').textContent = new Date(data.rendicion.subvencion.fecha_asignacion).toLocaleDateString('es-CL'); //Corrección fecha decreto para que aparezca sólo día, mes y año
+
             document.getElementById('detalle_destino').textContent = data.rendicion.subvencion.destino;
             document.getElementById('detalle_estado_actual').textContent = data.rendicion.estado_rendicion.nombre;
 
@@ -102,7 +107,7 @@ function verDetalleRendicion(id, button) {
                                 render: function(d){
                                     if (!d) return 'S/D';
                                     fecha = new Date(d)
-                                    return fecha.toLocaleDateString()
+                                    return fecha.toLocaleDateString() // ver si se puede modificar por hora
                                 }
                             },
                             { 

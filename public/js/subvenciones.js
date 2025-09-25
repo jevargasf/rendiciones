@@ -224,7 +224,8 @@ function verDetalleSubvencion(subvencionId){
 
             document.getElementById('detalle_fecha_decreto').innerText = fecha_decreto;
             document.getElementById('detalle_decreto').innerText = data.subvencion.decreto;
-            document.getElementById('detalle_monto').innerText = data.subvencion.monto;
+          //document.getElementById('detalle_monto').innerText = data.subvencion.monto; -> Reemplaza por código de abajo para agregar signo $ y punto en monto
+            document.getElementById('detalle_monto').innerText = `$${data.subvencion.monto.toLocaleString('es-CL')}`;
 
             document.getElementById('detalle_fecha_asignacion').innerText = fecha_asignacion;
             document.getElementById('detalle_destino').innerText = data.subvencion.destino;
