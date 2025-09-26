@@ -28,9 +28,9 @@ class AccionResource extends JsonResource
             'persona' => new PersonaResource($this->whenLoaded('persona')),
             'cargo' => new CargoResource($this->whenLoaded('cargo')),
             'estado' => $this->estado,
-            'notificacion' => $this->when(
-                $this->notificacion != null,
-                new NotificacionResource($this->notificacion)
+            'notificaciones' => $this->when(
+                $this->notificaciones != null,
+                new NotificacionResource($this->notificaciones)
             )
         ];
     }

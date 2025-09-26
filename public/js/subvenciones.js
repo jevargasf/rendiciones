@@ -280,7 +280,7 @@ function verDetalleSubvencion(subvencionId){
                     }
                     $.fn.dataTable.ext.search.push(function (settings, data, dataIndex, rowData, counter) {
                         // Accede directamente al objeto de datos completo (si está disponible)
-                        const notificacion_row = rowData?.notificacion;
+                        const notificacion_row = rowData?.notificaciones;
                         
                         // Solo mostrar si nombre no es nulo, undefined ni cadena vacía
                         return !!notificacion_row;

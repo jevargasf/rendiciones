@@ -1,7 +1,6 @@
 <x-app title="Rendiciones">
     <x-header />
 
-
     <!-- Encabezado principal -->
     <div class="container justify-content-center py-3 mt-3">
         <div class="shadow-sm p-3 mb-5 bg-body rounded">
@@ -226,6 +225,7 @@
         // Funcionalidad del buscador y ordenamiento para rendiciones
         document.addEventListener('DOMContentLoaded', function() {
             // Prueba Data tables - Pestaña Rendiciones
+
             new DataTable('#table_revision', {
                 data: @json($revision),
                 order: [ 0, 'desc' ],
@@ -261,8 +261,7 @@
                                 }
                     },
                     { 
-                        data: '',
-                        defaultContent: 'S/D'
+                        data: 'subvencion.data_organizacion.nombre_organizacion'
                     },
                     { data: 'subvencion.decreto' },
                     { 
@@ -360,8 +359,7 @@
                                 }
                     },
                     { 
-                        data: '',
-                        defaultContent: 'S/D'
+                        data: 'subvencion.data_organizacion.nombre_organizacion'
                     },
                     { data: 'subvencion.decreto' },
                     { 
@@ -452,7 +450,7 @@
                                 }
                     },
                     { 
-                        data: '',
+                        data: 'subvencion.data_organizacion.nombre_organizacion',
                         defaultContent: 'S/D'
                     },
                     { data: 'subvencion.decreto' },
@@ -537,8 +535,7 @@
                                 }
                     },
                     { 
-                        data: '',
-                        defaultContent: 'S/D'
+                        data: 'subvencion.data_organizacion.nombre_organizacion'
                     },
                     { data: 'subvencion.decreto' },
                     { 

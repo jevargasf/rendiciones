@@ -53,8 +53,8 @@ class Accion extends Model
         return $this->belongsTo(Cargo::class, 'cargo_id');
     }
 
-    public function notificacion()
+    public function notificaciones()
     {
-        return $this->hasOne(Notificacion::class, 'accion_id');
+        return $this->hasMany(Notificacion::class, 'accion_id');
     }
 }

@@ -165,7 +165,7 @@ function verDetalleRendicion(id, button) {
                     console.log($.fn.dataTable.ext.search)
                     $.fn.dataTable.ext.search.push(function (settings, data, dataIndex, rowData, counter) {
                         // Accede directamente al objeto de datos completo (si está disponible)
-                        const notificacion_row = rowData?.notificacion;
+                        const notificacion_row = rowData?.notificaciones;
                         
                         // Solo mostrar si nombre no es nulo, undefined ni cadena vacía
                         return !!notificacion_row;
@@ -175,7 +175,10 @@ function verDetalleRendicion(id, button) {
                     new DataTable('#table_notificaciones_rendicion', {
                         data: function () {
                                 // Filtrar solo las acciones que tengan notificación
-                                return data.rendicion.acciones.filter(fila => fila.notificacion);
+                                acciones_con_notificacion = data.rendicion.acciones.filter(fila => fila.notificaciones.length > 0);
+                                notificaciones = []
+                                acciones_con_notificacion.forEach(fila => fila.notificaciones.forEach(notif => notificaciones.push(notif)))
+                                return notificaciones
                             }(),
                         searching: false,
                         lengthChange: false,
@@ -186,9 +189,9 @@ function verDetalleRendicion(id, button) {
                         paging: false,
                         order: [[ 0, 'desc' ], [ 1, 'desc' ]],
                         columns: [
-                            { data: 'notificacion.id' },
+                            { data: 'id' },
                             { 
-                                data: 'notificacion.fecha_envio',
+                                data: 'fecha_envio',
                                 render: function(d){
                                     if (!d) return 'S/D';
                                     fecha = new Date(d)
@@ -196,7 +199,7 @@ function verDetalleRendicion(id, button) {
                                 }
                             },
                             { 
-                                data: 'notificacion.fecha_envio',
+                                data: 'fecha_envio',
                                 render: function(d){
                                     if (!d) return 'S/D';
                                     fecha = new Date(d)
@@ -208,13 +211,13 @@ function verDetalleRendicion(id, button) {
                                 }
                             },
                             { 
-                                data: 'notificacion.estado_notificacion',
+                                data: 'estado_notificacion',
                                 render: function(d){
                                     if (!d) return 'No leído';
                                 }
                             },
                             { 
-                                data: 'notificacion.fecha_lectura',
+                                data: 'fecha_lectura',
                                 render: function(d){
                                     if (!d) return 'N/A';
                                     fecha = new Date(d)
@@ -225,7 +228,7 @@ function verDetalleRendicion(id, button) {
                                 }
                             },
                             { 
-                                data: 'notificacion.fecha_lectura',
+                                data: 'fecha_lectura',
                                 render: function(d){
                                     if (!d) return 'N/A';
                                     fecha = new Date(d)

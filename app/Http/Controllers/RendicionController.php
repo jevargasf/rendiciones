@@ -96,7 +96,7 @@ class RendicionController extends BaseController
         
         if(!$revision->isEmpty()){
             foreach($revision as $rendicion){
-                $rendicion = $this->conseguirDetalleOrganizacion($rendicion, '/resources/data/endpoint.json');
+                $rendicion->subvencion = $this->conseguirDetalleOrganizacion($rendicion->subvencion, '/resources/data/endpoint.json');
             }
         }
         
@@ -108,7 +108,7 @@ class RendicionController extends BaseController
 
         if(!$observadas->isEmpty()){
             foreach($observadas as $rendicion){
-                $rendicion = $this->conseguirDetalleOrganizacion($rendicion, '/resources/data/endpoint.json');
+                $rendicion->subvencion = $this->conseguirDetalleOrganizacion($rendicion->subvencion, '/resources/data/endpoint.json');
             }
         }
         // Rechazadas (estado_rendicion_id = 4)
@@ -119,7 +119,7 @@ class RendicionController extends BaseController
 
         if(!$rechazadas->isEmpty()){
             foreach($rechazadas as $rendicion){
-                $rendicion = $this->conseguirDetalleOrganizacion($rendicion, '/resources/data/endpoint.json');
+                $rendicion->subvencion = $this->conseguirDetalleOrganizacion($rendicion->subvencion, '/resources/data/endpoint.json');
             }
         }
         // Aprobadas (estado_rendicion_id = 5)
@@ -130,7 +130,7 @@ class RendicionController extends BaseController
         
         if(!$aprobadas->isEmpty()){
             foreach($aprobadas as $rendicion){
-                $rendicion = $this->conseguirDetalleOrganizacion($rendicion, '/resources/data/endpoint.json');
+                $rendicion->subvencion = $this->conseguirDetalleOrganizacion($rendicion->subvencion, '/resources/data/endpoint.json');
             }
         }
         
@@ -266,7 +266,7 @@ class RendicionController extends BaseController
                 'estadoRendicion' => function ($query){
                     $query->where('estado', 1);
                 },
-                'acciones.notificacion' => function ($query){
+                'acciones.notificaciones' => function ($query){
                     $query->where('estado', 1);
                 }
             ])
@@ -309,7 +309,7 @@ class RendicionController extends BaseController
                 'comentario' => 'required|string|max:400'
             ]);
             // buscar rendición por id
-            $rendicion = Rendicion::with(['estadoRendicion', 'acciones'])->where('id', $data_validada['id'])->first();
+            $rendicion = Rendicion::with(['estadoRendicion', 'acciones', 'subvencion'])->where('id', $data_validada['id'])->first();
 
             // capturar estado actual
             $estado_actual_nombre = $rendicion->estadoRendicion->nombre;
@@ -319,64 +319,99 @@ class RendicionController extends BaseController
                 'estado_rendicion_id' => $data_validada['nuevo_estado_id']
             ]);
             
-                // Crear acción automática de subvención creada 
-                $km_data = session('usuario');   
-    
-                if ($km_data) {
-                    $nombre_completo = trim($km_data['nombres'] ?? '') . ' ' . 
-                                            ($km_data['apellido_paterno'] ?? '') . ' ' . 
-                                            ($km_data['apellido_materno'] ?? '');
-                
-                // registrar la acción
-                $accion = Accion::create([
-                    'fecha' => now(),
-                    'estado_rendicion' => $estado_nuevo_nombre,
-                    'comentario' => $data_validada['comentario'],
-                    'km_rut' => $km_data['run'],
-                    'km_nombre' => $nombre_completo,
-                    'rendicion_id' => $rendicion->id,
+            // Crear acción asociada al cambio de estado
+            $km_data = session('usuario');   
+
+            if ($km_data) {
+                $nombre_completo = trim($km_data['nombres'] ?? '') . ' ' . 
+                                        ($km_data['apellido_paterno'] ?? '') . ' ' . 
+                                        ($km_data['apellido_materno'] ?? '');
+            // Limpiar rut
+            $data_validada['rut'] = $this->normalizarRut($data_validada['rut']);
+            // Si la persona no está registrada en la bd, registrar sus datos
+            $persona = Persona::where('rut', $data_validada['rut'])->first();
+            if (!$persona){
+                Persona::create([
+                    'rut' => $data_validada['rut'],
+                    'nombre' => $data_validada['nombre'],
+                    'apellido' => $data_validada['apellido'],
+                    'correo' => $data_validada['correo'],
                     'estado' => 1
                 ]);
+            }
 
-                // array correos es una memoria temporal para no
-                // enviar la misma notificación dos veces
+            // Crear la acción referenciando a la persona
+            $persona = Persona::where('rut', $data_validada['rut'])->first();
+            $accion = Accion::create([
+                'fecha' => now(),
+                'estado_rendicion' => $estado_nuevo_nombre,
+                'comentario' => $data_validada['comentario'],
+                'km_rut' => $km_data['run'],
+                'km_nombre' => $nombre_completo,
+                'rendicion_id' => $rendicion->id,
+                'persona_id' => $persona->id,
+                'cargo_id' => $data_validada['cargo'],
+                'estado' => 1
+            ]);
 
-                $correos = [];
-                // registrar la notificación 
-                $acciones_pasadas = $rendicion->acciones;
-                foreach($acciones_pasadas as $accion_pasada){
-                    if($accion_pasada->persona_id){
-                        $persona = Persona::findOrFail($accion_pasada->persona_id);
-                        $correo = $persona->correo;
-                        if(!in_array($correo, $correos)){
-                            $correos[] = $correo;
-                            Notificacion::create([
-                                'destinatario' => $correo,
-                                'fecha_envio' => now(),
-                                'accion_id' => $accion->id,
-                                'estado_notificacion' => 0,
-                                'estado' => 1
-                            ]);
-                        }
-                        // El payload de la notificación sale del modelo
-                        // notificación + la referencia a la acción que lo generó
+            // Enviar el correo a la persona registrada con copia al resto
+            // El que hizo el trámite es el destinatario, se arma arreglo de correos para enviar copia
+            Notificacion::create([
+                'destinatario' => $persona->correo,
+                'fecha_envio' => now(),
+                'accion_id' => $accion->id,
+                'estado_notificacion' => 0,
+                'estado' => 1
+            ]);
+            // array correos permite no enviar la misma notificación dos veces y sirve para adjuntar copia
+            $cc = [$persona->correo];
+            $acciones_anteriores = $rendicion->acciones;
+            foreach($acciones_anteriores as $accion_anterior){
+                if($accion_anterior->persona_id != null){
+                    $persona_anterior = Persona::where('id', $accion_anterior->persona_id)->first();
+                    $correo = $persona_anterior->correo;
+                    if(!in_array($correo, $cc)){
+                        $cc[] = $correo;
+                        Notificacion::create([
+                            'destinatario' => $correo,
+                            'fecha_envio' => now(),
+                            'accion_id' => $accion->id,
+                            'estado_notificacion' => 0,
+                            'estado' => 1
+                        ]);
                     }
                 }
+            }
 
-
-
-
-                // retornar la respuesta
-                return response()->json([
-                            'success' => true,
-                            'message' => "Rendición actualizada exitosamente de estado: {$estado_actual_nombre} a estado: {$estado_nuevo_nombre}"
-                        ]); 
-                    }else{
-                        return response()->json([
-                            'success' => false,
-                            'message' => 'Debe iniciar sesión para realizar esta acción'
-                        ]); 
+            // pedir correo organización desde API
+            $rendicion->subvencion = $this->conseguirDetalleOrganizacion($rendicion->subvencion, '/resources/data/endpoint.json');
+            if($rendicion->subvencion->data_organizacion['nombre_organizacion'] != 'S/D'){
+                $correo_organizacion = $rendicion->subvencion->data_organizacion['correo'];
+                // Si el correo organización no está en el array, agrega al array de cc
+                if(!in_array($correo_organizacion, $cc)){
+                    $cc[] = $correo_organizacion;
+                    Notificacion::create([
+                        'destinatario' => $correo_organizacion,
+                        'fecha_envio' => now(),
+                        'accion_id' => $accion->id,
+                        'estado_notificacion' => 0,
+                        'estado' => 1
+                    ]);
                 }
+            }
+            // Crear el payload para evento de correo
+
+            // retornar la respuesta
+            return response()->json([
+                        'success' => true,
+                        'message' => "Rendición actualizada exitosamente de estado: {$estado_actual_nombre} a estado: {$estado_nuevo_nombre}"
+                    ]); 
+                }else{
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Debe iniciar sesión para realizar esta acción'
+                    ]); 
+            }
                 
         }catch(Exception $e){
             return response()->json([
