@@ -172,6 +172,8 @@ function verDetalleSubvencion(subvencionId){
         });
         return;
     }
+
+    
     // Obtener datos de la subvención
     fetch(`${window.apiBaseUrl}subvenciones/obtener`, {
         method: 'POST',
@@ -186,6 +188,12 @@ function verDetalleSubvencion(subvencionId){
     .then(response => response.json())
     .then(data => {
         if (data.success) {
+
+            // Se agrega al modal ver detalle ID de la subvención
+            document.getElementById('modalVerDetallesLabel').textContent = "Detalle de subvención - "+subvencionId;
+
+
+
             // qué pasa si el historial de "otras" llega vacío
             // iterar con los nuevos nombres y estructura del arreglo data
             fecha_decreto = new Date(data.subvencion.fecha_decreto).toLocaleDateString()
@@ -352,6 +360,7 @@ function verDetalleSubvencion(subvencionId){
                 }
 
 
+                            //Tambien a los otros modales de subvención
             })
             // filas_acciones = ''
             // console.log(data.subvencion.rendiciones)
@@ -502,6 +511,9 @@ document.getElementById('persona_rut').addEventListener('input', function(){
 // Función para abrir modal de edición con datos de la subvención
 function abrirModalEditar(subvencionId) {
     console.log(subvencionId)
+
+   
+
     // Obtener token CSRF
     let csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
     
@@ -524,7 +536,9 @@ function abrirModalEditar(subvencionId) {
             confirmButtonText: "Aceptar"
         });
         return;
+        
     }
+
     
     // Obtener datos de la subvención
     fetch(`${window.apiBaseUrl}subvenciones/obtener`, {
@@ -543,6 +557,8 @@ function abrirModalEditar(subvencionId) {
             fecha_decreto = new Date(data.subvencion.fecha_decreto).toLocaleDateString()
             fecha_asignacion = new Date(data.subvencion.fecha_asignacion).toLocaleDateString()
             // Llenar el formulario con los datos
+                        document.getElementById('modalEditarTitulo').textContent = "Editar subvención - "+subvencionId;
+
             document.getElementById('subvencion_id').value = data.subvencion.id;
             document.getElementById('rut_editar').value = data.subvencion.rut;
             document.getElementById('organizacion_editar').value = data.subvencion.data_organizacion.nombre_organizacion;

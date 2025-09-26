@@ -74,6 +74,9 @@ function verDetalleRendicion(id, button) {
             });
             return;
         } 
+
+        document.getElementById('modalVerDetallesRendicionLabel').textContent = "Detalle de rendición - "+id;
+
     // Obtener datos de la subvención
     fetch(`${window.apiBaseUrl}rendiciones/obtener`, {
         method: 'POST',

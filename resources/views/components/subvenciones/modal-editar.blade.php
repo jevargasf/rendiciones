@@ -3,7 +3,7 @@
     <div class="modal-dialog modal-dialog-centered" style="max-width: 600px">
         <div class="modal-content shadow-md rounded-4 overflow-hidden">
             <div class="modal-header modal-header-app">
-                <h6 class="modal-title fw-bold">Editar subvención</h6>
+                <h6 class="modal-title fw-bold" id="modalEditarTitulo">Editar subvención</h6>
                 <button aria-label="Cerrar" class="btn-close btn-close-white" data-bs-dismiss="modal"
                     type="button"></button>
             </div>

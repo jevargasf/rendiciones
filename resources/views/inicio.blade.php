@@ -12,11 +12,7 @@
                 <li class="nav-item" role="presentation">
                     <button class="nav-link active" id="graficos-tab" data-bs-toggle="tab" data-bs-target="#graficos"
                         type="button" role="tab" aria-controls="graficos" aria-selected="true">Graficos</button>
-                </li>
-                <li class="nav-item" role="presentation">
-                    <button class="nav-link" id="historial-tab" data-bs-toggle="tab" data-bs-target="#historial"
-                        type="button" role="tab" aria-controls="historial" aria-selected="false">Historial</button>
-                </li>
+                </li>             
             </ul>
         @endif
 
