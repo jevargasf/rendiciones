@@ -230,7 +230,6 @@ function verDetalleSubvencion(subvencionId){
             document.getElementById('detalle_fecha_asignacion').innerText = fecha_asignacion;
             document.getElementById('detalle_destino').innerText = data.subvencion.destino;
 
-            console.log(data)
             document.addEventListener('shown.bs.tab', (e)=>{
                 if (e.target.id === 'tab2-tab'){
                     if ($.fn.DataTable.isDataTable('#table_acciones_subvencion')) {

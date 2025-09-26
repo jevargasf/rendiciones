@@ -40,7 +40,7 @@
                                 id="subvenciones-tab" data-bs-toggle="pill" role="tab" aria-controls="subvenciones"
                                 aria-selected="true">
                                 <div class="total-card" style="height:10rem">
-                                    <div class="total-number">{{ $subvenciones }}</div>
+                                    <div class="total-number"></div>
                                     <div class="total-label">Subvenciones</div>
                                 </div>
                             </a>
@@ -52,7 +52,7 @@
                                 id="rendiciones-tab" data-bs-toggle="pill" role="tab" aria-controls="rendiciones"
                                 aria-selected="true">
                                 <div class="total-card" style="height:10rem">
-                                    <div class="total-number">{{$rendiciones}}</div>
+                                    <div class="total-number"></div>
                                     <div class="total-label">Rendiciones</div>
                                 </div>
                             </a>                
@@ -64,7 +64,7 @@
                                 id="personas-tab" data-bs-toggle="pill" role="tab" aria-controls="personas"
                                 aria-selected="true">
                                 <div class="total-card" style="height:10rem">
-                                    <div class="total-number">{{$personas}}</div>
+                                    <div class="total-number"></div>
                                     <div class="total-label">Personas</div>
                                 </div>
                             </a>
@@ -76,7 +76,10 @@
                 <div class="tab-content mb-5" id="tabContent">
                     <div class="shadow-sm border rounded mm-5 tab-pane show active" id="subvenciones"
                         style="height: 450px" role="tabpanel" aria-labelledby="pills-subvenciones-tab" tabindex="0">
-                        Subvenciones</div>
+                        <canvas id="grafico_subvenciones">
+
+                        </canvas>    
+                    </div>
                     <div class="shadow-sm border rounded mm-5 tab-pane" id="rendiciones" style="height: 450px"
                         role="tabpanel" aria-labelledby="pills-rendiciones-tab" tabindex="0">Rendiciones</div>
                     <div class="shadow-sm border rounded mm-5 tab-pane" id="personas" style="height: 450px"
@@ -98,6 +101,31 @@
         </div>
 
     </div>
+    <script>
+        const ctx = document.getElementById('grafico_subvenciones');
+        console.log(@json($rendiciones))
+        document.addEventListener('DOMContentLoaded', ()=>{
+            new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'],
+                datasets: [{
+                label: '# de subvenciones',
+                data: @json($rendiciones),
+                borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                y: {
+                    beginAtZero: true
+                }
+                }
+            }
+            });
+        })
+
+    </script> <!-- se llama el script relacionado con la página -->
 
     <script src="https://code.highcharts.com/highcharts.js"></script>
     <script src="https://code.highcharts.com/highcharts-more.js"></script>

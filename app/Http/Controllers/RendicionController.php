@@ -14,8 +14,7 @@ use App\Models\Persona;
 use App\Http\Controllers\SubvencionController;
 use App\Http\Resources\RendicionResource;
 use Illuminate\Support\Facades\File as FileReader;
-
-use function PHPSTORM_META\type;
+use App\Helpers\Mailman;
 
 class RendicionController extends BaseController
 {
@@ -326,93 +325,129 @@ class RendicionController extends BaseController
                 $nombre_completo = trim($km_data['nombres'] ?? '') . ' ' . 
                                         ($km_data['apellido_paterno'] ?? '') . ' ' . 
                                         ($km_data['apellido_materno'] ?? '');
-            // Limpiar rut
-            $data_validada['rut'] = $this->normalizarRut($data_validada['rut']);
-            // Si la persona no está registrada en la bd, registrar sus datos
-            $persona = Persona::where('rut', $data_validada['rut'])->first();
-            if (!$persona){
-                Persona::create([
-                    'rut' => $data_validada['rut'],
-                    'nombre' => $data_validada['nombre'],
-                    'apellido' => $data_validada['apellido'],
-                    'correo' => $data_validada['correo'],
+                // Limpiar rut
+                $data_validada['rut'] = $this->normalizarRut($data_validada['rut']);
+                // Si la persona no está registrada en la bd, registrar sus datos
+                $persona = Persona::where('rut', $data_validada['rut'])->first();
+                if (!$persona){
+                    Persona::create([
+                        'rut' => $data_validada['rut'],
+                        'nombre' => $data_validada['nombre'],
+                        'apellido' => $data_validada['apellido'],
+                        'correo' => $data_validada['correo'],
+                        'estado' => 1
+                    ]);
+                }
+
+                // Crear la acción referenciando a la persona
+                $persona = Persona::where('rut', $data_validada['rut'])->first();
+                $accion = Accion::create([
+                    'fecha' => now(),
+                    'estado_rendicion' => $estado_nuevo_nombre,
+                    'comentario' => $data_validada['comentario'],
+                    'km_rut' => $km_data['run'],
+                    'km_nombre' => $nombre_completo,
+                    'rendicion_id' => $rendicion->id,
+                    'persona_id' => $persona->id,
+                    'cargo_id' => $data_validada['cargo'],
                     'estado' => 1
                 ]);
-            }
 
-            // Crear la acción referenciando a la persona
-            $persona = Persona::where('rut', $data_validada['rut'])->first();
-            $accion = Accion::create([
-                'fecha' => now(),
-                'estado_rendicion' => $estado_nuevo_nombre,
-                'comentario' => $data_validada['comentario'],
-                'km_rut' => $km_data['run'],
-                'km_nombre' => $nombre_completo,
-                'rendicion_id' => $rendicion->id,
-                'persona_id' => $persona->id,
-                'cargo_id' => $data_validada['cargo'],
-                'estado' => 1
-            ]);
+                // array correos permite no enviar la misma notificación dos veces
+                $cc = [];
+                $errores = [];
+                // Enviar notificación por correo a organización
+                $rendicion->subvencion = $this->conseguirDetalleOrganizacion($rendicion->subvencion, '/resources/data/endpoint.json');
+                if($rendicion->subvencion->data_organizacion['nombre_organizacion'] != 'S/D'){
+                    $correo_organizacion = $rendicion->subvencion->data_organizacion['correo'];
+                    // Crear el payload para evento de correo
+                    $data = [
+                        'email' => [
+                                'plantilla_id' => '9',
+                                'asunto' => 'Seguimiento de rendición',
+                                'destinatario' => "$correo_organizacion",
+                        ],
+                        'contenido' => [
+                                'titulo' => "Su rendición ha sido {$estado_nuevo_nombre}",
+                                'mensaje' => 'Estimado usuario/a, su rendición ha sido modificada.',
+                        ]
+                    ];
+            
+                    $mailmanAPI = new Mailman($data, 'send');
 
-            // Enviar el correo a la persona registrada con copia al resto
-            // El que hizo el trámite es el destinatario, se arma arreglo de correos para enviar copia
-            Notificacion::create([
-                'destinatario' => $persona->correo,
-                'fecha_envio' => now(),
-                'accion_id' => $accion->id,
-                'estado_notificacion' => 0,
-                'estado' => 1
-            ]);
-            // array correos permite no enviar la misma notificación dos veces y sirve para adjuntar copia
-            $cc = [$persona->correo];
-            $acciones_anteriores = $rendicion->acciones;
-            foreach($acciones_anteriores as $accion_anterior){
-                if($accion_anterior->persona_id != null){
-                    $persona_anterior = Persona::where('id', $accion_anterior->persona_id)->first();
-                    $correo = $persona_anterior->correo;
-                    if(!in_array($correo, $cc)){
-                        $cc[] = $correo;
+                    $resultado = $mailmanAPI->enviarEmail();
+                    dd($resultado);
+                    if($resultado){
                         Notificacion::create([
-                            'destinatario' => $correo,
+                            'destinatario' => $correo_organizacion,
                             'fecha_envio' => now(),
                             'accion_id' => $accion->id,
                             'estado_notificacion' => 0,
                             'estado' => 1
                         ]);
+                        $cc[] = $correo_organizacion;
+                    } else if($resultado['response']['error']) {
+                        $errores[] = $correo_organizacion;
                     }
                 }
-            }
 
-            // pedir correo organización desde API
-            $rendicion->subvencion = $this->conseguirDetalleOrganizacion($rendicion->subvencion, '/resources/data/endpoint.json');
-            if($rendicion->subvencion->data_organizacion['nombre_organizacion'] != 'S/D'){
-                $correo_organizacion = $rendicion->subvencion->data_organizacion['correo'];
-                // Si el correo organización no está en el array, agrega al array de cc
-                if(!in_array($correo_organizacion, $cc)){
-                    $cc[] = $correo_organizacion;
-                    Notificacion::create([
-                        'destinatario' => $correo_organizacion,
-                        'fecha_envio' => now(),
-                        'accion_id' => $accion->id,
-                        'estado_notificacion' => 0,
-                        'estado' => 1
-                    ]);
+                // Conseguir correos de las acciones anteriores
+                $acciones_anteriores = $rendicion->acciones;
+                foreach($acciones_anteriores as $accion_anterior){
+                    if($accion_anterior->persona_id != null){
+                        $persona_anterior = Persona::where('id', $accion_anterior->persona_id)->first();
+                        $correo = $persona_anterior->correo;
+                        if(!in_array($correo, $cc)){
+                            // Crear el payload para evento de correo
+                            $data = [
+                                'email' => [
+                                        'plantilla_id' => '9',
+                                        'asunto' => 'Seguimiento de rendición',
+                                        'destinatario' => "$correo",
+                                ],
+                                'contenido' => [
+                                        'titulo' => "Su rendición ha sido {$estado_nuevo_nombre}",
+                                        'mensaje' => 'Estimado usuario/a, su rendición ha sido modificada.',
+                                ]
+                            ];
+                    
+                            $mailmanAPI = new Mailman($data, 'send');
+
+                            $resultado = $mailmanAPI->enviarEmail();
+                            if($resultado){
+                                Notificacion::create([
+                                    'destinatario' => $correo,
+                                    'fecha_envio' => now(),
+                                    'accion_id' => $accion->id,
+                                    'estado_notificacion' => 0,
+                                    'estado' => 1
+                                ]);
+                                $cc[] = $correo;
+                            } else if($resultado['response']['error']) {
+                                $errores[] = $correo;
+                            }
+                        }
+                    }
                 }
-            }
-            // Crear el payload para evento de correo
 
-            // retornar la respuesta
-            return response()->json([
-                        'success' => true,
-                        'message' => "Rendición actualizada exitosamente de estado: {$estado_actual_nombre} a estado: {$estado_nuevo_nombre}"
-                    ]); 
+                if(count($errores) == 0){
+                    // retornar la respuesta
+                    return response()->json([
+                                'success' => true,
+                                'message' => 'Rendición actualizada exitosamente de estado:' . strtoupper($estado_actual_nombre) . 'a estado: ' . strtoupper($estado_nuevo_nombre) . '.'
+                            ]); 
                 }else{
                     return response()->json([
-                        'success' => false,
-                        'message' => 'Debe iniciar sesión para realizar esta acción'
-                    ]); 
-            }
-                
+                        'success' => true,
+                        'message' => 'Rendición actualizada exitosamente de estado:' . strtoupper($estado_actual_nombre) . 'a estado: ' . strtoupper($estado_nuevo_nombre) . '.' . 'Ocurrió un error al notificar al(los) siguiente(s) correos:' . $errores . '.'
+                    ]);
+                } 
+            }else{
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Debe iniciar sesión para realizar esta acción.'
+                ]); 
+            }      
         }catch(Exception $e){
             return response()->json([
                 'success' => false,
