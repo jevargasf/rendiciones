@@ -21,7 +21,7 @@ Route::get('/logout', [AuthController::class, 'logout'])->name('logout');
 Route::prefix('estadisticas')->group(function () {
 
     Route::get('/', [EstadisticasController::class, 'index'])->name('estadisticas');
-
+    Route::post('/cambiar-anio', [EstadisticasController::class, 'cambiarAnio'])->name('estadisticas.cambiarAnio');
     //Route::get('/{year}', [InicioController::class, 'getStatistics'])->name('estadisticas.statistics');
 });
 

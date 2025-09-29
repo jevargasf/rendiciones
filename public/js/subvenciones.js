@@ -610,13 +610,11 @@ document.querySelector("#btnFormEditar").addEventListener("click", async functio
     for (let [key, value] of formData.entries()) {
         data[key] = value;
     }
-    console.log('amtes',data['fecha_decreto'], data['fecha_asignacion'])
     // Formatear fechas
     fechaDecretoSeparada = data['fecha_decreto'].split('/')
     fechaAsignacionSeparada = data['fecha_asignacion'].split('/')
     data['fecha_decreto'] = `${fechaDecretoSeparada[2]}-${fechaDecretoSeparada[1].padStart(2, '0')}-${1, fechaDecretoSeparada[0].padStart(2, '0')}`
     data['fecha_asignacion'] = `${fechaAsignacionSeparada[2]}-${fechaAsignacionSeparada[1].padStart(2, '0')}-${1, fechaAsignacionSeparada[0].padStart(2, '0')}`
-    console.log(data);
     
     try {
         const response = await fetch(`${window.apiBaseUrl}subvenciones/actualizar`, {

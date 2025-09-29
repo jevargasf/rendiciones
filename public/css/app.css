@@ -824,6 +824,10 @@ button.btn.btn-app.btn-eliminar:focus {
   height: 10rem!important;
 }
 
+canvas {
+  width: 100% !important;
+  height: auto !important;
+}
                                             /* PAGINA SUBVENCIONES*/
 
 

@@ -136,7 +136,6 @@
         });
     </script>
 
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <!-- SCRIPT BOOTSTRAP 5.3 -->
     <script src="https://cdn.rancagua.cl/assets/bootstrap/5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
