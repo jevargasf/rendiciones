@@ -510,8 +510,8 @@ document.querySelector("#btnFormEditar").addEventListener("click", async functio
     // Formatear fechas
     fechaDecretoSeparada = data['fecha_decreto'].split('/')
     fechaAsignacionSeparada = data['fecha_asignacion'].split('/')
-    data['fecha_decreto'] = new Date(fechaDecretoSeparada[0], fechaDecretoSeparada[1], fechaDecretoSeparada[2])
-    data['fecha_asignacion'] = new Date(fechaAsignacionSeparada[0], fechaAsignacionSeparada[1], fechaAsignacionSeparada[2])
+    data['fecha_decreto'] = `${fechaDecretoSeparada[2]}-${fechaDecretoSeparada[1].padStart(2, '0')}-${1, fechaDecretoSeparada[0].padStart(2, '0')}`
+    data['fecha_asignacion'] = `${fechaAsignacionSeparada[2]}-${fechaAsignacionSeparada[1].padStart(2, '0')}-${1, fechaAsignacionSeparada[0].padStart(2, '0')}`
     try {
         const response = await fetch(`${window.apiBaseUrl}rendiciones/actualizar`, {
             method: 'POST',

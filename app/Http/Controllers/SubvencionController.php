@@ -412,7 +412,7 @@ class SubvencionController extends BaseController
     public function actualizar(Request $request)
     {
         try {
-            $request->validate([
+            $validated = $request->validate([
                 'id' => 'required|integer|exists:subvenciones,id',
                 'destino' => 'required|string|max:1000',
                 'rut' => 'required|regex:/^[0-9]{1,2}[0-9]{6}-[0-9kK]$/',
@@ -423,7 +423,7 @@ class SubvencionController extends BaseController
             ]);
 
             $subvencion = Subvencion::findOrFail($request->id);
-            
+
             // Normalizar RUT si es necesario
             $rutNormalizado = $this->normalizarRut($request->rut);
             if (!$rutNormalizado) {
@@ -438,8 +438,8 @@ class SubvencionController extends BaseController
                 'destino' => $request->destino,
                 'rut' => $rutNormalizado,
                 'decreto' => $request->decreto,
-                'fecha_decreto' => $request->fecha_decreto,
-                'fecha_asignacion' => $request->fecha_asignacion,
+                'fecha_decreto' => $validated['fecha_decreto'],
+                'fecha_asignacion' => $validated['fecha_asignacion'],
                 'monto' => $request->monto
             ]);
 
