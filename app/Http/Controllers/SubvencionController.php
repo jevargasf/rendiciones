@@ -22,6 +22,7 @@ use PhpOffice\PhpSpreadsheet\Shared\Date;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\File as FileReader;
 
+
 class SubvencionController extends BaseController
 {
 
@@ -41,8 +42,6 @@ class SubvencionController extends BaseController
 
     public function index()
     {
-        //dd(Session::all());
-        // Subvenciones no eliminadas y no iniciadas (estado rendición = 1)
         
         $subvenciones = Subvencion::where('estado', 1)
         ->whereHas('rendiciones', function ($query) {
