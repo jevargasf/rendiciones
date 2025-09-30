@@ -123,7 +123,7 @@
                                     <thead>
                                         <tr>
                                             <th>#</th>
-                                            <!-- <th>Destinatario</th> -->
+                                            <th>Destinatario</th>
                                             <th>Fecha envío</th>
                                             <th>Hora envío</th>
                                             <th>Leído</th>

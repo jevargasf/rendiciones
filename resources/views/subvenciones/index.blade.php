@@ -306,6 +306,7 @@
                 const celdas = fila.querySelectorAll('td');
                 
                 // Llenar el modal con los datos de la subvención
+                document.getElementById('modalEliminarSubvencionLabel').textContent = `Eliminar subvenciones decreto N° ${celdas[4].textContent}`
                 document.getElementById('advertencia_eliminar').innerHTML = `Al eliminar esta subvención, se eliminarán <strong>TODAS las subvenciones</strong> asociadas al decreto <strong>${celdas[4].textContent}</strong>. Esta acción no se puede deshacer.`
                 document.getElementById('eliminarSubvencionId').textContent = celdas[0].textContent;
                 document.getElementById('eliminarSubvencionRut').textContent = celdas[2].textContent;

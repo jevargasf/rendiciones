@@ -423,7 +423,6 @@ class RendicionController extends BaseController
                     $mailmanAPI = new Mailman($data, 'send');
 
                     $resultado = $mailmanAPI->enviarEmail();
-                    dd($resultado);
                     if($resultado['http_code'] === 200){
                         Notificacion::create([
                             'destinatario' => $correo_organizacion,

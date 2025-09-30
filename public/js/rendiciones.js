@@ -94,6 +94,7 @@ function verDetalleRendicion(id, button) {
                 document.getElementById('informacion_organizacion').innerText = `(${data.rendicion.subvencion.rut}) ${data.rendicion.subvencion.data_organizacion.nombre_organizacion}`;
             }
             // rendición con data subvención y organización
+            document.getElementById('modalVerDetallesRendicionLabel').innerText = `Detalle de Rendición #${data.rendicion.id}`;
             document.getElementById('rendicion_id').value = data.rendicion.id;
          // document.getElementById('detalle_fecha_decreto').textContent = data.rendicion.subvencion.fecha_decreto; //Corrección fecha decreto para que aparezca sólo día, mes y año
             document.getElementById('detalle_fecha_decreto').textContent = new Date(data.rendicion.subvencion.fecha_decreto).toLocaleDateString('es-CL');
@@ -120,7 +121,6 @@ function verDetalleRendicion(id, button) {
 
             document.addEventListener('shown.bs.tab', (e)=>{
                 if (e.target.id === 'tab2-rendicion-tab'){
-                    console.log($.fn.dataTable.ext)
                     if ($.fn.DataTable.isDataTable('#table_acciones_rendicion')) {
                         $('#table_acciones_rendicion').DataTable().destroy();
                     }
@@ -167,7 +167,6 @@ function verDetalleRendicion(id, button) {
                     if ($.fn.DataTable.isDataTable('#table_notificaciones_rendicion')) {
                         $('#table_notificaciones_rendicion').DataTable().destroy();
                     }
-                    console.log($.fn.dataTable.ext.search)
                     $.fn.dataTable.ext.search.push(function (settings, data, dataIndex, rowData, counter) {
                         // Accede directamente al objeto de datos completo (si está disponible)
                         const notificacion_row = rowData?.notificaciones;
@@ -192,9 +191,12 @@ function verDetalleRendicion(id, button) {
                         autoWidth: false,
                         responsive: true,
                         paging: false,
-                        order: [[ 0, 'desc' ], [ 1, 'desc' ]],
+                        order: [[ 2, 'desc' ], [ 3, 'desc' ]],
                         columns: [
                             { data: 'id' },
+                            { 
+                                data: 'destinatario'
+                            },
                             { 
                                 data: 'fecha_envio',
                                 render: function(d){
@@ -218,7 +220,10 @@ function verDetalleRendicion(id, button) {
                             { 
                                 data: 'estado_notificacion',
                                 render: function(d){
-                                    if (!d) return 'No leído';
+                                    if (!d) {return 'S/D'}
+                                    else if (d === 0) { return 'No leído' }
+                                    else if (d === 1) { return 'Leído' }
+                                    else { return 'S/D' }
                                 }
                             },
                             { 
@@ -435,10 +440,10 @@ function abrirModalEditar(rendicionId) {
     .then(response => response.json())
     .then(data => {
         if (data.success) {
-            console.log(data)
             fecha_decreto = new Date(data.rendicion.subvencion.fecha_decreto).toLocaleDateString()
             fecha_asignacion = new Date(data.rendicion.subvencion.fecha_asignacion).toLocaleDateString()
             // Llenar el formulario con los datos
+            document.getElementById('modalEditarRendicionLabel').textContent = `Editar rendición #${data.rendicion.id}`
             document.getElementById('subvencion_id').value = data.rendicion.subvencion.id;
             document.getElementById('rut_editar').value = data.rendicion.subvencion.rut;
             document.getElementById('organizacion_editar').value = data.rendicion.subvencion.data_organizacion.nombre_organizacion;
@@ -601,6 +606,7 @@ function abrirModalCambiarEstado(subvencionId) {
         if (data.success) {
             // Llenar ID de subvención
             document.getElementById('rendicion_id').value = data.subvencion.rendiciones.id;
+            document.getElementById('modalCambiarEstadoLabel').textContent = data.subvencion.rendiciones.id
             // Llenar datos de la subvención
             document.getElementById('rut_organizacion_rendir').textContent = data.subvencion.rut;
             document.getElementById('nombre_organizacion_rendir').textContent = data.subvencion.data_organizacion.nombre_organizacion;
@@ -614,7 +620,6 @@ function abrirModalCambiarEstado(subvencionId) {
             const estadosSelect = document.getElementById('select_estados');
             cargoSelect.innerHTML = '<option value="">Seleccione...</option>';
             estadosSelect.innerHTML = '<option value="">Seleccione...</option>';
-            console.log(data)
             data.cargos.forEach(cargo => {
                 const option = document.createElement('option');
                 option.value = cargo.id;
@@ -670,6 +675,7 @@ document.addEventListener('click', function(e) {
         const celdas = fila.querySelectorAll('td');
         
         // // Llenar el modal con los datos de la rendición
+        document.getElementById('modalEliminarRendicionLabel').textContent = `Eliminar rendición #${celdas[0].textContent}`
         document.getElementById('eliminarRendicionNumero').textContent = celdas[0].textContent;
         document.getElementById('eliminarRendicionRut').textContent = celdas[2].textContent;
         document.getElementById('eliminarRendicionOrganizacion').textContent = celdas[3].textContent;
@@ -804,7 +810,6 @@ document.getElementById('modalVerDetallesRendicion').addEventListener('hidden.bs
     panes[0].classList.add('active');
     panes[0].classList.add('show');
   }
-  console.log(e);
   
 });
 

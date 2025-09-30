@@ -3,7 +3,7 @@
     <div class="modal-dialog modal-lg modal-dialog-centered">
         <div class="modal-content shadow-md rounded-4 overflow-hidden">
             <div class="modal-header modal-header-app bg-danger">
-                <h5 class="modal-title fw-bold text-white" id="modalEliminarTitulo">
+                <h5 class="modal-title fw-bold text-white" id="modalEliminarSubvencionLabel">
                     <i class="fas fa-exclamation-triangle me-2"></i>
                     Eliminar Subvención
                 </h5>

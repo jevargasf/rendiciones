@@ -6,7 +6,7 @@ use Exception;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
-use App\Services\EnviarCorreoService;
+use App\Services\NotificacionesService;
 
 class CheckRendicionesVencidas extends Command
 {
@@ -15,7 +15,7 @@ class CheckRendicionesVencidas extends Command
      *
      * @var string
      */
-    protected $signature = 'rendiciones:check-vencidas';
+    protected $signature = 'rendiciones:notificar-vencidas';
 
     /**
      * The console command description.
@@ -23,7 +23,10 @@ class CheckRendicionesVencidas extends Command
      * @var string
      */
     protected $description = 'Revisa si se cumplió el plazo máximo de rendición. Cambia a estado "rechazada" todas las rendiciones fuera de plazo y envía una notificación por correo electrónico a la organización cuando faltan 10 días para su vencimiento.';
-    protected $plazo_vencimiento = 30;
+    // El plazo de vencimiento está seteado a 30 días después de la fecha de asignación
+    protected $plazo_vencidas = 30;
+    // El plazo por vencer está seteado a 10 días antes de la fecha de vencimiento final
+    protected $plazo_por_vencer = 20;
     /**
      * Execute the console command.
      */
@@ -32,14 +35,14 @@ class CheckRendicionesVencidas extends Command
     public function handle()
     {
         try{
-            $correoService = app(EnviarCorreoService::class); 
+            $correoService = app(NotificacionesService::class); 
             Log::info("Iniciando revisión de plazo de rendiciones.");
             $rendiciones_vencidas = DB::table('rendiciones')
             ->join('subvenciones', 'rendiciones.subvencion_id', '=', 'subvenciones.id')
             ->where('rendiciones.estado', 1)
             ->where('subvenciones.estado', 1)
             ->whereIn('rendiciones.estado_rendicion_id', [2, 3])
-            ->whereRaw("DATE_ADD(subvenciones.fecha_asignacion, INTERVAL {$this->plazo_vencimiento} DAY) <= NOW()")
+            ->whereRaw("DATE_ADD(subvenciones.fecha_asignacion, INTERVAL {$this->plazo_vencidas} DAY) <= NOW()")
             ->select('rendiciones.id', 'rendiciones.estado_rendicion_id', 'subvenciones.fecha_asignacion')
             ->get();
             

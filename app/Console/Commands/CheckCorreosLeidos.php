@@ -29,7 +29,6 @@ class CheckCorreosLeidos extends Command
      */
     public function handle()
     {
-        // https://appl.rancagua.cl/municipalidad/mailman/api/status
         // Consulta bd
         $no_leidas = Notificacion::where('estado', 1)->where('estado_notificacion', 0)->whereNotNull('email_id')->get();
         // Comprobación de respuesta
@@ -50,8 +49,5 @@ class CheckCorreosLeidos extends Command
                 Log::info('Notificacion id: ' . $notificacion->id . ' Email id: ' . $notificacion->email_id . ' Respuesta: ' . $response['response']['message'] );
             }
         }
-        // Actualización de la db
-
-        // Retorno respuesta: escritura de log
     }
 }
