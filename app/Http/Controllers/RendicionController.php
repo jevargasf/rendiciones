@@ -15,6 +15,7 @@ use App\Http\Controllers\SubvencionController;
 use App\Http\Resources\RendicionResource;
 use Illuminate\Support\Facades\File as FileReader;
 use App\Helpers\Mailman;
+use App\Models\Cargo;
 
 class RendicionController extends BaseController
 {
@@ -293,6 +294,52 @@ class RendicionController extends BaseController
         }
     }
     
+    public function obtenerDatosCambiarEstado(Request $request)
+    {
+        try {
+            //dd($request->all());
+            $request->validate([
+                'id' => 'required|integer|exists:subvenciones,id'
+            ]);
+
+            // aquí por qué no funciona con el where?
+            $subvencion = Subvencion::with(['rendiciones' => function ($query) {
+                        $query->where([
+                            ['estado', '=', 1]
+                        ]);
+                    }, 'rendiciones.estadoRendicion', 'rendiciones.acciones' => function ($query){
+                        $query->where([['persona_id', '!=', null]]);
+                    }]
+            )->where([
+                ['id', '=', $request->id],
+                ['estado', '=', 1],
+                //['rendiciones.estado_rendicion_id', '=', 1],
+                //['rendiciones.estado', '=', 1]
+            ])->get();
+            
+            // aquí si la rendición tiene estado diferente de 1, entonces no dejar que se vuelva a rendir
+            // si la rendición no existe, entonces algo falló, pero habría que crear una
+
+            $subvencion = $this->conseguirDetalleOrganizacion($subvencion[0], '/resources/data/endpoint.json');
+            $persona = Persona::where('estado', 1)->where('id', $subvencion->rendiciones->acciones->first()->persona_id)->first();
+            $cargos = Cargo::where('estado', 1)->get();
+            $estados = EstadoRendicion::where([['estado', '=', 1], ['id', '>', 2]])->get();
+            return response()->json([
+                'success' => true,
+                'subvencion' => $subvencion,
+                'cargos' => $cargos,
+                'estados' => $estados,
+                'persona' => $persona
+            ]);
+
+        } catch (Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error al obtener los datos: ' . $e->getMessage()
+            ]);
+        }
+    }
+
 
     public function cambiarEstado(Request $request){
         try{
@@ -377,9 +424,10 @@ class RendicionController extends BaseController
 
                     $resultado = $mailmanAPI->enviarEmail();
                     dd($resultado);
-                    if($resultado){
+                    if($resultado['http_code'] === 200){
                         Notificacion::create([
                             'destinatario' => $correo_organizacion,
+                            'email_id' => $resultado['response']['email'][0],
                             'fecha_envio' => now(),
                             'accion_id' => $accion->id,
                             'estado_notificacion' => 0,
@@ -414,9 +462,10 @@ class RendicionController extends BaseController
                             $mailmanAPI = new Mailman($data, 'send');
 
                             $resultado = $mailmanAPI->enviarEmail();
-                            if($resultado){
+                            if($resultado['http_code'] === 200){
                                 Notificacion::create([
                                     'destinatario' => $correo,
+                                    'email_id' => $resultado['response']['email'][0],
                                     'fecha_envio' => now(),
                                     'accion_id' => $accion->id,
                                     'estado_notificacion' => 0,

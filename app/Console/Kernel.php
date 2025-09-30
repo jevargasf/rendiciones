@@ -13,6 +13,7 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule): void
     {
         $schedule->command('rendiciones:check-vencidas')->dailyAt('00:00');
+        $schedule->command('notificaciones:check-correos-leidos')->everyThirtyMinutes();
     }
 
     /**

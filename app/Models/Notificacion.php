@@ -15,6 +15,7 @@ class Notificacion extends Model
     
     protected $fillable = [
         'destinatario',
+        'email_id',
         'fecha_envio',
         'fecha_lectura',
         'estado_notificacion',

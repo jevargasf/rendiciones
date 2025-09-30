@@ -54,9 +54,10 @@ class EnviarCorreoService{
 
             $resultado = $mailmanAPI->enviarEmail();
 
-            if($resultado){
+            if($resultado['http_code'] === 200){
                 Notificacion::create([
                     'destinatario' => $correo_organizacion,
+                    'email_id' => $resultado['response']['email'][0],
                     'fecha_envio' => now(),
                     'accion_id' => $accion->id,
                     'estado_notificacion' => 0,
@@ -92,9 +93,11 @@ class EnviarCorreoService{
                     $mailmanAPI = new Mailman($data, 'send');
 
                     $resultado = $mailmanAPI->enviarEmail();
-                    if($resultado){
+
+                    if($resultado['http_code'] === 200){
                         $notificacion = Notificacion::create([
                             'destinatario' => $correo,
+                            'email_id' => $resultado['response']['email'][0],
                             'fecha_envio' => now(),
                             'accion_id' => $accion->id,
                             'estado_notificacion' => 0,

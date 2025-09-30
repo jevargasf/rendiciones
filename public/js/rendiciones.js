@@ -586,7 +586,7 @@ function abrirModalCambiarEstado(subvencionId) {
     }
     
     // Obtener datos de la subvención y opciones
-    fetch(`${window.apiBaseUrl}subvenciones/obtener-datos-rendir`, {
+    fetch(`${window.apiBaseUrl}rendiciones/obtener-datos-cambiar-estado`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -629,10 +629,10 @@ function abrirModalCambiarEstado(subvencionId) {
             })
             
             // Limpiar campos de persona
-            document.getElementById('persona_rut').value = '';
-            document.getElementById('persona_nombre').value = '';
-            document.getElementById('persona_apellido').value = '';
-            document.getElementById('persona_email').value = '';
+            document.getElementById('persona_rut').value = data.persona.rut;
+            document.getElementById('persona_nombre').value = data.persona.nombre;
+            document.getElementById('persona_apellido').value = data.persona.apellido;
+            document.getElementById('persona_email').value = data.persona.correo;
             
             // Mostrar el modal
             bootstrap.Modal.getOrCreateInstance(document.getElementById('modalCambiarEstado')).show();
