@@ -3,7 +3,7 @@
     <div class="modal-dialog modal-dialog-centered" style="max-width: 900px">
         <div class="modal-content shadow-md rounded-4 overflow-hidden">
             <div class="modal-header modal-header-app">
-                <h6 class="modal-title fw-bold">Cambiar Estado Rendición</h6>
+                <h6 class="modal-title fw-bold" id="modalCambiarEstadoLabel">Cambiar Estado Rendición</h6>
                 <button aria-label="Cerrar" class="btn-close btn-close-white" data-bs-dismiss="modal"
                     type="button"></button>
             </div>

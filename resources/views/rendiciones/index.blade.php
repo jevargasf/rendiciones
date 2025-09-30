@@ -223,7 +223,7 @@
         };
 
         // Funcionalidad del buscador y ordenamiento para rendiciones
-        document.addEventListener('DOMContentLoaded', function() {
+        window.addEventListener('DOMContentLoaded', function() {
             // Prueba Data tables - Pestaña Rendiciones
 
             new DataTable('#table_revision', {
@@ -292,7 +292,7 @@
                                     <!-- Ver detalles -->
                                     <button class="btn btn-accion"
                                         onclick="verDetalleRendicion(${id}, this)" data-btn-estado="revision" 
-                                        title="Ver detalles" type="button"
+                                        title="Ver detalles" type="button" data-rendicion-id="${id}"
                                         data-btn-estado="revision">
                                         <i class="fas fa-search"> </i>
                                     </button>
@@ -592,6 +592,14 @@
                 }).attr('placeholder', 'Buscar en subvenciones (RUT, organización, decreto, destino, monto...)');
             $('.dataTables_filter label').addClass('w-100').css('margin-bottom', '0');
 
+            if (localStorage.getItem('abrir_modal_detalles') === 'true'){                
+                localStorage.removeItem('abrir_modal_detalles');
+                const botonModalDetalles = document.querySelector('#table_revision > tbody > tr.odd > td:nth-child(8) > div > button:nth-child(3)');
+                
+                if (botonModalDetalles) {
+                    botonModalDetalles.click();
+                }
+            }
         });
     </script>
 

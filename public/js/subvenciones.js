@@ -190,7 +190,7 @@ function verDetalleSubvencion(subvencionId){
             // iterar con los nuevos nombres y estructura del arreglo data
             fecha_decreto = new Date(data.subvencion.fecha_decreto).toLocaleDateString()
             fecha_asignacion = new Date(data.subvencion.fecha_asignacion).toLocaleDateString()
-            
+            document.getElementById('modalVerDetallesLabel').innerText = `Detalle de subvención #${data.subvencion.id}`
             if (data.subvencion.data_organizacion.error){
             document.getElementById('informacion_organizacion').innerText = `(${data.subvencion.rut})`;
             } else {
@@ -500,7 +500,6 @@ document.getElementById('persona_rut').addEventListener('input', function(){
 /*Editar*/
 // Función para abrir modal de edición con datos de la subvención
 function abrirModalEditar(subvencionId) {
-    console.log(subvencionId)
     // Obtener token CSRF
     let csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
     
@@ -542,6 +541,7 @@ function abrirModalEditar(subvencionId) {
             fecha_decreto = new Date(data.subvencion.fecha_decreto).toLocaleDateString()
             fecha_asignacion = new Date(data.subvencion.fecha_asignacion).toLocaleDateString()
             // Llenar el formulario con los datos
+            document.getElementById('modalEditarSubvencionLabel').innerText = `Editar subvencion #${data.subvencion.id}`
             document.getElementById('subvencion_id').value = data.subvencion.id;
             document.getElementById('rut_editar').value = data.subvencion.rut;
             document.getElementById('organizacion_editar').value = data.subvencion.data_organizacion.nombre_organizacion;
@@ -701,8 +701,8 @@ function abrirModalRendir(subvencionId) {
     .then(response => response.json())
     .then(data => {
         if (data.success) {
-            console.log(data.subvencion.rendiciones)
             // Llenar ID de subvención
+            document.getElementById('modalRendirSubvencionLabel').innerText = `Rendir subvención #${data.subvencion.id}`
             document.getElementById('rendicion_id').value = data.subvencion.rendiciones.id;
             // Llenar datos de la subvención
             document.getElementById('rut_organizacion_rendir').textContent = data.subvencion.rut;
@@ -714,7 +714,6 @@ function abrirModalRendir(subvencionId) {
             // Llenar opciones de cargos
             const cargoSelect = document.getElementById('persona_cargo');
             cargoSelect.innerHTML = '<option value="">Seleccione...</option>';
-            console.log(data)
             data.cargos.forEach(cargo => {
                 const option = document.createElement('option');
                 option.value = cargo.id;
@@ -985,8 +984,8 @@ document.getElementById('btnFormRendir').addEventListener('click', async functio
                 // Cerrar modal y recargar página
                 const modalRendir = bootstrap.Modal.getInstance(document.getElementById('modalRendirsubvencion'));
                 modalRendir.hide();
-                window.location.reload();
-                console.log("llegó acá")
+                window.location.href = '/rendiciones';
+                localStorage.setItem('abrir_modal_detalles', true);
             });
         }
     } catch (error) {

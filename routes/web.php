@@ -41,6 +41,7 @@ Route::prefix('rendiciones')->group(function () {
     Route::get('/', [RendicionController::class, 'index'])->name('rendiciones');
     Route::post('crear', [RendicionController::class, 'crear'])->name('rendiciones.crear');
     Route::post('/obtener',[RendicionController::class, 'obtener'])->name('rendiciones.obtener'); 
+    Route::post('obtener-datos-cambiar-estado', [RendicionController::class, 'obtenerDatosCambiarEstado'])->name('subvenciones.obtener-datos-cambiar-estado');
     Route::post('/cambiar-estado',[RendicionController::class, 'cambiarEstado'])->name('rendiciones.cambiarEstado'); 
     Route::post('/actualizar',[RendicionController::class, 'actualizar'])->name('rendiciones.actualizar'); 
     Route::post('/eliminar', [RendicionController::class, 'eliminar'])->name('rendiciones.eliminar');

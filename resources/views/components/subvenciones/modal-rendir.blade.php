@@ -3,7 +3,7 @@
     <div class="modal-dialog modal-dialog-centered" style="max-width: 900px">
         <div class="modal-content shadow-md rounded-4 overflow-hidden">
             <div class="modal-header modal-header-app">
-                <h6 class="modal-title fw-bold">Rendir Subvención</h6>
+                <h6 class="modal-title fw-bold" id="modalRendirSubvencionLabel">Rendir Subvención</h6>
                 <button aria-label="Cerrar" class="btn-close btn-close-white" data-bs-dismiss="modal"
                     type="button"></button>
             </div>
@@ -120,7 +120,7 @@
                     </button>
                     <button class="btn btn-app px-4 py-2 rounded-pill shadow-sm" id="btnFormRendir"
                         type="submit">
-                        Guardar datos de rendición
+                        Iniciar rendición
                     </button>
                 </div>
             </div>

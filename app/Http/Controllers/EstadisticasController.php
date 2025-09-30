@@ -48,7 +48,18 @@ class EstadisticasController extends BaseController
                 ORDER BY anio desc  
                 '
         );
-
+        if (count($query_anios) === 0){
+            $data = [
+                'grafico' => false,
+                'conteos' => [
+                    'rendiciones' => 0,
+                    'subvenciones' => 0,
+                    'personas' => 0
+                ],
+                'select' => false
+            ];
+            return view('inicio', compact('data'));
+        }
         $anios_disponibles = collect($query_anios)->pluck('anio')->toArray();
         $ultimo_anio = $anios_disponibles[0];
         // pedir todas las rendiciones por estado
