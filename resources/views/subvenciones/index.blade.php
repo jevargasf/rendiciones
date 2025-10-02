@@ -49,7 +49,6 @@
     </div>
     <!-- Modal Agregar Subvención -->
     <x-subvenciones.modal-agregar />
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         document.addEventListener('show.bs.modal', function(e) {
 
@@ -173,128 +172,6 @@
     <script src="{{ asset('js/subvenciones.js') }}" defer></script>
 
     <script>
-        // Funcionalidad del buscador y ordenamiento
-        // document.addEventListener('DOMContentLoaded', function() {
-        //     const buscador = document.getElementById('buscadorSubvenciones');
-        //     const tabla = document.getElementById('table_id');
-        //     const filas = tabla.querySelectorAll('tbody tr');
-        //     const headers = tabla.querySelectorAll('thead th');
-            
-        //     // Variables para el ordenamiento
-        //     let ordenActual = {};
-        //     let filasOriginales = Array.from(filas);
-
-        //     // Función para filtrar filas
-        //     function filtrarFilas(termino) {
-        //         const terminoLower = termino.toLowerCase();
-
-        //         filas.forEach(fila => {
-        //             const celdas = fila.querySelectorAll('td');
-        //             let coincide = false;
-
-        //             // Buscar en todas las celdas excepto la última (opciones)
-        //             for (let i = 0; i < celdas.length - 1; i++) {
-        //                 const texto = celdas[i].textContent.toLowerCase();
-        //                 if (texto.includes(terminoLower)) {
-        //                     coincide = true;
-        //                     break;
-        //                 }
-        //             }
-
-        //             // Mostrar u ocultar fila
-        //             fila.style.display = coincide ? '' : 'none';
-        //         });
-        //     }
-
-            // Función para ordenar la tabla
-        //     function ordenarTabla(columna, direccion) {
-        //         const tbody = tabla.querySelector('tbody');
-        //         const filasArray = Array.from(filas).filter(fila => fila.style.display !== 'none');
-                
-        //         filasArray.sort((a, b) => {
-        //             const valorA = a.cells[columna].textContent.trim();
-        //             const valorB = b.cells[columna].textContent.trim();
-                    
-        //             // Manejar diferentes tipos de datos
-        //             let comparacion = 0;
-                    
-        //             if (columna === 0) { // Columna # (números)
-        //                 comparacion = parseInt(valorA) - parseInt(valorB);
-        //             } else if (columna === 1) { // Fecha
-        //                 const fechaA = new Date(valorA.split('/').reverse().join('-'));
-        //                 const fechaB = new Date(valorB.split('/').reverse().join('-'));
-        //                 comparacion = fechaA - fechaB;
-        //             } else if (columna === 5) { // Monto
-        //                 const montoA = parseFloat(valorA.replace(/[^0-9]/g, ''));
-        //                 const montoB = parseFloat(valorB.replace(/[^0-9]/g, ''));
-        //                 comparacion = montoA - montoB;
-        //             } else { // Texto
-        //                 comparacion = valorA.localeCompare(valorB, 'es', { numeric: true });
-        //             }
-                    
-        //             return direccion === 'asc' ? comparacion : -comparacion;
-        //         });
-                
-        //         // Reorganizar las filas en el DOM
-        //         filasArray.forEach(fila => tbody.appendChild(fila));
-                
-        //         // Actualizar numeración secuencial
-        //         actualizarNumeracion();
-        //     }
-
-        //     // Función para actualizar la numeración secuencial
-        //     function actualizarNumeracion() {
-        //         const filasVisibles = Array.from(filas).filter(fila => fila.style.display !== 'none');
-        //         filasVisibles.forEach((fila, index) => {
-        //             fila.cells[0].textContent = index + 1;
-        //         });
-        //     }
-
-        //     // Función para actualizar iconos de ordenamiento
-        //     function actualizarIconos(columna, direccion) {
-        //         headers.forEach((header, index) => {
-        //             const icono = header.querySelector('i.fas');
-        //             if (icono) {
-        //                 if (index === columna) {
-        //                     icono.className = direccion === 'asc' ? 'fas fa-sort-up me-1' : 'fas fa-sort-down me-1';
-        //                 } else {
-        //                     icono.className = 'fas fa-sort me-1';
-        //                 }
-        //             }
-        //         });
-        //     }
-
-        //     // Agregar event listeners a los headers (excepto Destino y Opciones)
-        //     headers.forEach((header, index) => {
-        //         // No agregar ordenamiento a Destino (índice 6) y Opciones (índice 7)
-        //         if (index < 6) {
-        //             header.style.cursor = 'pointer';
-        //             header.addEventListener('click', function() {
-        //                 const direccion = ordenActual[index] === 'asc' ? 'desc' : 'asc';
-        //                 ordenActual = { [index]: direccion };
-        //                 ordenarTabla(index, direccion);
-        //                 actualizarIconos(index, direccion);
-        //             });
-        //         }
-        //     });
-
-        //     // Evento de búsqueda en tiempo real
-        //     buscador.addEventListener('input', function() {
-        //         const termino = this.value.trim();
-        //         filtrarFilas(termino);
-        //         actualizarNumeracion();
-        //     });
-
-        //     // Limpiar búsqueda con Escape
-        //     buscador.addEventListener('keydown', function(e) {
-        //         if (e.key === 'Escape') {
-        //             this.value = '';
-        //             filtrarFilas('');
-        //             actualizarNumeracion();
-        //         }
-        //     });
-        // });
-
         // Funcionalidad para eliminar subvenciones
         document.addEventListener('click', function(e) {
             if (e.target.closest('.btn-eliminar-subvencion')) {
@@ -419,53 +296,7 @@
             });
         }
 
-
-        /*
-                          var table;
-                          var modalElement = document.getElementById("modalForm");
-                          var modal = modalElement ? new bootstrap.Modal(modalElement) : null;
-
-                          document
-                            .querySelector("#btnModal")
-                            ?.addEventListener("click", function () {
-                              modal.show();
-                            });
-
-                          document
-                            .querySelector("#table_id")
-                            ?.addEventListener("click", function (e) {
-                              if (e.target && e.target.matches("i.fa-pen-square")) {
-                                modal.show();
-                              }
-                            });  */
     </script>
-    <div class="row fixed-bottom bg-light" style="border-top: 1px solid #eee">
-        <div class="col-md-12">
-
-        </div>
-    </div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     <x-footer />
 
 

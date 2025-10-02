@@ -21,6 +21,21 @@ function normalizarRut(rut) {
     return numero + '-' + dv;
 }
 
+function formatearRut(rut){
+    rut = rut.replace(/\./g, '').replace('-', '');
+    cuerpo = rut.slice(0, -1)
+    dv = rut.slice(-1)
+
+    rutConPuntos = ''
+    i = cuerpo.length
+    while (i > 3){
+        rutConPuntos = '.' + cuerpo.slice(i-3, i) + rutConPuntos
+        i -= 3
+    }
+    rutConPuntos = cuerpo.slice(0, i) + rutConPuntos
+    return `${rutConPuntos}-${dv}`
+    }
+
 // Función para validar dígito verificador
 function validarDigitoVerificador(numero, dv) {
     let suma = 0;
@@ -46,8 +61,6 @@ function validarDigitoVerificador(numero, dv) {
     return dv === dvCalculado;
 }
 
-
-//var modalRendicion = new bootstrap.Modal(document.getElementById("modalVerDetallesRendicion"));
 
 /* Función para mostrar detalles de rendición */
 function verDetalleRendicion(id, button) {
@@ -91,19 +104,17 @@ function verDetalleRendicion(id, button) {
             if(data.rendicion.subvencion.data_organizacion.error){
                 document.getElementById('informacion_organizacion').innerText = `(${data.renducion.subvencion.rut})`;
             }else{
-                document.getElementById('informacion_organizacion').innerText = `(${data.rendicion.subvencion.rut}) ${data.rendicion.subvencion.data_organizacion.nombre_organizacion}`;
+                rutFormateado = formatearRut(data.rendicion.subvencion.rut)
+                document.getElementById('informacion_organizacion').innerText = `(${rutFormateado}) ${data.rendicion.subvencion.data_organizacion.nombre_organizacion}`;
             }
             // rendición con data subvención y organización
             document.getElementById('modalVerDetallesRendicionLabel').innerText = `Detalle de Rendición #${data.rendicion.id}`;
             document.getElementById('rendicion_id').value = data.rendicion.id;
-         // document.getElementById('detalle_fecha_decreto').textContent = data.rendicion.subvencion.fecha_decreto; //Corrección fecha decreto para que aparezca sólo día, mes y año
             document.getElementById('detalle_fecha_decreto').textContent = new Date(data.rendicion.subvencion.fecha_decreto).toLocaleDateString('es-CL');
 
             document.getElementById('detalle_decreto').textContent = data.rendicion.subvencion.decreto;
-           // document.getElementById('detalle_monto').textContent = data.rendicion.subvencion.monto; Se reemplaza con el código de abajo para que aparezca signo peso y punto
             document.getElementById('detalle_monto').textContent = `$${data.rendicion.subvencion.monto.toLocaleString('es-CL')}`;  
 
-         // document.getElementById('detalle_fecha_asignacion').textContent = data.rendicion.subvencion.fecha_asignacion; Se reemplaza con el código de abajo
             document.getElementById('detalle_fecha_asignacion').textContent = new Date(data.rendicion.subvencion.fecha_asignacion).toLocaleDateString('es-CL'); //Corrección fecha decreto para que aparezca sólo día, mes y año
 
             document.getElementById('detalle_destino').textContent = data.rendicion.subvencion.destino;
@@ -135,7 +146,7 @@ function verDetalleRendicion(id, button) {
                         autoWidth: false,
                         responsive: true,
                         paging: false,
-                        order: [[ 1, 'desc' ], [ 2, 'desc' ]],
+                        order: [[ 1, 'asc' ], [ 2, 'desc' ]],
                         columns: [
                             { data: 'id' },
                             { 
@@ -181,7 +192,13 @@ function verDetalleRendicion(id, button) {
                                 // Filtrar solo las acciones que tengan notificación
                                 acciones_con_notificacion = data.rendicion.acciones.filter(fila => fila.notificaciones.length > 0);
                                 notificaciones = []
-                                acciones_con_notificacion.forEach(fila => fila.notificaciones.forEach(notif => notificaciones.push(notif)))
+                                acciones_con_notificacion.forEach(fila => 
+                                    fila.notificaciones.forEach(notif => 
+                                        {
+                                            notif['estado_rendicion'] = fila.estado_rendicion
+                                            notificaciones.push(notif)
+                                        }
+                                    ))
                                 return notificaciones
                             }(),
                         searching: false,
@@ -191,7 +208,7 @@ function verDetalleRendicion(id, button) {
                         autoWidth: false,
                         responsive: true,
                         paging: false,
-                        order: [[ 2, 'desc' ], [ 3, 'desc' ]],
+                        order: [[ 1, 'asc' ], [ 2, 'desc' ]],
                         columns: [
                             { data: 'id' },
                             { 
@@ -217,11 +234,13 @@ function verDetalleRendicion(id, button) {
                                     })
                                 }
                             },
+                            {
+                                data:'estado_rendicion'
+                            },
                             { 
                                 data: 'estado_notificacion',
                                 render: function(d){
-                                    if (!d) {return 'S/D'}
-                                    else if (d === 0) { return 'No leído' }
+                                    if (d === 0) { return 'No leído' }
                                     else if (d === 1) { return 'Leído' }
                                     else { return 'S/D' }
                                 }
@@ -229,7 +248,7 @@ function verDetalleRendicion(id, button) {
                             { 
                                 data: 'fecha_lectura',
                                 render: function(d){
-                                    if (!d) return 'N/A';
+                                    if (!d) return 'S/D';
                                     fecha = new Date(d)
                                     return fecha.toLocaleDateString({
                                         hour: '2-digit',
@@ -240,7 +259,7 @@ function verDetalleRendicion(id, button) {
                             { 
                                 data: 'fecha_lectura',
                                 render: function(d){
-                                    if (!d) return 'N/A';
+                                    if (!d) return 'S/D';
                                     fecha = new Date(d)
                                     return fecha.toLocaleTimeString()
                                 }
@@ -249,6 +268,64 @@ function verDetalleRendicion(id, button) {
                     });
 
 
+                } else if (e.target.id === 'tab4-rendicion-tab') {
+                    if ($.fn.DataTable.isDataTable('#table_anteriores_rendicion')) {
+                        $('#table_anteriores_rendicion').DataTable().destroy();
+                    }
+
+                    new DataTable('#table_anteriores_rendicion', {
+                        data: data.historial,
+                        searching: false,
+                        lengthChange: false,
+                        language: idioma ?? {},
+                        deferRender: true,
+                        autoWidth: false,
+                        responsive: true,
+                        paging: false,
+                        order: [[ 1, 'asc' ]],
+                        columns: [
+                            { data: 'id' },
+                            { 
+                                data: 'fecha_asignacion',
+                                render: function(d){
+                                    if (!d) return 'S/D';
+                                    fecha = new Date(d)
+                                    return fecha.toLocaleDateString()
+                                }
+                            },
+                            { 
+                                data: 'decreto'
+
+                            },
+                            { 
+                                data: 'monto',
+                                render: function(monto){
+                                    monto = monto.toString()
+                                    montoFormateado = ''
+                                    i = monto.length
+                                    while(i > 3){
+                                        montoFormateado = '.' + monto.slice(i-3, i) + montoFormateado
+                                        i -= 3
+                                    }
+                                    montoFormateado = monto.slice(0, i) + montoFormateado
+                                    return `$${montoFormateado}`
+                                }
+                            },
+                            { 
+                                data: 'destino',
+                            },
+                            { 
+                                data: 'rendiciones.estado_rendicion.nombre',
+                                render: function(estado){
+                                    if (estado == 'Recepcionada') {
+                                        return 'No iniciada'
+                                    } else {
+                                        return estado
+                                    }
+                                }
+                            },
+                        ]
+                    });
                 }
 
 
@@ -358,43 +435,44 @@ document.getElementById('btnCambiarEstado').addEventListener('click', async func
     }
 })
 
-function comprobarPersona(rut){
-    // Realizar petición AJAX
-    fetch('/personas/obtener', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || 
-                           document.querySelector('input[name="_token"]')?.value
-        },
-        body: JSON.stringify({
-            rut: rut
+async function comprobarPersona(rut){
+    try{
+        const res = await fetch('/personas/obtener', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || 
+                            document.querySelector('input[name="_token"]')?.value
+            },
+            body: JSON.stringify({
+                rut: rut
+            })
         })
-    })
-    .then(response => response.json())
-    .then(data => {
-            if (data.success){
+        const data = await res.json()
+        return data
+    }catch (error){
+        console.error('Error:', error);
+
+    }
+}
+
+document.getElementById('persona_rut').addEventListener('input', async function(){
+    this.value = this.value.trim().replace(/[^0-9kK.-]/g, '') 
+    if (this.value.length >= 9 && this.value.length <= 12){
+        rutConsulta = normalizarRut(this.value)
+        if (rutConsulta != null){
+            data = await comprobarPersona(rutConsulta)
+            if(data.success){
                 document.getElementById('persona_rut').value = `${data.persona.rut.substr(-11,2)}.${data.persona.rut.substr(-8,3)}.${data.persona.rut.substr(-5)}`
                 document.getElementById('persona_nombre').value = data.persona.nombre
                 document.getElementById('persona_apellido').value = data.persona.apellido
                 document.getElementById('persona_email').value = data.persona.correo
-            } else {
+            }else{
+                this.value = formatearRut(this.value)
                 document.getElementById('persona_nombre').value = ''
                 document.getElementById('persona_apellido').value = ''
                 document.getElementById('persona_email').value = ''
             }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-    });
-}
-
-document.getElementById('persona_rut').addEventListener('input', function(){
-    this.value = this.value.trim().replace(/[^0-9kK.-]/g, '')
-    if (this.value.length >= 9 && this.value.length <= 12){
-        rutFormateado = normalizarRut(this.value)
-        if (rutFormateado != null){
-            comprobarPersona(rutFormateado)
         }
 
     }
@@ -443,9 +521,10 @@ function abrirModalEditar(rendicionId) {
             fecha_decreto = new Date(data.rendicion.subvencion.fecha_decreto).toLocaleDateString()
             fecha_asignacion = new Date(data.rendicion.subvencion.fecha_asignacion).toLocaleDateString()
             // Llenar el formulario con los datos
+            rutFormateado = formatearRut(data.rendicion.subvencion.rut)
             document.getElementById('modalEditarRendicionLabel').textContent = `Editar rendición #${data.rendicion.id}`
             document.getElementById('subvencion_id').value = data.rendicion.subvencion.id;
-            document.getElementById('rut_editar').value = data.rendicion.subvencion.rut;
+            document.getElementById('rut_editar').value = rutFormateado;
             document.getElementById('organizacion_editar').value = data.rendicion.subvencion.data_organizacion.nombre_organizacion;
             document.getElementById('decreto_editar').value = data.rendicion.subvencion.decreto;
             document.getElementById('fecha_decreto_editar').value = fecha_decreto;
@@ -475,6 +554,16 @@ function abrirModalEditar(rendicionId) {
         });
     });
 }
+
+document.getElementById('rut_editar').addEventListener('input', function(){
+    this.value = this.value.trim().replace(/[^0-9kK.-]/g, '')
+    if (this.value.length >= 9 && this.value.length <= 12){
+        rutFormateado = formatearRut(this.value)
+        if(rutFormateado != null){
+            this.value = rutFormateado
+        }
+    }
+});
 
 // Event listener para el botón de editar
 document.querySelector("#btnFormEditar").addEventListener("click", async function(event) {
@@ -517,6 +606,7 @@ document.querySelector("#btnFormEditar").addEventListener("click", async functio
     fechaAsignacionSeparada = data['fecha_asignacion'].split('/')
     data['fecha_decreto'] = `${fechaDecretoSeparada[2]}-${fechaDecretoSeparada[1].padStart(2, '0')}-${1, fechaDecretoSeparada[0].padStart(2, '0')}`
     data['fecha_asignacion'] = `${fechaAsignacionSeparada[2]}-${fechaAsignacionSeparada[1].padStart(2, '0')}-${1, fechaAsignacionSeparada[0].padStart(2, '0')}`
+    data['rut'] = normalizarRut(data['rut'])
     try {
         const response = await fetch(`${window.apiBaseUrl}rendiciones/actualizar`, {
             method: 'POST',
@@ -606,9 +696,10 @@ function abrirModalCambiarEstado(subvencionId) {
         if (data.success) {
             // Llenar ID de subvención
             document.getElementById('rendicion_id').value = data.subvencion.rendiciones.id;
-            document.getElementById('modalCambiarEstadoLabel').textContent = data.subvencion.rendiciones.id
+            document.getElementById('modalCambiarEstadoLabel').textContent = `Cambiar estado rendición #${data.subvencion.rendiciones.id}`
             // Llenar datos de la subvención
-            document.getElementById('rut_organizacion_rendir').textContent = data.subvencion.rut;
+            rutOrganizacionFormateado = formatearRut(data.subvencion.rut)
+            document.getElementById('rut_organizacion_rendir').textContent = rutOrganizacionFormateado;
             document.getElementById('nombre_organizacion_rendir').textContent = data.subvencion.data_organizacion.nombre_organizacion;
             document.getElementById('decreto_rendir').textContent = data.subvencion.decreto;
             document.getElementById('monto_rendir').textContent = '$' + data.subvencion.monto.toLocaleString('es-CL');
@@ -634,7 +725,8 @@ function abrirModalCambiarEstado(subvencionId) {
             })
             
             // Limpiar campos de persona
-            document.getElementById('persona_rut').value = data.persona.rut;
+            rutPersonaFormateado = formatearRut(data.persona.rut)
+            document.getElementById('persona_rut').value = rutPersonaFormateado
             document.getElementById('persona_nombre').value = data.persona.nombre;
             document.getElementById('persona_apellido').value = data.persona.apellido;
             document.getElementById('persona_email').value = data.persona.correo;

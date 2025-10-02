@@ -281,10 +281,22 @@ class RendicionController extends BaseController
             $rendicion[0]->setAttribute('subvencion', $this->conseguirDetalleOrganizacion($rendicion[0]->subvencion, '/resources/data/endpoint.json'));
             
             $estados_rendicion = EstadoRendicion::whereBetween('id', [3, 5])->get();
+
+            // Otras subvenciones asociadas al mismo rut
+            $consulta_anteriores = Subvencion::where([
+                ['rut', '=', $rendicion[0]->subvencion->rut],
+                ['estado', '=', 1]
+            ])->with(['rendiciones' => function ($query) {
+                $query->where('estado', 1)->with('estadoRendicion');
+            }])
+            ->whereNot('id', $rendicion[0]->subvencion->id)
+            ->get();
+
             return response()->json([
                 'success' => true,
                 'rendicion' => $resource,
-                'estados_rendicion' => $estados_rendicion
+                'estados_rendicion' => $estados_rendicion,
+                'historial' => $consulta_anteriores
             ]);
         } catch(Exception $e) {
             return response()->json([

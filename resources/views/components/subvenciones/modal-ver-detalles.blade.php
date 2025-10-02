@@ -121,7 +121,7 @@
                                         <th>Decreto</th>
                                         <th>Monto</th>
                                         <th>Destino</th>
-                                        <!-- <th>Estado</th> -->
+                                        <th>Estado</th>
                                     </tr>
                                 </thead>
                             </table>

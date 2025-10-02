@@ -197,22 +197,6 @@
             </div>
         </div>
     </div>
-
-    <!-- Footer -->
-    <div class="row fixed-bottom bg-light" style="border-top: 1px solid #eee">
-        <div class="col-md-12">
-            <footer class="footer" style="padding: 10px !important; margin: 0px !important; font-size: 14px">
-                <p class="text-center" style="margin: 0px !important; font-size: 13px; color: #666">
-                    Departamento de Computación e Informática -
-                    <a style="color: #333" target="_blank" href="http://www.rancagua.cl">Ilustre Municipalidad de
-                        Rancagua</a>
-                </p>
-            </footer>
-        </div>
-    </div>
-
-    <!-- Scripts -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="{{ asset('js/rendiciones.js') }}" defer></script> <!-- se llama el script relacionado con la página -->
 
     <!-- Aquí se eliminaron todos los scripts relacionados con funciones de JavaScript estáticas,(no había archivo antes de JS)

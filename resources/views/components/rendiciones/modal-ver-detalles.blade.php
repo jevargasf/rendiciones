@@ -90,7 +90,7 @@
                                         class="col-sm-2 col-form-label fw-bold">Destino
                                         </label>
                                         <div class="col-sm-10">
-                                            <textarea id="detalle_destino" class="form-control shadow-sm" rows="2" readonly>
+                                            <textarea id="detalle_destino" class="form-control shadow-sm" rows="4" readonly>
                                             </textarea>
                                         </div>
                                     </div>
@@ -126,6 +126,7 @@
                                             <th>Destinatario</th>
                                             <th>Fecha envío</th>
                                             <th>Hora envío</th>
+                                            <th>Estado rendición</th>
                                             <th>Leído</th>
                                             <th>Fecha lectura</th>
                                             <th>Hora lectura</th>
@@ -145,7 +146,7 @@
                                             <th>Decreto</th>
                                             <th>Monto</th>
                                             <th>Destino</th>
-                                            <!-- <th>Estado</th> -->
+                                            <th>Estado</th>
                                         </tr>
                                 </table>
                         </div>

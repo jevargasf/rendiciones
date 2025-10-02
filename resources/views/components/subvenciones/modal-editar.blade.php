@@ -20,7 +20,7 @@
                                 </label>
                                 <div class="col-sm-8">
                                     <input class="form-control form-control-sm shadow-sm" id="rut_editar" name="rut"
-                                        type="text" placeholder="12.345.678-9" required />
+                                        type="text" placeholder="12.345.678-9" maxlength="12" required />
                                 </div>
                             </div>
                             <div class="col-sm-6">
@@ -29,7 +29,7 @@
                                 </label>
                                 <div class="col-sm-8">
                                     <input class="form-control form-control-sm shadow-sm" id="organizacion_editar" name="nombre_organizacion"
-                                        type="text" placeholder="Nombre de la organización" readonly disabled />
+                                        type="text" placeholder="Nombre de la organización" readonly />
                                 </div>
                             </div>
                         </div>

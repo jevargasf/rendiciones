@@ -1,7 +1,20 @@
 var modal = new bootstrap.Modal(document.getElementById("modalForm"));
 
 
+function formatearRut(rut){
+    rut = rut.replace(/\./g, '').replace('-', '');
+    cuerpo = rut.slice(0, -1)
+    dv = rut.slice(-1)
 
+    rutConPuntos = ''
+    i = cuerpo.length
+    while (i > 3){
+        rutConPuntos = '.' + cuerpo.slice(i-3, i) + rutConPuntos
+        i -= 3
+    }
+    rutConPuntos = cuerpo.slice(0, i) + rutConPuntos
+    return `${rutConPuntos}-${dv}`
+    }
 
 // Función para normalizar RUT chileno
 function normalizarRut(rut) {
@@ -186,21 +199,15 @@ function verDetalleSubvencion(subvencionId){
     .then(response => response.json())
     .then(data => {
         if (data.success) {
-            // qué pasa si el historial de "otras" llega vacío
-            // iterar con los nuevos nombres y estructura del arreglo data
             fecha_decreto = new Date(data.subvencion.fecha_decreto).toLocaleDateString()
             fecha_asignacion = new Date(data.subvencion.fecha_asignacion).toLocaleDateString()
             document.getElementById('modalVerDetallesLabel').innerText = `Detalle de subvención #${data.subvencion.id}`
-            if (data.subvencion.data_organizacion.error){
-            document.getElementById('informacion_organizacion').innerText = `(${data.subvencion.rut})`;
-            } else {
-            document.getElementById('informacion_organizacion').innerText =
-                `(${data.subvencion.rut}) ${data.subvencion.data_organizacion.nombre_organizacion}`;
-            }
 
-           
+
+            rutFormateado = formatearRut(data.subvencion.rut)
+
             if (data.subvencion.data_organizacion.error) {
-            document.getElementById('informacion_organizacion').textContent = `(${data.subvencion.rut})`;
+            document.getElementById('informacion_organizacion').textContent = `(${rutFormateado})`;
             } else {
             const raw = (data.subvencion.data_organizacion.nombre_organizacion || '').trim();
             
@@ -216,8 +223,8 @@ function verDetalleSubvencion(subvencionId){
             }
 
             const info = nombreOracion
-                ? `(${data.subvencion.rut}) ${nombreOracion}`
-                : `(${data.subvencion.rut})`;
+                ? `(${rutFormateado}) ${nombreOracion}`
+                : `(${rutFormateado})`;
 
             document.getElementById('informacion_organizacion').textContent = info;
             }
@@ -246,7 +253,7 @@ function verDetalleSubvencion(subvencionId){
                         autoWidth: false,
                         responsive: true,
                         paging: false,
-                        order: [[ 1, 'desc' ], [ 2, 'desc' ]],
+                        order: [[ 1, 'asc' ], [ 2, 'desc' ]],
                         columns: [
                             { data: 'id' },
                             { 
@@ -277,6 +284,7 @@ function verDetalleSubvencion(subvencionId){
                 } else if (e.target.id === 'tab3-tab') {
                     if ($.fn.DataTable.isDataTable('#table_subvenciones_anteriores')) {
                         $('#table_subvenciones_anteriores').DataTable().destroy();
+                        
                     }
                     $.fn.dataTable.ext.search.push(function (settings, data, dataIndex, rowData, counter) {
                         // Accede directamente al objeto de datos completo (si está disponible)
@@ -285,10 +293,9 @@ function verDetalleSubvencion(subvencionId){
                         // Solo mostrar si nombre no es nulo, undefined ni cadena vacía
                         return !!notificacion_row;
                     });
-
                     // tabla acciones rendición
                     new DataTable('#table_subvenciones_anteriores', {
-                        data: data.anteriores,
+                        data: data.historial,
                         searching: false,
                         lengthChange: false,
                         language: idioma ?? {},
@@ -296,11 +303,11 @@ function verDetalleSubvencion(subvencionId){
                         autoWidth: false,
                         responsive: true,
                         paging: false,
-                        order: [[ 1, 'desc' ], [ 2, 'desc' ]],
+                        order: [[ 1, 'asc' ]],
                         columns: [
                             { data: 'id' },
                             { 
-                                data: 'fecha',
+                                data: 'fecha_asignacion',
                                 render: function(d){
                                     if (!d) return 'S/D';
                                     fecha = new Date(d)
@@ -308,40 +315,34 @@ function verDetalleSubvencion(subvencionId){
                                 }
                             },
                             { 
-                                data: 'fecha',
-                                render: function(d){
-                                    if (!d) return 'S/D';
-                                    fecha = new Date(d)
-                                    return fecha.toLocaleTimeString('es-CL', {
-                                        hour: '2-digit',
-                                        minute: '2-digit',
-                                        hour12: false
-                                    })
-                                }
-                            },
-                            { 
-                                data: 'decreto',
-                                render: function(d){
-                                    if (!d) return 'No leído';
-                                }
+                                data: 'decreto'
+
                             },
                             { 
                                 data: 'monto',
-                                render: function(d){
-                                    if (!d) return 'N/A';
-                                    fecha = new Date(d)
-                                    return fecha.toLocaleDateString({
-                                        hour: '2-digit',
-                                        minute: '2-digit'
-                                    })
+                                render: function(monto){
+                                    monto = monto.toString()
+                                    montoFormateado = ''
+                                    i = monto.length
+                                    while(i > 3){
+                                        montoFormateado = '.' + monto.slice(i-3, i) + montoFormateado
+                                        i -= 3
+                                    }
+                                    montoFormateado = monto.slice(0, i) + montoFormateado
+                                    return `$${montoFormateado}`
                                 }
                             },
                             { 
                                 data: 'destino',
-                                render: function(d){
-                                    if (!d) return 'N/A';
-                                    fecha = new Date(d)
-                                    return fecha.toLocaleTimeString()
+                            },
+                            { 
+                                data: 'rendiciones.estado_rendicion.nombre',
+                                render: function(estado){
+                                    if (estado == 'Recepcionada') {
+                                        return 'No iniciada'
+                                    } else {
+                                        return estado
+                                    }
                                 }
                             },
                         ]
@@ -352,43 +353,6 @@ function verDetalleSubvencion(subvencionId){
 
 
             })
-            // filas_acciones = ''
-            // console.log(data.subvencion.rendiciones)
-            // data.subvencion.rendiciones.acciones.forEach((accion) =>{
-            //     fecha_accion = new Date(accion.fecha).toLocaleDateString()
-            //     filas_acciones += `
-            //                                             <tr>
-            //                                     <td class="text-center px-2">${fecha_accion}</td>
-            //                                     <td class="px-2">${accion.comentario}</td>
-            //                                     <td class="px-2">${accion.km_nombre}</td>
-            //                                     <td>    
-            //                                 </tr>
-            //     `
-            // })
-            // tabla_detalle.innerHTML = filas_acciones
-
-            // historial
-            // detalle_anteriores = document.getElementById('detalle_anteriores')
-            // filas_anteriores = ''
-            // if(data.historial.length == 0){
-            //     filas_anteriores = `<p>No hay otras subvenciones asociadas a esta organización.</p>`
-            // } else {
-            //     console.log(data.historial)
-            //     data.historial.forEach((anterior)=>{
-            //         filas_anteriores +=
-            //             `
-            //                 <tr>
-            //                     <td class="text-center px-2">${anterior.id}</td>
-            //                     <td>29/05/2025</td>
-            //                     <td class="px-2">${anterior.decreto}</td>
-            //                     <td class="px-2">${anterior.monto}</td>
-            //                     <td class="px-2">${anterior.destino}</td>
-            //                 </tr>
-            //             `
-            //     })
-            // }
-
-            // detalle_anteriores.innerHTML = filas_anteriores
             // ficha detalles organización
             if(Object.keys(data.subvencion.data_organizacion).length > 1) {
                 const org = data.subvencion.data_organizacion;
@@ -455,43 +419,45 @@ function verDetalleSubvencion(subvencionId){
     });
 }
 
-function comprobarPersona(rut){
-    // Realizar petición AJAX
-    fetch('/personas/obtener', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || 
-                           document.querySelector('input[name="_token"]')?.value
-        },
-        body: JSON.stringify({
-            rut: rut
+async function comprobarPersona(rut){
+    try{
+        const res = await fetch('/personas/obtener', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || 
+                            document.querySelector('input[name="_token"]')?.value
+            },
+            body: JSON.stringify({
+                rut: rut
+            })
         })
-    })
-    .then(response => response.json())
-    .then(data => {
-            if (data.success){
+        const data = await res.json()
+        return data
+    }catch (error){
+        console.error('Error:', error);
+
+    }
+}
+
+document.getElementById('persona_rut').addEventListener('input', async function(){
+    this.value = this.value.trim().replace(/[^0-9kK.-]/g, '')
+    
+    if (this.value.length >= 9 && this.value.length <= 12){
+        rutConsulta = normalizarRut(this.value)
+        if (rutConsulta != null){
+            data = await comprobarPersona(rutConsulta)
+            if(data.success){
                 document.getElementById('persona_rut').value = `${data.persona.rut.substr(-11,2)}.${data.persona.rut.substr(-8,3)}.${data.persona.rut.substr(-5)}`
                 document.getElementById('persona_nombre').value = data.persona.nombre
                 document.getElementById('persona_apellido').value = data.persona.apellido
                 document.getElementById('persona_email').value = data.persona.correo
-            } else {
+            }else{
+                this.value = formatearRut(this.value)
                 document.getElementById('persona_nombre').value = ''
                 document.getElementById('persona_apellido').value = ''
                 document.getElementById('persona_email').value = ''
             }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-    });
-}
-
-document.getElementById('persona_rut').addEventListener('input', function(){
-    this.value = this.value.trim().replace(/[^0-9kK.-]/g, '')
-    if (this.value.length >= 9 && this.value.length <= 12){
-        rutFormateado = normalizarRut(this.value)
-        if (rutFormateado != null){
-            comprobarPersona(rutFormateado)
         }
 
     }
@@ -541,9 +507,10 @@ function abrirModalEditar(subvencionId) {
             fecha_decreto = new Date(data.subvencion.fecha_decreto).toLocaleDateString()
             fecha_asignacion = new Date(data.subvencion.fecha_asignacion).toLocaleDateString()
             // Llenar el formulario con los datos
+            rutFormateado = formatearRut(data.subvencion.rut)
             document.getElementById('modalEditarSubvencionLabel').innerText = `Editar subvencion #${data.subvencion.id}`
             document.getElementById('subvencion_id').value = data.subvencion.id;
-            document.getElementById('rut_editar').value = data.subvencion.rut;
+            document.getElementById('rut_editar').value = rutFormateado;
             document.getElementById('organizacion_editar').value = data.subvencion.data_organizacion.nombre_organizacion;
             document.getElementById('decreto_editar').value = data.subvencion.decreto;
             document.getElementById('fecha_decreto_editar').value = fecha_decreto;
@@ -573,6 +540,16 @@ function abrirModalEditar(subvencionId) {
         });
     });
 }
+
+document.getElementById('rut_editar').addEventListener('input', function(){
+    this.value = this.value.trim().replace(/[^0-9kK.-]/g, '')
+    if (this.value.length >= 9 && this.value.length <= 12){
+        rutFormateado = formatearRut(this.value)
+        if(rutFormateado != null){
+            this.value = rutFormateado
+        }
+    }
+});
 
 // Event listener para el botón de editar
 document.querySelector("#btnFormEditar").addEventListener("click", async function(event) {
@@ -615,7 +592,7 @@ document.querySelector("#btnFormEditar").addEventListener("click", async functio
     fechaAsignacionSeparada = data['fecha_asignacion'].split('/')
     data['fecha_decreto'] = `${fechaDecretoSeparada[2]}-${fechaDecretoSeparada[1].padStart(2, '0')}-${1, fechaDecretoSeparada[0].padStart(2, '0')}`
     data['fecha_asignacion'] = `${fechaAsignacionSeparada[2]}-${fechaAsignacionSeparada[1].padStart(2, '0')}-${1, fechaAsignacionSeparada[0].padStart(2, '0')}`
-    
+    data['rut'] = normalizarRut(data['rut'])
     try {
         const response = await fetch(`${window.apiBaseUrl}subvenciones/actualizar`, {
             method: 'POST',
@@ -750,112 +727,6 @@ function abrirModalRendir(subvencionId) {
         });
     });
 }
-
-// Función para buscar personas por RUT
-// function buscarPersonas(query) {
-//     if (query.length < 2) {
-//         ocultarSugerencias();
-//         return;
-//     }
-    
-//     // Solo normalizar si el RUT tiene al menos 7 caracteres
-//     if (query.length >= 7) {
-//         const rutNormalizado = normalizarRut(query);
-//         if (rutNormalizado) {
-//             // Si el RUT es válido, actualizar el campo con el formato correcto
-//             document.getElementById('persona_rut').value = rutNormalizado;
-//         }
-//     }
-
-//     // Obtener token CSRF
-//     let csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
-    
-//     if (!csrfToken) {
-//         csrfToken = document.querySelector('input[name="_token"]')?.value;
-//     }
-    
-//     if (!csrfToken && typeof $ !== 'undefined') {
-//         csrfToken = $('meta[name="csrf-token"]').attr('content');
-//     }
-    
-//     if (!csrfToken) {
-//         console.error('No se pudo obtener el token CSRF');
-//         return;
-//     }
-    
-//     // Buscar personas
-//     // fetch(`${window.apiBaseUrl}personas/buscar`, {
-//     //     method: 'POST',
-//     //     headers: {
-//     //         'Content-Type': 'application/json',
-//     //         'X-Requested-With': 'XMLHttpRequest',
-//     //         'Accept': 'application/json',
-//     //         'X-CSRF-TOKEN': csrfToken
-//     //     },
-//     //     body: JSON.stringify({ q: query })
-//     // })
-//     // .then(response => response.json())
-//     // .then(data => {
-//     //     if (data.success) {
-//     //         mostrarSugerencias(data.data);
-//     //     }
-//     // })
-//     // .catch(error => {
-//     //     console.error('Error al buscar personas:', error);
-//     // });
-// }
-
-// Función para mostrar sugerencias
-// function mostrarSugerencias(personas) {
-//     const contenedor = document.getElementById('sugerencias_rut');
-//     contenedor.innerHTML = '';
-    
-//     if (personas.length === 0) {
-//         contenedor.style.display = 'none';
-//         return;
-//     }
-    
-//     personas.forEach(persona => {
-//         const item = document.createElement('div');
-//         item.className = 'list-group-item list-group-item-action';
-//         item.style.cursor = 'pointer';
-//         item.innerHTML = `
-//             <div class="d-flex w-100 justify-content-between">
-//                 <h6 class="mb-1">${persona.rut}</h6>
-//             </div>
-//             <p class="mb-1">${persona.nombre} ${persona.apellido}</p>
-//         `;
-        
-//         item.addEventListener('click', () => {
-//             seleccionarPersona(persona);
-//         });
-        
-//         contenedor.appendChild(item);
-//     });
-    
-//     contenedor.style.display = 'block';
-// }
-
-// Función para ocultar sugerencias
-// function ocultarSugerencias() {
-//     const contenedor = document.getElementById('sugerencias_rut');
-//     contenedor.style.display = 'none';
-// }
-
-// Función para seleccionar una persona
-// function seleccionarPersona(persona) {
-//     // Llenar campos de persona
-//     document.getElementById('persona_rut').value = persona.rut;
-//     document.getElementById('persona_nombre').value = persona.nombre;
-//     document.getElementById('persona_apellido').value = persona.apellido;
-//     document.getElementById('persona_email').value = persona.correo || '';
-    
-//     // Ocultar sugerencias
-//     ocultarSugerencias();
-    
-//     // Marcar que el RUT ya está validado para evitar validación en blur
-//     document.getElementById('persona_rut').setAttribute('data-validated', 'true');
-// }
 
 // Event listener para el botón de guardar rendición
 document.getElementById('btnFormRendir').addEventListener('click', async function(event) {

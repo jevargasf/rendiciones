@@ -76,9 +76,12 @@ class SubvencionController extends BaseController
         try {
             // Validar formulario
             $request->validate([
-                'fecha_decreto' => 'required|date',
-                'decreto' => 'required|string|max:255',
+                'fecha_decreto' => 'required|date|before_or_equal:today',
+                'decreto' => 'required|string|max:20',
                 'seleccionar_archivo' => 'required|file|mimes:xls,xlsx|max:10240' // 10MB máximo
+            ],
+            [
+                'fecha_decreto.before_or_equal' => 'La fecha no puede ser posterior a hoy.',
             ]);
 
             // Validar que el archivo sea Excel
@@ -201,11 +204,11 @@ class SubvencionController extends BaseController
 
                         // Crear acción automática de subvención creada 
                         $km_data = session('usuario');   
-        
+                        
                         if ($km_data) {
-                            $nombre_completo = trim($km_data['nombres'] ?? '') . ' ' . 
-                                                ($km_data['apellido_paterno'] ?? '') . ' ' . 
-                                                ($km_data['apellido_materno'] ?? '');
+                            $nombre_completo = ucfirst(strtolower(trim($km_data['nombres'] ?? ''))) . ' ' . 
+                                                ucfirst(strtolower(($km_data['apellido_paterno'] ?? ''))) . ' ' . 
+                                                ucfirst(strtolower(($km_data['apellido_materno'] ?? '')));
                         
                             Accion::create([
                                 'fecha' => now(),
@@ -384,33 +387,36 @@ class SubvencionController extends BaseController
             $consulta_anteriores = Subvencion::where([
                 ['rut', '=', $subvencion->rut],
                 ['estado', '=', 1]
-            ])
+            ])->with(['rendiciones' => function ($query) {
+                $query->where('estado', 1)->with('estadoRendicion');
+            }])
             ->whereNot('id', $subvencion->id)
             ->get();
-
+            
             $historial = [];
 
             if($consulta_anteriores->isEmpty()){
-                $anteriores = [
+                $historial = [
                     'message'=>'No hay subvenciones anteriores asociadas.'
                 ];
-            }else{
-                foreach($consulta_anteriores as $anterior){
-                    $fecha_anterior_formateada = \Carbon\Carbon::parse($anterior->fecha)->format('d/m/Y');
-
-                    array_push($historial, [
-                        'id'=>$anterior->id,
-                        'decreto'=>$anterior->decreto,
-                        'monto'=>$anterior->monto,
-                        'fecha'=>$fecha_anterior_formateada,
-                        'destino'=>$anterior->destino
-                    ]);
-                }
             }
+            // }else{
+            //     foreach($consulta_anteriores as $anterior){
+            //         $fecha_anterior_formateada = \Carbon\Carbon::parse($anterior->fecha)->format('d/m/Y');
+
+            //         array_push($historial, [
+            //             'id'=>$anterior->id,
+            //             'decreto'=>$anterior->decreto,
+            //             'monto'=>$anterior->monto,
+            //             'fecha'=>$fecha_anterior_formateada,
+            //             'destino'=>$anterior->destino
+            //         ]);
+            //     }
+            // }
             return response()->json([
                 'success' => true,
                 'subvencion' => $subvencion,
-                'historial' => $historial
+                'historial' => $consulta_anteriores
             ]);
         } catch (Exception $e) {
             return response()->json([

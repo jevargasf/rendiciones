@@ -63,7 +63,7 @@
                         <div class="col-md-3">
                             <label class="fw-bold small mb-1" for="persona_rut">RUT</label>
                             <input class="form-control form-control-sm shadow-sm" id="persona_rut"
-                                placeholder="Ingrese RUT..." style="min-width: 160px" />
+                                placeholder="Ingrese RUT..." style="min-width: 160px" maxlength="12"/>
                             <div id="sugerencias_rut" class="list-group position-absolute" style="z-index: 1000; display: none; max-height: 200px; overflow-y: auto; width: 100%; border: 1px solid #dee2e6; border-radius: 0.375rem; box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);">
                                 <!-- Las sugerencias se cargarán aquí -->
                             </div>

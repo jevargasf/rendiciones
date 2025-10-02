@@ -1023,6 +1023,10 @@ canvas {
   color: #d9d9d9 !important;
 }
 
+#tab1, #tab1-rendicion, #detalle_destino{
+  cursor:default;
+}
+
 @media (min-width:576px){ .pull-left-sm { margin-left:-.5rem !important; } }
 @media (min-width:768px){ .pull-left-md { margin-left:-3rem !important; } }
 
