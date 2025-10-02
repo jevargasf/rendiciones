@@ -1,13 +1,12 @@
 <?php
 
 namespace App\Services;
-use Illuminate\Support\Carbon;
+
 use App\Models\Accion;
 use App\Helpers\Mailman;
 use App\Models\Notificacion;
 use App\Models\Persona;
 use App\Models\Rendicion;
-use Illuminate\Support\Facades\Log;
 
 
 class NotificacionesService{
@@ -251,9 +250,5 @@ class NotificacionesService{
                 'errores' => $errores
             ];
         }
-    }
-
-    public function enviarCorreos(){
-        
     }
 }

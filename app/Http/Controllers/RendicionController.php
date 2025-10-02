@@ -281,10 +281,22 @@ class RendicionController extends BaseController
             $rendicion[0]->setAttribute('subvencion', $this->conseguirDetalleOrganizacion($rendicion[0]->subvencion, '/resources/data/endpoint.json'));
             
             $estados_rendicion = EstadoRendicion::whereBetween('id', [3, 5])->get();
+
+            // Otras subvenciones asociadas al mismo rut
+            $consulta_anteriores = Subvencion::where([
+                ['rut', '=', $rendicion[0]->subvencion->rut],
+                ['estado', '=', 1]
+            ])->with(['rendiciones' => function ($query) {
+                $query->where('estado', 1)->with('estadoRendicion');
+            }])
+            ->whereNot('id', $rendicion[0]->subvencion->id)
+            ->get();
+
             return response()->json([
                 'success' => true,
                 'rendicion' => $resource,
-                'estados_rendicion' => $estados_rendicion
+                'estados_rendicion' => $estados_rendicion,
+                'historial' => $consulta_anteriores
             ]);
         } catch(Exception $e) {
             return response()->json([
@@ -482,12 +494,12 @@ class RendicionController extends BaseController
                     // retornar la respuesta
                     return response()->json([
                                 'success' => true,
-                                'message' => 'Rendición actualizada exitosamente de estado:' . strtoupper($estado_actual_nombre) . 'a estado: ' . strtoupper($estado_nuevo_nombre) . '.'
+                                'message' => 'Rendición actualizada exitosamente de estado:' . $estado_actual_nombre . ' a estado: ' . $estado_nuevo_nombre . '.'
                             ]); 
                 }else{
                     return response()->json([
                         'success' => true,
-                        'message' => 'Rendición actualizada exitosamente de estado:' . strtoupper($estado_actual_nombre) . 'a estado: ' . strtoupper($estado_nuevo_nombre) . '.' . 'Ocurrió un error al notificar al(los) siguiente(s) correos:' . $errores . '.'
+                        'message' => 'Rendición actualizada exitosamente de estado:' . $estado_actual_nombre . ' a estado: ' . $estado_nuevo_nombre . '.' . 'Ocurrió un error al notificar al(los) siguiente(s) correos:' . $errores . '.'
                     ]);
                 } 
             }else{

@@ -25,8 +25,6 @@ class CheckRendicionesVencidas extends Command
     protected $description = 'Revisa si se cumplió el plazo máximo de rendición. Cambia a estado "rechazada" todas las rendiciones fuera de plazo y envía una notificación por correo electrónico a la organización cuando faltan 10 días para su vencimiento.';
     // El plazo de vencimiento está seteado a 30 días después de la fecha de asignación
     protected $plazo_vencidas = 30;
-    // El plazo por vencer está seteado a 10 días antes de la fecha de vencimiento final
-    protected $plazo_por_vencer = 20;
     /**
      * Execute the console command.
      */

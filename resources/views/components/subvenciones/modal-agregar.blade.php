@@ -1,70 +1,59 @@
-<!-- Botón para agregar subvenciones -->
-<div aria-hidden="true" class="modal fade" id="modalForm" tabindex="-1">
-    <div class="modal-dialog modal-dialog-centered" style="--bs-modal-width:min(640px, 92vw)">
-        <div class="modal-content shadow-md rounded-4 overflow-hidden">
-            <div class="modal-header modal-header-app">
-                <h5 class="modal-title fw-bold" id="modalFormTitulo">
-                    Agregar subvenciones
-                </h5>
-                <button aria-label="Close" class="btn-close btn-close-white" data-bs-dismiss="modal"
-                    type="button"></button>
+<!-- Modal: Agregar subvenciones -->
+<div class="modal fade" id="modalForm" tabindex="-1" aria-labelledby="agregarLabel"   data-bs-backdrop="static">
+  <div class="modal-dialog modal-dialog-scrollable">
+    <form class="modal-content needs-validation" id="form" method="POST" enctype="multipart/form-data" novalidate>
+      @csrf
+      @method('POST')
+
+
+      <div class="modal-header" style="background: linear-gradient(135deg, var(--app-color), var(--app-color)); color: white;">
+        <h5 id="modalFormTitulo" class="modal-title">Agregar subvenciones</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+
+      <div class="modal-body p-4 bg-light">
+        <div class="border rounded-4 p-3 bg-white shadow-sm">
+          <div class="row g-3">
+
+            <div class="col-12 col-md-6">
+              <label for="fecha_decreto" class="form-label fw-bold">Fecha Decreto <span class="text-danger">*</span></label>
+              <input type="date"
+                    class="form-control"
+                    id="fecha_decreto"
+                    name="fecha_decreto"
+                    required>
+              <div class="invalid-feedback">La fecha del decreto es obligatoria.</div>
             </div>
-            <form id="form" enctype="multipart/form-data">
-                @csrf
-                @method('POST')
-                <div class="modal-body p-4">
-                    <div class="container-fluid">
-                        <div class="p-4 rounded form-horizontal-fixed">
-                             <!-- Fecha Decreto -->
-                            <div class="row tight flex-nowrap align-items-center mb-3">
-                                <label for="fecha_decreto" class="col-label fw-bold" >
-                                    Fecha Decreto
-                                    <span class="text-danger">*</span>
-                                </label>
-                                <div class="col-field">
-                                    <input class="form-control form-control-sm input-compact-220" id="fecha_decreto" name="fecha_decreto"
-                                        placeholder="Ej: 29/05/2025" required="" type="date" />
-                                </div>
-                            </div>
-                            <div class="row tight flex-nowrap align-items-center mb-3">
-                                <label class="col-label fw-bold mb-0" for="decreto">
-                                    N.° Decreto
-                                    <span class="text-danger"> * </span>
-                                </label>
-                                <div class="col-field">
-                                    <input class="form-control form-control-sm input-compact-220" id="decreto"
-                                        name="decreto" placeholder="Ej: 2025-458" required=""
-                                        type="text" />
-                                </div>
-                            </div>
 
-                            <!--Archivo-->
+            <div class="col-12 col-md-6">
+              <label for="decreto" class="form-label fw-bold">N.º Decreto <span class="text-danger">*</span></label>
+              <input type="text"
+                    class="form-control"
+                    id="decreto"
+                    name="decreto"
+                    required>
+              <div class="invalid-feedback">El número de decreto es obligatorio.</div>
+            </div>
 
-                            <div class="row tight flex-nowrap align-items-center mb-3 label-archivo-180 responsive-break">
-                                <label class="col-label fw-bold" for="seleccionar_archivo">
-                                    Seleccione archivo
-                                    <span class="text-danger"> * </span>
-                                </label>
-                                <div class="col-field">
-                                    <input class="form-control form-control-sm shadow-sm input-file-350" id="seleccionar_archivo"
-                                        name="seleccionar_archivo" type="file" />
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-footer d-flex justify-content-between p-3 border-top bg-light">
-                    <button class="btn btn-outline-secondary px-4 py-2 rounded-pill" data-bs-dismiss="modal"
-                        type="button">
-                        <i class="fa-solid fa-arrow-left me-2"> </i>
-                        Cancelar
-                    </button>
-                    <button class="btn btn-app px-4 py-2 rounded-pill shadow-sm" id="btnFormCargar"
-                        type="submit">
-                        Cargar subvenciones
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
+            <div class="col-12">
+              <label for="seleccionar_archivo" class="form-label fw-bold">Seleccione archivo <span class="text-danger">*</span></label>
+              <input type="file"
+                    class="form-control"
+                    id="seleccionar_archivo"
+                    name="seleccionar_archivo"
+                    accept=".xlsx,.xls"
+                    required>
+              <div class="form-text">Formatos permitidos: XLSX/XLS.</div>
+              <div class="invalid-feedback">Debes seleccionar un archivo válido.</div>
+            </div>
+
+          </div>
+      </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+        <button type="submit" class="btn btn-primary" id="btnFormCargar" style="background: linear-gradient(135deg, var(--app-color), var(--app-color)); color: white;">Cargar subvenciones</button>
+      </div>
+    </form>
+  </div>
 </div>

@@ -138,9 +138,10 @@
         </div>
     </div>
     <!-- /Encabezado principal -->
-
+    <div class="container">
+        <x-rendiciones.modal-ver-detalles />
+    </div>
     <!-- Modal Ver Detalles de Rendición -->
-    <x-rendiciones.modal-ver-detalles />
 
     <!-- Modal Editar -->
     <x-rendiciones.modal-editar />
@@ -149,11 +150,11 @@
     <x-rendiciones.modal-cambiar-estado/>
     
     <!-- Modal Eliminar Rendición -->
-    <div class="modal fade" id="modalEliminarRendicion" tabindex="-1" aria-labelledby="modalEliminarRendicionLabel" aria-hidden="true">
+    <div class="modal fade" id="modalEliminarRendicion" tabindex="-1" aria-labelledby="modalEliminarRendicionLabel"  >
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content shadow-lg rounded-4 overflow-hidden">
-                <div class="modal-header modal-header-app">
-                    <h5 class="modal-title fw-bold" id="modalEliminarRendicionLabel">
+                <div class="modal-header bg-danger">
+                    <h5 class="modal-title fw-bold text-white" id="modalEliminarRendicionLabel">
                         <i class="fas fa-exclamation-triangle me-2"></i>Eliminar Rendición
                     </h5>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -197,22 +198,6 @@
             </div>
         </div>
     </div>
-
-    <!-- Footer -->
-    <div class="row fixed-bottom bg-light" style="border-top: 1px solid #eee">
-        <div class="col-md-12">
-            <footer class="footer" style="padding: 10px !important; margin: 0px !important; font-size: 14px">
-                <p class="text-center" style="margin: 0px !important; font-size: 13px; color: #666">
-                    Departamento de Computación e Informática -
-                    <a style="color: #333" target="_blank" href="http://www.rancagua.cl">Ilustre Municipalidad de
-                        Rancagua</a>
-                </p>
-            </footer>
-        </div>
-    </div>
-
-    <!-- Scripts -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="{{ asset('js/rendiciones.js') }}" defer></script> <!-- se llama el script relacionado con la página -->
 
     <!-- Aquí se eliminaron todos los scripts relacionados con funciones de JavaScript estáticas,(no había archivo antes de JS)
@@ -228,6 +213,8 @@
 
             new DataTable('#table_revision', {
                 data: @json($revision),
+                info: false,
+                lengthChange: false,
                 order: [ 0, 'desc' ],
                 language: idioma ?? {},
                 deferRender: true,
@@ -326,6 +313,8 @@
             // Prueba Data Tables - Pestaña Pendientes //
             new DataTable('#table_observadas', {
                 data: @json($observadas),
+                info: false,
+                lengthChange: false,
                 order: [ 0, 'desc' ],
                 language: idioma ?? {},
                 deferRender: true,
@@ -417,6 +406,8 @@
 
             new DataTable('#table_rechazadas', {
                 data: @json($rechazadas),
+                info: false,
+                lengthChange: false,
                 order: [ 0, 'desc' ],
                 language: idioma ?? {},
                 deferRender: true,
@@ -502,6 +493,8 @@
 
             new DataTable('#table_aprobadas', {
                 data: @json($aprobadas),
+                info: false,
+                lengthChange: false,
                 order: [ 0, 'desc' ],
                 language: idioma ?? {},
                 deferRender: true,
@@ -591,15 +584,15 @@
                     'margin-left': '0'
                 }).attr('placeholder', 'Buscar en subvenciones (RUT, organización, decreto, destino, monto...)');
             $('.dataTables_filter label').addClass('w-100').css('margin-bottom', '0');
+                console.log(localStorage)
+            // if (localStorage.getItem('abrir_modal_detalles') === 'true'){                
+            //     localStorage.removeItem('abrir_modal_detalles');
+            //     const botonModalDetalles = document.querySelector('#table_revision > tbody > tr.odd > td:nth-child(8) > div > button:nth-child(3)');
 
-            if (localStorage.getItem('abrir_modal_detalles') === 'true'){                
-                localStorage.removeItem('abrir_modal_detalles');
-                const botonModalDetalles = document.querySelector('#table_revision > tbody > tr.odd > td:nth-child(8) > div > button:nth-child(3)');
-                
-                if (botonModalDetalles) {
-                    botonModalDetalles.click();
-                }
-            }
+            //     if (botonModalDetalles) {
+            //         botonModalDetalles.click();
+            //     }
+            // }
         });
     </script>
 

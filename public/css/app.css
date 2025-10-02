@@ -947,10 +947,8 @@ canvas {
 }
 
 .modal-footer {
-  border: 1px solid #dfd9d9;
   border-radius: 8px;
   padding: 0.75rem 0.3rem;
-  margin-top: 1rem;
 }
 
 /* Overlay de “Ver detalles” en acciones realizadas */
@@ -1021,6 +1019,10 @@ canvas {
   background-color: #d9d9d9 !important;
   border-color: #d9d9d9 !important;
   color: #d9d9d9 !important;
+}
+
+#tab1, #tab1-rendicion, #detalle_destino{
+  cursor:default;
 }
 
 @media (min-width:576px){ .pull-left-sm { margin-left:-.5rem !important; } }
