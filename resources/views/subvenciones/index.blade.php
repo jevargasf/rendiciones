@@ -67,6 +67,8 @@
         subvenciones = @json($subvenciones);
         $('#table_subvenciones').DataTable({
         data: subvenciones,
+        info: false,
+        lengthChange: false,
         order: [ 0, 'desc' ],
         language: idioma,
         deferRender: true,

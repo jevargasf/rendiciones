@@ -366,19 +366,18 @@ class SubvencionController extends BaseController
                 'id' => 'required|integer|exists:subvenciones,id'
             ]);
             // Detalle subvención
-            $subvencion = Subvencion::with([
-                'rendiciones.acciones' => function ($query) {
-                        $query->where('estado', 1);
-                    }],[
-                'rendiciones.estados_rendiciones' => function ($query) {
-                        $query->where('estado', 1);
-                    }
-                ])
-            ->where([
-                ['subvenciones.estado', '=', 1], 
-                ['subvenciones.id', '=', $request->id]
-                ])
-            ->get();
+            
+            $subvencion = Subvencion::with(['rendiciones.acciones' => function ($query) {
+                        $query->where([
+                            ['estado', '=', 1]
+                        ]);
+                    }, 'rendiciones.estadoRendicion']
+            )->where([
+                ['id', '=', $request->id],
+                ['estado', '=', 1],
+                //['rendiciones.estado_rendicion_id', '=', 1],
+                //['rendiciones.estado', '=', 1]
+            ])->get();
 
             // Agregar data organización
             $subvencion = $this->conseguirDetalleOrganizacion($subvencion[0], '/resources/data/endpoint.json');
@@ -400,19 +399,7 @@ class SubvencionController extends BaseController
                     'message'=>'No hay subvenciones anteriores asociadas.'
                 ];
             }
-            // }else{
-            //     foreach($consulta_anteriores as $anterior){
-            //         $fecha_anterior_formateada = \Carbon\Carbon::parse($anterior->fecha)->format('d/m/Y');
 
-            //         array_push($historial, [
-            //             'id'=>$anterior->id,
-            //             'decreto'=>$anterior->decreto,
-            //             'monto'=>$anterior->monto,
-            //             'fecha'=>$fecha_anterior_formateada,
-            //             'destino'=>$anterior->destino
-            //         ]);
-            //     }
-            // }
             return response()->json([
                 'success' => true,
                 'subvencion' => $subvencion,

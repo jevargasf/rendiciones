@@ -138,9 +138,10 @@
         </div>
     </div>
     <!-- /Encabezado principal -->
-
+    <div class="container">
+        <x-rendiciones.modal-ver-detalles />
+    </div>
     <!-- Modal Ver Detalles de Rendición -->
-    <x-rendiciones.modal-ver-detalles />
 
     <!-- Modal Editar -->
     <x-rendiciones.modal-editar />
@@ -149,11 +150,11 @@
     <x-rendiciones.modal-cambiar-estado/>
     
     <!-- Modal Eliminar Rendición -->
-    <div class="modal fade" id="modalEliminarRendicion" tabindex="-1" aria-labelledby="modalEliminarRendicionLabel" aria-hidden="true">
+    <div class="modal fade" id="modalEliminarRendicion" tabindex="-1" aria-labelledby="modalEliminarRendicionLabel"  >
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content shadow-lg rounded-4 overflow-hidden">
-                <div class="modal-header modal-header-app">
-                    <h5 class="modal-title fw-bold" id="modalEliminarRendicionLabel">
+                <div class="modal-header bg-danger">
+                    <h5 class="modal-title fw-bold text-white" id="modalEliminarRendicionLabel">
                         <i class="fas fa-exclamation-triangle me-2"></i>Eliminar Rendición
                     </h5>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -212,6 +213,8 @@
 
             new DataTable('#table_revision', {
                 data: @json($revision),
+                info: false,
+                lengthChange: false,
                 order: [ 0, 'desc' ],
                 language: idioma ?? {},
                 deferRender: true,
@@ -310,6 +313,8 @@
             // Prueba Data Tables - Pestaña Pendientes //
             new DataTable('#table_observadas', {
                 data: @json($observadas),
+                info: false,
+                lengthChange: false,
                 order: [ 0, 'desc' ],
                 language: idioma ?? {},
                 deferRender: true,
@@ -401,6 +406,8 @@
 
             new DataTable('#table_rechazadas', {
                 data: @json($rechazadas),
+                info: false,
+                lengthChange: false,
                 order: [ 0, 'desc' ],
                 language: idioma ?? {},
                 deferRender: true,
@@ -486,6 +493,8 @@
 
             new DataTable('#table_aprobadas', {
                 data: @json($aprobadas),
+                info: false,
+                lengthChange: false,
                 order: [ 0, 'desc' ],
                 language: idioma ?? {},
                 deferRender: true,
@@ -575,15 +584,15 @@
                     'margin-left': '0'
                 }).attr('placeholder', 'Buscar en subvenciones (RUT, organización, decreto, destino, monto...)');
             $('.dataTables_filter label').addClass('w-100').css('margin-bottom', '0');
+                console.log(localStorage)
+            // if (localStorage.getItem('abrir_modal_detalles') === 'true'){                
+            //     localStorage.removeItem('abrir_modal_detalles');
+            //     const botonModalDetalles = document.querySelector('#table_revision > tbody > tr.odd > td:nth-child(8) > div > button:nth-child(3)');
 
-            if (localStorage.getItem('abrir_modal_detalles') === 'true'){                
-                localStorage.removeItem('abrir_modal_detalles');
-                const botonModalDetalles = document.querySelector('#table_revision > tbody > tr.odd > td:nth-child(8) > div > button:nth-child(3)');
-                
-                if (botonModalDetalles) {
-                    botonModalDetalles.click();
-                }
-            }
+            //     if (botonModalDetalles) {
+            //         botonModalDetalles.click();
+            //     }
+            // }
         });
     </script>
 

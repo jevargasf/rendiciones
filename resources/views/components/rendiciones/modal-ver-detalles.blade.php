@@ -1,170 +1,140 @@
-<!-- Módulo para "Ver Detalles" con pestañas -->
-<div class="modal fade" id="modalVerDetallesRendicion" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered" style="max-width: 900px">
-        <div class="modal-content shadow-md rounded-4 overflow-hidden">
-            <!-- Encabezado -->
-            <div class="modal-header modal-header-app">
-                <h6 class="modal-title fw-bold" id="modalVerDetallesRendicionLabel">
-                    Detalle de rendición
-                </h6>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
-                    aria-label="Cerrar"></button>
-            </div>
+<!-- Modal: Ver Detalles -->
+<div class="modal fade" id="modalVerDetallesRendicion" tabindex="-1" aria-labelledby="modalVerDetallesRendicionLabel"  >
+  <div class="modal-dialog modal-dialog-scrollable modal-xl">
+    <div class="modal-content">
+      <div class="modal-header" style="background: linear-gradient(135deg, var(--app-color), var(--app-color)); color: white;">
+        <h5 id="modalVerDetallesRendicionLabel" class="modal-title">Detalle de subvención</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+        <input type="hidden" name="id" id="rendicion_id">
 
-            <!-- Información general -->
-            <div class="modal-body p-3 d-flex flex-column">
-                <label for="informacion_organizacion" class="form-label fw-bold"></label>
-                <p id="informacion_organizacion" class="form-control shadow-sm" readonly rows="4">
-                    <i class="bi bi-clipboard-check me-1"></i>
-                    
-                </p>
-            </div>
+      <div class="modal-body p-4 bg-light">
+        <!-- Nav tabs -->
+        <div class="border rounded-4 p-3 bg-white shadow-sm">
+        
+         <ul class="nav nav-tabs" id="detalleTabsRendicion" role="tablist">
+          <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="tab1-rendicion-tab" data-bs-toggle="tab" data-bs-target="#tab1-rendicion" type="button" role="tab" aria-controls="detalle" aria-selected="true">
+              Detalle de Subvención
+            </button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" id="tab2-rendicion-tab" data-bs-toggle="tab" data-bs-target="#tab2-rendicion" type="button" role="tab" aria-controls="acciones" aria-selected="false">
+              Acciones realizadas
+            </button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" id="tab3-rendicion-tab" data-bs-toggle="tab" data-bs-target="#tab3-rendicion" type="button" role="tab" aria-controls="otras" aria-selected="false">
+              Otras subvenciones
+            </button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" id="tab4-rendicion-tab" data-bs-toggle="tab" data-bs-target="#tab4-rendicion" type="button" role="tab" aria-controls="organizacion" aria-selected="false">
+              Datos de la organización
+            </button>
+          </li>
+         </ul>
 
-            <!-- Pestañas de detalles -->
-            <div class="modal-body p-0 detalle-container">
-                <!-- Navegación de pestañas -->
-                <ul class="nav nav-tabs bg-light px-3 pt-1" id="detalleTabsRendicion" role="tablist">
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link active" id="tab1-rendicion-tab" data-bs-toggle="tab" data-bs-target="#tab1-rendicion"
-                            type="button" role="tab">
-                            Detalle de rendición
-                        </button>
-                    </li>    
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="tab2-rendicion-tab" data-bs-toggle="tab" data-bs-target="#tab2-rendicion"
-                            type="button" role="tab">
-                            Acciones realizadas
-                        </button>
-                    </li>
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="tab3-rendicion-tab" data-bs-toggle="tab"
-                            data-bs-target="#tab3-rendicion" type="button" role="tab">
-                            Notificaciones
-                        </button>
-                    </li>
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="tab4-rendicion-tab" data-bs-toggle="tab" data-bs-target="#tab4-rendicion"
-                            type="button" role="tab">
-                            Otras subvenciones
-                        </button>
-                    </li>
-                </ul>
-
-                <!-- Contenido de las pestañas -->
-                <div class="tab-content pt-4 px-4 pb-2">
-                    <!-- Pestaña detalle rendición -->
-                    <div class="tab-pane fade active show" id="tab1-rendicion" role="tabpanel">
-                        <div class="bg-white border rounded-4 p-3 mb-0">
-                            <input type="hidden" name="id" id="rendicion_id">
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <p class="mb-3">
-                                        <strong>Fecha Decreto:</strong>
-                                        <span class="dato-subrayado" id="detalle_fecha_decreto"></span>
-                                    </p>
-                                    <p class="mb-3">
-                                        <strong>N° Decreto:</strong>
-                                        <span class="dato-subrayado" id="detalle_decreto"></span>
-                                    </p>
-                                    <p class="mb-3">
-                                        <strong>Monto:</strong>
-                                        <span class="dato-subrayado" id="detalle_monto"></span>
-                                    </p>
-                                </div>
-                                <div class="col-md-6">
-                                    <p class="mb-3">
-                                        <strong>Fecha asignación:</strong>
-                                        <span class="dato-subrayado" id="detalle_fecha_asignacion"></span>
-                                    </p>
-                                    <p class="mb-3">
-                                        <strong>Estado actual:</strong>
-                                        <span class="dato-subrayado" id="detalle_estado_actual"></span>
-                                    </p>
-                                </div>
-                            </div>
-
-                            <div class="row mt-4">
-                                <div class="col-sm-12">
-                                    <div class="row">
-                                        <label for="comentario_destino"
-                                        class="col-sm-2 col-form-label fw-bold">Destino
-                                        </label>
-                                        <div class="col-sm-10">
-                                            <textarea id="detalle_destino" class="form-control shadow-sm" rows="4" readonly>
-                                            </textarea>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+          <!-- Tab panes -->
+          <div class="tab-content pt-3">
+            <!-- Detalle -->
+            <div class="tab-pane fade show active" id="tab1-rendicion" role="tabpanel" aria-labelledby="detalle-tab">
+              
+            
+              <div class="mb-3">
+                <h6 class="fw-semibold">Datos de la subvención</h6>
+                <div class="col">
+                  <div class="row row-cols-1 row-cols-md-2 g-3">
+                    <div class="col">
+                      <dl class="row mb-0">
+                        <dt class="col-sm-6 fw-bold small ">Fecha Decreto:</dt>
+                        <dd class="col-sm-6" id="detalle_fecha_decreto">-</dd>
+                        <dt class="col-sm-6 fw-bold small ">N° Decreto:</dt>
+                        <dd class="col-sm-6" id="detalle_decreto">-</dd>
+                        <dt class="col-sm-6 fw-bold small ">Monto:</dt>
+                        <dd class="col-sm-6" id="detalle_monto">-</dd>
+                      </dl>
                     </div>
-                    <!-- Pestaña 1 - Acciones realizadas -->
-                    <div class="tab-pane fade" id="tab2-rendicion" role="tabpanel">
-                        <div class="bg-white border rounded-4 p-3 mb-0 min-vh-50">
-                                <table id="table_acciones_rendicion" class="table table-striped">
-                                    <thead>
-                                        <tr>
-                                            <th>#</th>
-                                            <th>Fecha</th>
-                                            <th>Hora</th>
-                                            <th>Estado</th>
-                                            <th>Comentario</th>
-                                            <th>Usuario</th>
-                                        </tr>
-                                    </thead>
-                                </table>
-                        </div>
+                    <div class="col">
+                      <dl class="row mb-0">
+                        <dt class="col-sm-6 fw-bold small">Estado actual:</dt>
+                        <dd class="col-sm-6">
+                          <span id="detalle_estado_actual" class="col-sm-6 badge bg-primary bg-opacity-75 text-white py-2 rounded-pill shadow-sm">
+                          </span>
+                        </dd>
+                        <dt class="col-sm-6 fw-bold small ">Fecha asignación:</dt>
+                        <dd class="col-sm-6" id="detalle_fecha_asignacion">-</dd>
+                        <dt class="col-sm-6 fw-bold small">Destino:</dt>
+                        <dd class="col-sm-6" id="detalle_destino">-</dd>
+                      </dl>
                     </div>
-
-                    <!-- Pestaña 3 - Notificaciones -->
-                    <div class="tab-pane fade" id="tab3-rendicion" role="tabpanel">
-                        <div class="bg-white border rounded-4 p-3 mb-0 min-vh-50">
-                                <table id="table_notificaciones_rendicion" class="table table-striped">
-                                    <thead>
-                                        <tr>
-                                            <th>#</th>
-                                            <th>Destinatario</th>
-                                            <th>Fecha envío</th>
-                                            <th>Hora envío</th>
-                                            <th>Estado rendición</th>
-                                            <th>Leído</th>
-                                            <th>Fecha lectura</th>
-                                            <th>Hora lectura</th>
-                                        </tr>
-                                    </thead>
-                                </table>
-                        </div>
-                    </div>
-                    <!-- Pestaña subvenciones anteriores -->
-                    <div class="tab-pane fade" id="tab4-rendicion" role="tabpanel">
-                        <div class="bg-white border rounded-4 p-3 mb-0 min-vh-50">
-                                <table id="table_anteriores_rendicion" class="table table-striped">
-                                    <thead>
-                                        <tr>
-                                            <th>#</th>
-                                            <th>Fecha</th>
-                                            <th>Decreto</th>
-                                            <th>Monto</th>
-                                            <th>Destino</th>
-                                            <th>Estado</th>
-                                        </tr>
-                                </table>
-                        </div>
-                    </div>
+                  </div>
                 </div>
+              </div>
+            </div>
+      
+        
+    
+
+            <!-- Acciones -->
+            <div class="tab-pane fade" id="tab2-rendicion" role="tabpanel" aria-labelledby="acciones-tab">
+              <div class="table-responsive">
+                <table class="table table-sm table-bordered align-middle" id="table_acciones_rendicion">
+                  <thead class="table-light">
+                    <tr>
+                      <th>#</th><th>Fecha</th><th>Hora</th><th>Estado</th><th>Comentario</th><th>Usuario</th>
+                    </tr>
+                  </thead>
+                </table>
+              </div>
             </div>
 
-            <!-- Footer -->
-            <div class="modal-footer bg-light d-flex justify-content-end py-2">
-                <button type="button" class="btn btn-outline-secondary rounded-pill px-3 py-1"
-                    data-bs-dismiss="modal">
-                    <i class="fa-solid fa-xmark me-2"></i>Cerrar
-                </button>
-
-                <button class="btn btn-app px-4 py-2 rounded-pill shadow-sm" id="btnNavegacionCambiarEstado" data-bs-target="#modalCambiarEstado" data-bs-toggle="modal" data-bs-dismiss="modal">
-                    Ir a cambiar estado
-                </button>
+            <!-- Otras subvenciones -->
+            <div class="tab-pane fade" id="tab3-rendicion" role="tabpanel" aria-labelledby="otras-tab">
+              <div class="table-responsive">
+                <table class="table table-sm table-bordered align-middle" id="table_notificaciones_rendicion">
+                  <thead class="table-light">
+                    <tr>
+                        <th>#</th>
+                        <th>Destinatario</th>
+                        <th>Fecha envío</th>
+                        <th>Hora envío</th>
+                        <th>Estado rendición</th>
+                        <th>Leído</th>
+                        <th>Fecha lectura</th>
+                        <th>Hora lectura</th>
+                    </tr>
+                  </thead>
+                </table>
+              </div>
             </div>
+
+            <!-- Otras subvenciones -->
+            <div class="tab-pane fade" id="tab4-rendicion" role="tabpanel" aria-labelledby="otras-tab">
+              <div class="table-responsive">
+                <table class="table table-sm table-bordered align-middle" id="table_anteriores_rendicion">
+                  <thead class="table-light">
+                    <tr>
+                        <th>#</th>
+                        <th>Fecha</th>
+                        <th>Decreto</th>
+                        <th>Monto</th>
+                        <th>Destino</th>
+                        <th>Estado</th> 
+                    </tr>
+                  </thead>
+                </table>
+              </div>
+            </div>
+
+  
         </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cerrar</button>
+
+      </div>
     </div>
+  </div>
 </div>

@@ -947,10 +947,8 @@ canvas {
 }
 
 .modal-footer {
-  border: 1px solid #dfd9d9;
   border-radius: 8px;
   padding: 0.75rem 0.3rem;
-  margin-top: 1rem;
 }
 
 /* Overlay de “Ver detalles” en acciones realizadas */

@@ -16,6 +16,18 @@ function formatearRut(rut){
     return `${rutConPuntos}-${dv}`
     }
 
+function formatLocalDateToInput(localDate) {
+    const d = new Date(localDate);
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    console.log(localDate)
+    return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+}
+function formatDateChile(fechaISO) {
+  const [year, month, day] = fechaISO.split('-');
+  return `${day}/${month}/${year}`;
+}
 // Función para normalizar RUT chileno
 function normalizarRut(rut) {
     // Limpiar el RUT (quitar puntos, guiones y espacios)
@@ -62,6 +74,35 @@ function validarDigitoVerificador(numero, dv) {
     }
     
     return dv === dvCalculado;
+}
+
+function badgeEstado(id_elemento){
+    elemento = document.getElementById(id_elemento)
+    const estadoTexto = elemento.textContent.trim(); 
+    elemento.textContent = estadoTexto;
+
+    let className = 'badge px-3 py-2 rounded-pill shadow-sm text-white ';
+
+    switch (estadoTexto) {
+        case 'Recepcionada':
+            className += 'bg-secondary';
+            break;
+        case 'En revisión':
+            className += 'bg-primary';
+            break;
+        case 'Observada':
+            className += 'bg-warning text-dark'; // texto oscuro para fondo claro
+            break;
+        case 'Rechazada':
+            className += 'bg-danger';
+            break;
+        case 'Aprobada':
+            className += 'bg-success';
+            break;
+        default:
+            className += 'bg-light text-dark'; // fallback neutral
+            break;
+    }
 }
 
 //Helpers del formato detalle de subvención, parte del rut y nombre de la organización
@@ -199,43 +240,45 @@ function verDetalleSubvencion(subvencionId){
     .then(response => response.json())
     .then(data => {
         if (data.success) {
-            fecha_decreto = new Date(data.subvencion.fecha_decreto).toLocaleDateString()
-            fecha_asignacion = new Date(data.subvencion.fecha_asignacion).toLocaleDateString()
+            console.log(data)
+            fecha_decreto = formatLocalDateToInput(data.subvencion.fecha_decreto)
+            fecha_asignacion = formatLocalDateToInput(data.subvencion.fecha_asignacion)
             document.getElementById('modalVerDetallesLabel').innerText = `Detalle de subvención #${data.subvencion.id}`
 
 
             rutFormateado = formatearRut(data.subvencion.rut)
 
-            if (data.subvencion.data_organizacion.error) {
-            document.getElementById('informacion_organizacion').textContent = `(${rutFormateado})`;
-            } else {
-            const raw = (data.subvencion.data_organizacion.nombre_organizacion || '').trim();
+            // if (data.subvencion.data_organizacion.error) {
+            // // document.getElementById('informacion_organizacion').textContent = `(${rutFormateado})`;
+            // } else {
+            // const raw = (data.subvencion.data_organizacion.nombre_organizacion || '').trim();
             
-            const normalizado = raw.replace(/\s+/g, '').toUpperCase().replace(/[.\-]/g, '/');
+            // const normalizado = raw.replace(/\s+/g, '').toUpperCase().replace(/[.\-]/g, '/');
 
-            let nombreOracion;
-            if (normalizado === 'S/D') {
-                // excepción: dejar S/D en mayúsculas
-                nombreOracion = 'S/D';
-            } else {
-                // primera letra mayúscula, resto minúsculas
-                nombreOracion = raw ? raw.charAt(0).toUpperCase() + raw.slice(1).toLowerCase() : '';
-            }
+            // let nombreOracion;
+            // if (normalizado === 'S/D') {
+            //     // excepción: dejar S/D en mayúsculas
+            //     nombreOracion = 'S/D';
+            // } else {
+            //     // primera letra mayúscula, resto minúsculas
+            //     nombreOracion = raw ? raw.charAt(0).toUpperCase() + raw.slice(1).toLowerCase() : '';
+            // }
 
-            const info = nombreOracion
-                ? `(${rutFormateado}) ${nombreOracion}`
-                : `(${rutFormateado})`;
+            // const info = nombreOracion
+            //     ? `(${rutFormateado}) ${nombreOracion}`
+            //     : `(${rutFormateado})`;
 
-            document.getElementById('informacion_organizacion').textContent = info;
-            }
+            // document.getElementById('informacion_organizacion').textContent = info;
+            // }
 
-            document.getElementById('detalle_fecha_decreto').innerText = fecha_decreto;
+            document.getElementById('detalle_fecha_decreto').innerText = formatDateChile(fecha_decreto);
             document.getElementById('detalle_decreto').innerText = data.subvencion.decreto;
           //document.getElementById('detalle_monto').innerText = data.subvencion.monto; -> Reemplaza por código de abajo para agregar signo $ y punto en monto
             document.getElementById('detalle_monto').innerText = `$${data.subvencion.monto.toLocaleString('es-CL')}`;
 
-            document.getElementById('detalle_fecha_asignacion').innerText = fecha_asignacion;
+            document.getElementById('detalle_fecha_asignacion').innerText =  formatDateChile(fecha_asignacion);
             document.getElementById('detalle_destino').innerText = data.subvencion.destino;
+            document.getElementById('detalle_estado').textContent = data.subvencion.rendiciones.estado_rendicion.nombre;
 
             document.addEventListener('shown.bs.tab', (e)=>{
                 if (e.target.id === 'tab2-tab'){
@@ -245,6 +288,7 @@ function verDetalleSubvencion(subvencionId){
                     // tabla acciones rendición
                     new DataTable('#table_acciones_subvencion', {
                         data: data.subvencion.rendiciones.acciones,
+                        info: false,
                         searching: false,
                         lengthChange: false,
                         order: [],
@@ -296,6 +340,7 @@ function verDetalleSubvencion(subvencionId){
                     // tabla acciones rendición
                     new DataTable('#table_subvenciones_anteriores', {
                         data: data.historial,
+                        info: false,
                         searching: false,
                         lengthChange: false,
                         language: idioma ?? {},
@@ -353,10 +398,11 @@ function verDetalleSubvencion(subvencionId){
 
 
             })
+            console.log(Object.keys(data.subvencion.data_organizacion).length > 1)
             // ficha detalles organización
             if(Object.keys(data.subvencion.data_organizacion).length > 1) {
                 const org = data.subvencion.data_organizacion;
-
+                console.log("llegó aquí 2")
 
                 const cap = s => s ? s.charAt(0).toUpperCase() + s.slice(1).toLowerCase() : '';
                 
@@ -504,8 +550,8 @@ function abrirModalEditar(subvencionId) {
     .then(response => response.json())
     .then(data => {
         if (data.success) {
-            fecha_decreto = new Date(data.subvencion.fecha_decreto).toLocaleDateString()
-            fecha_asignacion = new Date(data.subvencion.fecha_asignacion).toLocaleDateString()
+            fecha_decreto = formatLocalDateToInput(data.subvencion.fecha_decreto)
+            fecha_asignacion = formatLocalDateToInput(data.subvencion.fecha_asignacion)
             // Llenar el formulario con los datos
             rutFormateado = formatearRut(data.subvencion.rut)
             document.getElementById('modalEditarSubvencionLabel').innerText = `Editar subvencion #${data.subvencion.id}`
@@ -588,10 +634,6 @@ document.querySelector("#btnFormEditar").addEventListener("click", async functio
         data[key] = value;
     }
     // Formatear fechas
-    fechaDecretoSeparada = data['fecha_decreto'].split('/')
-    fechaAsignacionSeparada = data['fecha_asignacion'].split('/')
-    data['fecha_decreto'] = `${fechaDecretoSeparada[2]}-${fechaDecretoSeparada[1].padStart(2, '0')}-${1, fechaDecretoSeparada[0].padStart(2, '0')}`
-    data['fecha_asignacion'] = `${fechaAsignacionSeparada[2]}-${fechaAsignacionSeparada[1].padStart(2, '0')}-${1, fechaAsignacionSeparada[0].padStart(2, '0')}`
     data['rut'] = normalizarRut(data['rut'])
     try {
         const response = await fetch(`${window.apiBaseUrl}subvenciones/actualizar`, {
@@ -687,7 +729,8 @@ function abrirModalRendir(subvencionId) {
             document.getElementById('decreto_rendir').textContent = data.subvencion.decreto;
             document.getElementById('monto_rendir').textContent = '$' + data.subvencion.monto.toLocaleString('es-CL');
             document.getElementById('destino_subvencion_rendir').textContent = data.subvencion.destino;
-            
+            document.getElementById('estado_actual_rendir').textContent = data.subvencion.rendiciones.estado_rendicion.nombre;
+            badgeEstado('estado_actual_rendir')
             // Llenar opciones de cargos
             const cargoSelect = document.getElementById('persona_cargo');
             cargoSelect.innerHTML = '<option value="">Seleccione...</option>';

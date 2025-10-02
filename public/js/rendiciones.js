@@ -1,3 +1,28 @@
+function closeAllModalsExcept(excludedModal) {
+    const openModals = document.querySelectorAll('.modal.show');
+
+    openModals.forEach(modal => {
+        if (modal !== excludedModal) {
+            const instance = bootstrap.Modal.getInstance(modal);
+            if (instance) {
+                instance.hide();
+            }
+        }
+    });
+}
+
+function formatLocalDateToInput(localDate) {
+    const d = new Date(localDate);
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    console.log(localDate)
+    return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+}
+function formatDateChile(fechaISO) {
+  const [year, month, day] = fechaISO.split('-');
+  return `${day}/${month}/${year}`;
+}
 // Función para normalizar RUT chileno
 function normalizarRut(rut) {
     // Limpiar el RUT (quitar puntos, guiones y espacios)
@@ -19,6 +44,35 @@ function normalizarRut(rut) {
     
     // Formatear con guión
     return numero + '-' + dv;
+}
+
+function badgeEstado(id_elemento){
+    elemento = document.getElementById(id_elemento)
+    const estadoTexto = elemento.textContent.trim(); 
+    elemento.textContent = estadoTexto;
+
+    let className = 'badge px-3 py-2 rounded-pill shadow-sm text-white ';
+
+    switch (estadoTexto) {
+        case 'recepcionada':
+            className += 'bg-secondary';
+            break;
+        case 'en revisión':
+            className += 'bg-primary';
+            break;
+        case 'observada':
+            className += 'bg-warning text-dark'; // texto oscuro para fondo claro
+            break;
+        case 'rechazada':
+            className += 'bg-danger';
+            break;
+        case 'aprobada':
+            className += 'bg-success';
+            break;
+        default:
+            className += 'bg-light text-dark'; // fallback neutral
+            break;
+    }
 }
 
 function formatearRut(rut){
@@ -101,34 +155,35 @@ function verDetalleRendicion(id, button) {
     .then(response => response.json())
     .then(data => {
         if (data.success) {
-            if(data.rendicion.subvencion.data_organizacion.error){
-                document.getElementById('informacion_organizacion').innerText = `(${data.renducion.subvencion.rut})`;
-            }else{
-                rutFormateado = formatearRut(data.rendicion.subvencion.rut)
-                document.getElementById('informacion_organizacion').innerText = `(${rutFormateado}) ${data.rendicion.subvencion.data_organizacion.nombre_organizacion}`;
-            }
+            // if(data.rendicion.subvencion.data_organizacion.error){
+            //     document.getElementById('informacion_organizacion').innerText = `(${data.renducion.subvencion.rut})`;
+            // }else{
+            //     rutFormateado = formatearRut(data.rendicion.subvencion.rut)
+            //     document.getElementById('informacion_organizacion').innerText = `(${rutFormateado}) ${data.rendicion.subvencion.data_organizacion.nombre_organizacion}`;
+            // }
             // rendición con data subvención y organización
             document.getElementById('modalVerDetallesRendicionLabel').innerText = `Detalle de Rendición #${data.rendicion.id}`;
             document.getElementById('rendicion_id').value = data.rendicion.id;
-            document.getElementById('detalle_fecha_decreto').textContent = new Date(data.rendicion.subvencion.fecha_decreto).toLocaleDateString('es-CL');
+            document.getElementById('detalle_fecha_decreto').innerText = formatDateChile(formatLocalDateToInput(data.rendicion.subvencion.fecha_decreto))
 
             document.getElementById('detalle_decreto').textContent = data.rendicion.subvencion.decreto;
             document.getElementById('detalle_monto').textContent = `$${data.rendicion.subvencion.monto.toLocaleString('es-CL')}`;  
 
-            document.getElementById('detalle_fecha_asignacion').textContent = new Date(data.rendicion.subvencion.fecha_asignacion).toLocaleDateString('es-CL'); //Corrección fecha decreto para que aparezca sólo día, mes y año
+            document.getElementById('detalle_fecha_asignacion').innerText = formatDateChile(formatLocalDateToInput(data.rendicion.subvencion.fecha_asignacion)) //Corrección fecha decreto para que aparezca sólo día, mes y año
 
             document.getElementById('detalle_destino').textContent = data.rendicion.subvencion.destino;
             document.getElementById('detalle_estado_actual').textContent = data.rendicion.estado_rendicion.nombre;
+            badgeEstado('detalle_estado_actual')
 
-            const btnCambiarEstado = document.getElementById('btnNavegacionCambiarEstado')
+            // const btnCambiarEstado = document.getElementById('btnNavegacionCambiarEstado')
 
-            // si la tabla es en revisión u observadas, renderizar select de cambio de estado
-            if(button.dataset.btnEstado == 'revision' || button.dataset.btnEstado == 'observadas'){
-                // select de estados rendición
-                btnCambiarEstado.hidden = false
-            }else{
-                btnCambiarEstado.hidden = true
-            }
+            // // si la tabla es en revisión u observadas, renderizar select de cambio de estado
+            // if(button.dataset.btnEstado == 'revision' || button.dataset.btnEstado == 'observadas'){
+            //     // select de estados rendición
+            //     btnCambiarEstado.hidden = false
+            // }else{
+            //     btnCambiarEstado.hidden = true
+            // }
 
             document.addEventListener('shown.bs.tab', (e)=>{
                 if (e.target.id === 'tab2-rendicion-tab'){
@@ -138,6 +193,7 @@ function verDetalleRendicion(id, button) {
                     // tabla acciones rendición
                     new DataTable('#table_acciones_rendicion', {
                         data: data.rendicion.acciones,
+                        info: false,
                         searching: false,
                         lengthChange: false,
                         order: [],
@@ -202,6 +258,7 @@ function verDetalleRendicion(id, button) {
                                 return notificaciones
                             }(),
                         searching: false,
+                        info: false,
                         lengthChange: false,
                         language: idioma ?? {},
                         deferRender: true,
@@ -275,6 +332,7 @@ function verDetalleRendicion(id, button) {
 
                     new DataTable('#table_anteriores_rendicion', {
                         data: data.historial,
+                        info: false,
                         searching: false,
                         lengthChange: false,
                         language: idioma ?? {},
@@ -332,6 +390,12 @@ function verDetalleRendicion(id, button) {
             })
 
 
+
+            const modalRendirEl = document.getElementById('modalVerDetallesRendicion');
+            const modalRendir   = bootstrap.Modal.getOrCreateInstance(modalRendirEl);
+                    console.log(modalRendir)
+            modalRendir.show();
+            console.log(modalRendir)
         } else {
             Swal.fire({
                 title: "Error",
@@ -349,9 +413,9 @@ function verDetalleRendicion(id, button) {
         document.getElementById('tbody_notificaciones_rendicion').innerHTML = 
             '<tr><td colspan="5" class="text-center text-muted">Error al cargar las notificaciones</td></tr>';
     })
-    
-        const modalRendir = new bootstrap.Modal(document.getElementById('modalVerDetallesRendicion'));
-        modalRendir.show();
+
+
+
 }
 
 document.getElementById('btnCambiarEstado').addEventListener('click', async function(event) {
@@ -518,8 +582,9 @@ function abrirModalEditar(rendicionId) {
     .then(response => response.json())
     .then(data => {
         if (data.success) {
-            fecha_decreto = new Date(data.rendicion.subvencion.fecha_decreto).toLocaleDateString()
-            fecha_asignacion = new Date(data.rendicion.subvencion.fecha_asignacion).toLocaleDateString()
+            
+            fecha_decreto = formatLocalDateToInput(data.rendicion.subvencion.fecha_decreto)
+            fecha_asignacion = formatLocalDateToInput(data.rendicion.subvencion.fecha_asignacion)
             // Llenar el formulario con los datos
             rutFormateado = formatearRut(data.rendicion.subvencion.rut)
             document.getElementById('modalEditarRendicionLabel').textContent = `Editar rendición #${data.rendicion.id}`
@@ -531,8 +596,7 @@ function abrirModalEditar(rendicionId) {
             document.getElementById('fecha_asignacion_editar').value = fecha_asignacion;
             document.getElementById('destino_editar').value = data.rendicion.subvencion.destino;
             document.getElementById('monto_editar').value = data.rendicion.subvencion.monto;
-            
-            // Mostrar el modal
+
             const modalEditar = new bootstrap.Modal(document.getElementById('modalEditar'));
             modalEditar.show();
         } else {
@@ -602,10 +666,7 @@ document.querySelector("#btnFormEditar").addEventListener("click", async functio
         data[key] = value;
     }
     // Formatear fechas
-    fechaDecretoSeparada = data['fecha_decreto'].split('/')
-    fechaAsignacionSeparada = data['fecha_asignacion'].split('/')
-    data['fecha_decreto'] = `${fechaDecretoSeparada[2]}-${fechaDecretoSeparada[1].padStart(2, '0')}-${1, fechaDecretoSeparada[0].padStart(2, '0')}`
-    data['fecha_asignacion'] = `${fechaAsignacionSeparada[2]}-${fechaAsignacionSeparada[1].padStart(2, '0')}-${1, fechaAsignacionSeparada[0].padStart(2, '0')}`
+
     data['rut'] = normalizarRut(data['rut'])
     try {
         const response = await fetch(`${window.apiBaseUrl}rendiciones/actualizar`, {
@@ -705,7 +766,7 @@ function abrirModalCambiarEstado(subvencionId) {
             document.getElementById('monto_rendir').textContent = '$' + data.subvencion.monto.toLocaleString('es-CL');
             document.getElementById('destino_subvencion_rendir').textContent = data.subvencion.destino;
             document.getElementById('estado_actual_rendir').textContent = data.subvencion.rendiciones.estado_rendicion.nombre;
-
+            badgeEstado('estado_actual_rendir')
             // Llenar opciones de cargos
             const cargoSelect = document.getElementById('persona_cargo');
             const estadosSelect = document.getElementById('select_estados');
@@ -779,8 +840,12 @@ document.addEventListener('click', function(e) {
         document.getElementById('btnConfirmarEliminacionRendicion').disabled = true;
         
         // // Mostrar el modal
-        const modal = new bootstrap.Modal(document.getElementById('modalEliminarRendicion'));
-        modal.show();
+
+        const modalEliminarEl = document.getElementById('modalEliminarRendicion');
+        const modalEliminar   = bootstrap.Modal.getOrCreateInstance(modalEliminarEl);
+        console.log(modalEliminar)
+        modalEliminar.show()
+
         
         // // Guardar el ID para usar después
         document.getElementById('btnConfirmarEliminacionRendicion').setAttribute('data-rendicion-id', rendicionId);
@@ -879,35 +944,55 @@ function eliminarRendicion(id) {
 }
 
 // Reiniciar pestañas modal ver detalles
-document.getElementById('modalVerDetallesRendicion').addEventListener('hidden.bs.modal', function (e) {
+elementoModalDetalle = document.getElementById('modalVerDetallesRendicion')
+elementoModalEditar = document.getElementById('modalEditar')
+elementoModalCambiarEstado = document.getElementById('modalCambiarEstado')
+console.log(elementoModalCambiarEstado, elementoModalDetalle, elementoModalEditar)
+// elementoModalDetalle.addEventListener('hidden.bs.modal', function (e) {
+//     // closeAllModalsExcept(this);
+//     // Tabs nav
+//   const tabs = document.querySelectorAll('#modalVerDetallesRendicion button.nav-link');
+//   // Tab panes
+//   const panes = document.querySelectorAll('#modalVerDetallesRendicion .tab-content .tab-pane');
+
+//   // Quitar active y show de todas
+//   tabs.forEach(tab => tab.classList.remove('active'));
+//   panes.forEach(pane => {
+//     pane.classList.remove('active');
+//     pane.classList.remove('show');
+//   });
+
+//   // Poner active y show en el primero
+//   if(tabs.length > 0)
+//   {
+//     tabs[0].classList.add('active');
+//     tabs[0].classList.add('show');
+//   }
+//   if(panes.length > 0) {
+//     panes[0].classList.add('active');
+//     panes[0].classList.add('show');
+//   }
+  
+// });
+
+document.addEventListener('shown.bs.modal', function (e) {
+    console.log(document.getElementsByClassName('modal show'))
     // Tabs nav
-  const tabs = document.querySelectorAll('#modalVerDetallesRendicion button.nav-link');
-  // Tab panes
-  const panes = document.querySelectorAll('#modalVerDetallesRendicion .tab-content .tab-pane');
 
-  // Quitar active y show de todas
-  tabs.forEach(tab => tab.classList.remove('active'));
-  panes.forEach(pane => {
-    pane.classList.remove('active');
-    pane.classList.remove('show');
-  });
-
-  // Poner active y show en el primero
-  if(tabs.length > 0)
-  {
-    tabs[0].classList.add('active');
-    tabs[0].classList.add('show');
-  }
-  if(panes.length > 0) {
-    panes[0].classList.add('active');
-    panes[0].classList.add('show');
-  }
   
 });
 
-// Rellenar datos modal cambiar estado al cerrar modal ver detalles
-document.getElementById('btnNavegacionCambiarEstado').addEventListener('click', ()=>{
-    rendicion_id = document.getElementById('rendicion_id')
-    abrirModalCambiarEstado(rendicion_id.value)
+
+// elementoModalCambiarEstado.addEventListener('hidden.bs.modal', function (e) {
+//     closeAllModalsExcept(this);
+
+  
+// });
+// // Rellenar datos modal cambiar estado al cerrar modal ver detalles
+// // document.getElementById('btnNavegacionCambiarEstado').addEventListener('click', ()=>{
+// //     rendicion_id = document.getElementById('rendicion_id')
+// //     abrirModalCambiarEstado(rendicion_id.value)
     
-})
+// // })
+
+// document.addEventListener

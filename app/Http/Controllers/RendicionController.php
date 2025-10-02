@@ -494,12 +494,12 @@ class RendicionController extends BaseController
                     // retornar la respuesta
                     return response()->json([
                                 'success' => true,
-                                'message' => 'Rendición actualizada exitosamente de estado:' . strtoupper($estado_actual_nombre) . 'a estado: ' . strtoupper($estado_nuevo_nombre) . '.'
+                                'message' => 'Rendición actualizada exitosamente de estado:' . $estado_actual_nombre . ' a estado: ' . $estado_nuevo_nombre . '.'
                             ]); 
                 }else{
                     return response()->json([
                         'success' => true,
-                        'message' => 'Rendición actualizada exitosamente de estado:' . strtoupper($estado_actual_nombre) . 'a estado: ' . strtoupper($estado_nuevo_nombre) . '.' . 'Ocurrió un error al notificar al(los) siguiente(s) correos:' . $errores . '.'
+                        'message' => 'Rendición actualizada exitosamente de estado:' . $estado_actual_nombre . ' a estado: ' . $estado_nuevo_nombre . '.' . 'Ocurrió un error al notificar al(los) siguiente(s) correos:' . $errores . '.'
                     ]);
                 } 
             }else{
