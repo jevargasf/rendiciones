@@ -1,11 +1,11 @@
 <!-- Modal: Editar subvención -->
-<div class="modal fade" id="modalEditar" tabindex="-1" aria-labelledby="editarLabel"   data-bs-backdrop="static">
+<div class="modal fade" id="modalEditar" tabindex="-1" aria-labelledby="editarLabel" >
   <div class="modal-dialog modal-dialog-scrollable modal-lg">
-    <form class="modal-content needs-validation" method="POST" id="formEditarSubvencion" novalidate>
+    <form class="modal-content needs-validation" method="POST" id="formEditarRendicion" novalidate>
       @csrf
 
       <div class="modal-header" style="background: linear-gradient(135deg, var(--app-color), var(--app-color)); color: white;">
-        <h5 id="modalEditarSubvencionLabel" class="modal-title">Editar subvención</h5>
+        <h5 id="modalEditarRendicionLabel" class="modal-title">Editar subvención</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
       </div>
 
@@ -109,7 +109,7 @@
 
       <div class="modal-footer bg-light px-4 pb-4 border-top-0">
         <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
-        <button type="submit" class="btn btn-primary" id="btnFormEditar" style="background: linear-gradient(135deg, var(--app-color), var(--app-color));">Editar datos de subvención</button>
+        <button type="submit" class="btn btn-primary" id="btnFormEditar" style="background: linear-gradient(135deg, var(--app-color), var(--app-color));">Editar datos de rendición</button>
       </div>
     </form>
   </div>

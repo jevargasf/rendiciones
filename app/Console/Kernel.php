@@ -12,7 +12,9 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule): void
     {
-        // $schedule->command('inspire')->hourly();
+        $schedule->command('rendiciones:notificar-vencidas')->dailyAt('00:00');
+        $schedule->command('rendiciones:notificar-por-vencer')->dailyAt('00:15');
+        $schedule->command('notificaciones:check-correos-leidos')->everyThirtyMinutes();
     }
 
     /**

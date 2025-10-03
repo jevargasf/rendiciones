@@ -8,10 +8,10 @@
                     DAF
                 </a>
             </div>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse">
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContenido">
                 <span class="navbar-toggler-icon"></span>
             </button>
-            <div class="collapse navbar-collapse">
+            <div class="navbar-collapse collapse" id="navbarContenido">
                 <ul class="navbar-nav mr-auto">
 
                     <li class="nav-item">
@@ -28,7 +28,7 @@
                 </ul>
                 <!-- Menú desplegable del perfil -->
                 <ul
-                    class="navbar-nav ms-auto d-flex flex-column-reverse align-items-start flex-md-row md:align-items-center">
+                    class="navbar-nav ms-auto d-flex flex-column-reverse align-items-start flex-md-row align-items-md-center">
                     @if (Session::get('perfiles'))
                         <li class="nav-item dropdown" style="position: relative;">
                             <a class="nav-link" href="#" id="profileDropdown" role="button"

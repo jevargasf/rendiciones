@@ -12,15 +12,32 @@ class Mailman
     {
         $baseUrl = config('app.mailman') . 'api/';
         $this->endpoint = $tipoEndpoint === 'scheduled' ? $baseUrl . 'scheduled' : $baseUrl . 'send';
+
+        if ($tipoEndpoint === 'scheduled') {
+            $this->endpoint = $baseUrl . 'scheduled';
+        } else if ($tipoEndpoint === 'status'){
+            $this->endpoint = $baseUrl . 'status';
+        } else {
+            $this->endpoint = $baseUrl . 'send';
+        }
         $this->tokenAuthorization = config('app.km_token_verify');
 
-        $this->atributos = array_merge([
+        if ($tipoEndpoint === 'status'){
+            $this-> atributos = array_merge([
             'aplicacion_id' => config('app.app_km_id'),
             'aplicacion_token' => config('app.app_km_token'),
             'aplicacion_nombre' => config('app.app_nombre'),
-        ], $data['email']);
+            'email' => $data['email']
+            ]);
+        } else {
+            $this->atributos = array_merge([
+                'aplicacion_id' => config('app.app_km_id'),
+                'aplicacion_token' => config('app.app_km_token'),
+                'aplicacion_nombre' => config('app.app_nombre'),
+            ], $data['email']);
 
-        $this->atributos['datos'] = $data['contenido'] ?? [];
+            $this->atributos['datos'] = $data['contenido'] ?? [];
+        }
     }
 
     public function enviarEmail()

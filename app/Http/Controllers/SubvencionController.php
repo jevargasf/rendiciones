@@ -15,26 +15,60 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rules\File;
 use Illuminate\Routing\Controller as BaseController;
 use PhpOffice\PhpSpreadsheet\Reader\Xlsx;
+use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
+use PhpOffice\PhpSpreadsheet\Shared\Date;
+use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\File as FileReader;
+use Illuminate\Support\Facades\Log;
 
 class SubvencionController extends BaseController
 {
 
 
+    public function conseguirDetalleOrganizacion($subvencion_objeto, $endpoint){
+        $data_organizacion = FileReader::get(base_path($endpoint));
+        // Adjunta data organización al objeto, rellena con S/D en caso de que no encuentre datos
+            $json_organizacion = json_decode($data_organizacion, associative: true);
+            $rut_json = $json_organizacion[0]['rut'];
+            if ($rut_json == $subvencion_objeto['rut']){
+                $subvencion_objeto->data_organizacion = $json_organizacion[0];
+            } else {
+                $subvencion_objeto->data_organizacion = ['nombre_organizacion' => 'S/D'];
+            }
+        return $subvencion_objeto;
+    }
+
     public function index()
     {
+        
         $subvenciones = Subvencion::where('estado', 1)
-            ->where('estado', '!=', 9) // Excluir subvenciones eliminadas (estado = 9)
-            ->get();
+        ->whereHas('rendiciones', function ($query) {
+            $query->where('estado_rendicion_id', 1);
+        })
+        ->get();
 
-        // dd($subvenciones);
+        if($subvenciones->isEmpty()){
+            return view(
+                'subvenciones.index',
+                [
+                    'subvenciones' => $subvenciones
+                ]
+            );  
+        }else{
+            // Realiza consulta al json de datos para cada subvención
+            foreach($subvenciones as $subvencion){
+                $subvencion = $this->conseguirDetalleOrganizacion($subvencion, '/resources/data/endpoint.json');
 
-        return view(
-
-            'subvenciones.index',
-
-            compact('subvenciones')
-
-        );  
+            }
+            return view(
+                'subvenciones.index',
+                                [
+                    'subvenciones' => $subvenciones
+                ]
+            );  
+        }
     }
 
     public function crear(Request $request)
@@ -42,15 +76,19 @@ class SubvencionController extends BaseController
         try {
             // Validar formulario
             $request->validate([
-                'fecha_decreto' => 'required|date',
-                'numero_decreto' => 'required|string|max:255',
+                'fecha_decreto' => 'required|date|before_or_equal:today',
+                'decreto' => 'required|string|max:20',
                 'seleccionar_archivo' => 'required|file|mimes:xls,xlsx|max:10240' // 10MB máximo
+            ],
+            [
+                'fecha_decreto.before_or_equal' => 'La fecha no puede ser posterior a hoy.',
             ]);
 
             // Validar que el archivo sea Excel
             $file = $request->file('seleccionar_archivo');
             $extension = $file->getClientOriginalExtension();
             
+            // Alerta si la extensión del archivo no es válida
             if (!in_array($extension, ['xls', 'xlsx'])) {
                 return response()->json([
                     'success' => false,
@@ -71,12 +109,13 @@ class SubvencionController extends BaseController
             $reader->setReadDataOnly(true);
             $spreadsheet = $reader->load($filePath);
 
-            // Obtener la primera hoja
+            // Obtener la hoja activa del excel
             $worksheet = $spreadsheet->getActiveSheet();
+            // Obtener número de fila y columna que tienen realmente datos
             $highestRow = $worksheet->getHighestDataRow();
             $highestColumn = $worksheet->getHighestDataColumn();
 
-            // Validar que el archivo tenga datos
+            // Validación: el archivo tiene solo 1 fila con datos
             if ($highestRow < 2) {
                 return response()->json([
                     'success' => false,
@@ -84,16 +123,19 @@ class SubvencionController extends BaseController
                 ]);
             }
 
+            // Falta: validación de número de columnas esperado
+
             // Obtener encabezados para validar formato
             $headers = $worksheet->rangeToArray('A1:' . $highestColumn . '1', null, true, true, true);
-            $expectedHeaders = ['Rut Organización', 'Organización', 'Monto', 'Destino', 'Fecha'];
+            //$headersCleaned = array_map('trim', $headers);
+            $expectedHeaders = ['Rut Organización', 'Monto', 'Destino', 'Fecha'];
             
-            // Validar que los encabezados sean correctos
+            // REVISAR: Validar que los encabezados sean correctos. Solo valida el número, no valida que tengan el mismo nombre
             $headerRow = array_values($headers[1]);
-            if (count($headerRow) < 5) {
+            if (count($headerRow) < 4) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'El archivo debe tener al menos 5 columnas: RUT Organización, Organización, Monto, Destino, Fecha'
+                    'message' => 'El archivo no tiene el formato esperado. Las columnas deben ser: RUT Organización, Monto, Destino, Fecha'
                 ]);
             }
 
@@ -103,81 +145,91 @@ class SubvencionController extends BaseController
             // Procesar cada fila de datos
             for ($row = 2; $row <= $highestRow; $row++) {
                 try {
-                    $rut = $worksheet->getCell('A' . $row)->getValue();
-                    $organizacion = $worksheet->getCell('B' . $row)->getValue();
-                    $monto = $worksheet->getCell('C' . $row)->getValue();
-                    $destino = $worksheet->getCell('D' . $row)->getValue();
-                    $fecha = $worksheet->getCell('E' . $row)->getValue();
+                    // Detectar filas vacías
+                    $rut     = trim((string) $worksheet->getCell("A$row")->getValue());
+                    $monto   = trim((string) $worksheet->getCell("B$row")->getValue());
+                    $destino = trim((string) $worksheet->getCell("C$row")->getValue());
+                    $fecha   = trim((string) $worksheet->getCell("D$row")->getValue());
 
-                    // Validar datos de la fila
-                    if (empty($rut) || empty($organizacion) || empty($monto) || empty($destino) || empty($fecha)) {
-                        $errores[] = "Fila $row: Todos los campos son obligatorios";
+                    if (empty($rut) && empty($monto) && empty($destino) && empty($fecha)) {
                         continue;
                     }
 
-                    // Normalizar y validar RUT
-                    $rutNormalizado = $this->normalizarRut($rut);
-                    if (!$rutNormalizado) {
-                        $errores[] = "Fila $row: RUT inválido ($rut)";
+                    $valorFechaExcel = $worksheet->getCell('D' . $row)->getValue();
+
+                    $fecha = is_numeric($valorFechaExcel)
+                        ? Date::excelToDateTimeObject($valorFechaExcel)->format('d-m-Y')
+                        : null;
+
+                    $validar_fila = Validator::make([
+                            'rut' => $worksheet->getCell('A' . $row)->getValue(),
+                            'monto' => $worksheet->getCell('B' . $row)->getValue(),
+                            'destino' => $worksheet->getCell('C' . $row)->getValue(),
+                            'fecha' => $fecha
+                        ]
+                        ,[
+                            'rut' => 'required|regex:/^[0-9]{1,2}\.[0-9]{3}\.[0-9]{3}-[0-9kK]$/',
+                            'monto' => 'required|integer',
+                            'destino' => 'required|string|max:200',
+                            'fecha' => 'required|date_format:d-m-Y'
+                        ]);
+
+                    if ($validar_fila->fails()){
+                        // Error genérico
+                        $errores[] = "Fila $row contiene errores: " . $validar_fila->errors();
                         continue;
+                    } else {
+                        $fila_validada = $validar_fila->validated();
+                        // Crear registro de subvención
+                        // Falta consumir json rut organización para validar rut
+                        // o validar si es un rut correcto antes de escribirlo en la bd
+                        // porque escribe campo vacío hasta el momento
+                        $subvencion = Subvencion::create([
+                            'decreto' => $request->decreto,
+                            'fecha_decreto' => $request->fecha_decreto,
+                            'monto' => $fila_validada['monto'],
+                            'fecha_asignacion' => $fila_validada['fecha'],
+                            'destino' => $fila_validada['destino'],
+                            'rut' => $this->normalizarRut($fila_validada['rut']),
+                            'estado' => 1,
+                            'motivo_eliminacion' => null
+                        ]);
+
+                        // Crear automáticamente la rendición asociada con estado_rendicion_id = 1
+                        $rendicion = Rendicion::create([
+                            'subvencion_id' => $subvencion->id,
+                            'estado_rendicion_id' => 1, // Estado inicial
+                            'estado' => 1
+                        ]);
+
+                        // Crear acción automática de subvención creada 
+                        $km_data = session('usuario');   
+                        
+                        if ($km_data) {
+                            $nombre_completo = ucfirst(strtolower(trim($km_data['nombres'] ?? ''))) . ' ' . 
+                                                ucfirst(strtolower(($km_data['apellido_paterno'] ?? ''))) . ' ' . 
+                                                ucfirst(strtolower(($km_data['apellido_materno'] ?? '')));
+                        
+                            Accion::create([
+                                'fecha' => now(),
+                                'estado_rendicion' => 'Recepcionada',
+                                'comentario' => 'Subvención registrada en el sistema.',
+                                'km_rut' => $km_data['run'] ?? '',
+                                'km_nombre' => $nombre_completo,
+                                'rendicion_id' => $rendicion->id,
+                                'estado' => 1
+                            ]);
+                            $subvencionesCreadas++;
+                        } else{
+                            return response()->json([
+                                'success' => false,
+                                'message' => 'Debe iniciar sesión para realizar esta acción'
+                            ]); 
+                        }
                     }
 
-                    // Validar monto
-                    if (!is_numeric($monto) || $monto <= 0) {
-                        $errores[] = "Fila $row: Monto inválido ($monto)";
-                        continue;
-                    }
 
-                    // Convertir fecha si es necesario
-                    $fechaAsignacion = $this->convertirFecha($fecha);
-                    if (!$fechaAsignacion) {
-                        $errores[] = "Fila $row: Fecha inválida ($fecha)";
-                        continue;
-                    }
 
-                    // Crear registro de subvención
-                    $subvencion = Subvencion::create([
-                        'decreto' => $request->numero_decreto,
-                        'monto' => (int) $monto,
-                        'destino' => $destino,
-                        'fecha_asignacion' => $fechaAsignacion,
-                        'rut' => $rutNormalizado,
-                        'organizacion' => $organizacion,
-                        'estado' => 1
-                    ]);
-
-                    // Crear automáticamente la rendición asociada con estado_rendicion_id = 1
-                    $rendicion = Rendicion::create([
-                        'subvencion_id' => $subvencion->id,
-                        'estado_rendicion_id' => 1, // Estado inicial
-                        'estado' => 1
-                    ]);
-                    
-                    // Crear notificación inicial de subvención creada
-                    Notificacion::create([
-                        'tipo_notificacion' => 1, // Tipo: Subvención Creada
-                        'fecha_envio' => now(),
-                        'fecha_lectura' => null,
-                        'estado_notificacion_id' => false, // No leída
-                        'rendicion_id' => $rendicion->id,
-                        'estado' => 1
-                    ]);
-                    
-                    // TODO: Implementar creación automática de acciones
-                    // cuando se implemente la funcionalidad de Persona y Cargo:
-                    // 
-                    // Accion::create([
-                    //     'fecha' => now(),
-                    //     'comentario' => 'Subvención creada desde archivo Excel',
-                    //     'km_rut' => $usuarioActual->rut,
-                    //     'km_nombre' => $usuarioActual->nombre_completo,
-                    //     'rendicion_id' => $rendicion->id,
-                    //     'persona_id' => $usuarioActual->id,
-                    //     'cargo_id' => $usuarioActual->cargo_id,
-                    //     'estado' => 1
-                    // ]);
-
-                    $subvencionesCreadas++;
 
                 } catch (Exception $e) {
                     $errores[] = "Fila $row: Error al procesar - " . $e->getMessage();
@@ -201,6 +253,7 @@ class SubvencionController extends BaseController
             ]);
 
         } catch (Exception $e) {
+            Log::error($e->getMessage());
             return response()->json([
                 'success' => false,
                 'message' => 'Error al procesar el archivo: ' . $e->getMessage()
@@ -312,22 +365,46 @@ class SubvencionController extends BaseController
             $request->validate([
                 'id' => 'required|integer|exists:subvenciones,id'
             ]);
-
-            $subvencion = Subvencion::findOrFail($request->id);
+            // Detalle subvención
             
+            $subvencion = Subvencion::with(['rendiciones.acciones' => function ($query) {
+                        $query->where([
+                            ['estado', '=', 1]
+                        ]);
+                    }, 'rendiciones.estadoRendicion']
+            )->where([
+                ['id', '=', $request->id],
+                ['estado', '=', 1],
+                //['rendiciones.estado_rendicion_id', '=', 1],
+                //['rendiciones.estado', '=', 1]
+            ])->get();
+
+            // Agregar data organización
+            $subvencion = $this->conseguirDetalleOrganizacion($subvencion[0], '/resources/data/endpoint.json');
+            
+            // Otras subvenciones asociadas al mismo rut
+            $consulta_anteriores = Subvencion::where([
+                ['rut', '=', $subvencion->rut],
+                ['estado', '=', 1]
+            ])->with(['rendiciones' => function ($query) {
+                $query->where('estado', 1)->with('estadoRendicion');
+            }])
+            ->whereNot('id', $subvencion->id)
+            ->get();
+            
+            $historial = [];
+
+            if($consulta_anteriores->isEmpty()){
+                $historial = [
+                    'message'=>'No hay subvenciones anteriores asociadas.'
+                ];
+            }
+
             return response()->json([
                 'success' => true,
-                'data' => [
-                    'id' => $subvencion->id,
-                    'decreto' => $subvencion->decreto,
-                    'monto' => $subvencion->monto,
-                    'destino' => $subvencion->destino,
-                    'rut' => $subvencion->rut,
-                    'organizacion' => $subvencion->organizacion,
-                    'fecha_asignacion' => $subvencion->fecha_asignacion
-                ]
+                'subvencion' => $subvencion,
+                'historial' => $consulta_anteriores
             ]);
-
         } catch (Exception $e) {
             return response()->json([
                 'success' => false,
@@ -342,17 +419,18 @@ class SubvencionController extends BaseController
     public function actualizar(Request $request)
     {
         try {
-            $request->validate([
+            $validated = $request->validate([
                 'id' => 'required|integer|exists:subvenciones,id',
-                'decreto' => 'required|string|max:255',
-                'monto' => 'required|integer|min:1',
                 'destino' => 'required|string|max:1000',
-                'rut' => 'required|string|max:12',
-                'organizacion' => 'required|string|max:255'
+                'rut' => 'required|regex:/^[0-9]{1,2}[0-9]{6}-[0-9kK]$/',
+                'fecha_decreto' => 'required|date',
+                'fecha_asignacion' => 'required|date',
+                'decreto' => 'required|string|max:255',
+                'monto' => 'required|integer'
             ]);
 
             $subvencion = Subvencion::findOrFail($request->id);
-            
+
             // Normalizar RUT si es necesario
             $rutNormalizado = $this->normalizarRut($request->rut);
             if (!$rutNormalizado) {
@@ -364,11 +442,12 @@ class SubvencionController extends BaseController
 
             // Actualizar la subvención
             $subvencion->update([
-                'decreto' => $request->decreto,
-                'monto' => $request->monto,
                 'destino' => $request->destino,
                 'rut' => $rutNormalizado,
-                'organizacion' => $request->organizacion
+                'decreto' => $request->decreto,
+                'fecha_decreto' => $validated['fecha_decreto'],
+                'fecha_asignacion' => $validated['fecha_asignacion'],
+                'monto' => $request->monto
             ]);
 
             return response()->json([
@@ -387,25 +466,54 @@ class SubvencionController extends BaseController
 
     /**
      * Eliminar una subvención (soft delete cambiando estado a 9)
+     * Elimina todas las subvenciones con el mismo decreto
      */
     public function eliminar(Request $request)
     {
         try {
             $request->validate([
-                'id' => 'required|integer|exists:subvenciones,id'
+                'id' => 'required|integer|exists:subvenciones,id',
+                'motivo' => 'required|string|min:10|max:500'
             ]);
 
             $subvencion = Subvencion::findOrFail($request->id);
+            $decreto = $subvencion->decreto;
             
-            // Cambiar estado de la subvención a 9 (eliminada)
-            $subvencion->update(['estado' => 9]);
+            // Obtener todas las subvenciones con el mismo decreto
+            $subvencionesConMismoDecreto = Subvencion::where('decreto', $decreto)
+                ->where('estado', '!=', 9) // No incluir las ya eliminadas
+                ->get();
 
-            // Cambiar estado de todas las rendiciones asociadas a 9 (eliminadas)
-            $subvencion->rendiciones()->update(['estado' => 9]);
+            $subvencionesEliminadas = 0;
+            $rendicionesEliminadas = 0;
+
+            // Eliminar todas las subvenciones con el mismo decreto
+            foreach ($subvencionesConMismoDecreto as $subvencionAEliminar) {
+                // Cambiar estado de la subvención a 9 (eliminada)
+                $subvencionAEliminar->update([
+                    'estado' => 9,
+                    'motivo_eliminacion' => $request->motivo
+                ]);
+
+                // Cambiar estado de todas las rendiciones asociadas a 9 (eliminadas)
+                $subvencionAEliminar->rendiciones()->update([
+                    'estado' => 9
+                ]);
+                
+                $subvencionesEliminadas++;
+                $rendicionesEliminadas++;
+            }
+
+            $mensaje = "Se eliminaron {$subvencionesEliminadas} subvención(es) asociadas al decreto '{$decreto}'.";
 
             return response()->json([
                 'success' => true,
-                'message' => 'Subvención y rendiciones asociadas eliminadas correctamente'
+                'message' => $mensaje,
+                'data' => [
+                    'subvenciones_eliminadas' => $subvencionesEliminadas,
+                    'rendiciones_eliminadas' => $rendicionesEliminadas,
+                    'decreto' => $decreto
+                ]
             ]);
 
         } catch (Exception $e) {
@@ -422,33 +530,35 @@ class SubvencionController extends BaseController
     public function obtenerDatosRendir(Request $request)
     {
         try {
+            //dd($request->all());
             $request->validate([
                 'id' => 'required|integer|exists:subvenciones,id'
             ]);
 
-            $subvencion = Subvencion::findOrFail($request->id);
-            $cargos = Cargo::where('estado', 1)->get();
-            $personas = Persona::where('estado', 1)->get();
-            $estadosRendicion = EstadoRendicion::where('estado', 1)
-                ->where('id', '!=', 1) // Excluir estado con ID 1 (Recepcionada)
-                ->get();
+            // aquí por qué no funciona con el where?
+            $subvencion = Subvencion::with(['rendiciones' => function ($query) {
+                        $query->where([
+                            ['estado', '=', 1]
+                        ]);
+                    }, 'rendiciones.estadoRendicion']
+            )->where([
+                ['id', '=', $request->id],
+                ['estado', '=', 1],
+                //['rendiciones.estado_rendicion_id', '=', 1],
+                //['rendiciones.estado', '=', 1]
+            ])->get();
             
+            // aquí si la rendición tiene estado diferente de 1, entonces no dejar que se vuelva a rendir
+            // si la rendición no existe, entonces algo falló, pero habría que crear una
+
+            $subvencion = $this->conseguirDetalleOrganizacion($subvencion[0], '/resources/data/endpoint.json');
+            $cargos = Cargo::where('estado', 1)->get();
+            $estados = EstadoRendicion::where([['estado', '=', 1], ['id', '>', 2]])->get();
             return response()->json([
                 'success' => true,
-                'data' => [
-                    'subvencion' => [
-                        'id' => $subvencion->id,
-                        'decreto' => $subvencion->decreto,
-                        'monto' => $subvencion->monto,
-                        'destino' => $subvencion->destino,
-                        'rut' => $subvencion->rut,
-                        'organizacion' => $subvencion->organizacion,
-                        'fecha_asignacion' => $subvencion->fecha_asignacion
-                    ],
-                    'cargos' => $cargos,
-                    'personas' => $personas,
-                    'estados_rendicion' => $estadosRendicion
-                ]
+                'subvencion' => $subvencion,
+                'cargos' => $cargos,
+                'estados' => $estados
             ]);
 
         } catch (Exception $e) {
@@ -459,99 +569,5 @@ class SubvencionController extends BaseController
         }
     }
 
-    /**
-     * Guardar rendición de subvención
-     */
-    public function guardarRendicion(Request $request)
-    {
-        try {
-            $request->validate([
-                'subvencion_id' => 'required|integer|exists:subvenciones,id',
-                'persona_rut' => 'required|string|max:12',
-                'persona_nombre' => 'required|string|max:255',
-                'persona_apellido' => 'required|string|max:255',
-                'persona_email' => 'required|email|max:255',
-                'persona_telefono' => 'required|string|max:20',
-                'persona_cargo_id' => 'required|integer|exists:cargos,id',
-                'estado_rendicion_id' => 'required|integer|exists:estados_rendiciones,id',
-                'comentario' => 'required|string|max:1000'
-            ]);
 
-            // Normalizar RUT
-            $rutNormalizado = $this->normalizarRut($request->persona_rut);
-            if (!$rutNormalizado) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'RUT inválido'
-                ]);
-            }
-
-            // Buscar o crear persona
-            $persona = Persona::where('rut', $rutNormalizado)->first();
-            if (!$persona) {
-                $persona = Persona::create([
-                    'rut' => $rutNormalizado,
-                    'nombre' => $request->persona_nombre,
-                    'apellido' => $request->persona_apellido,
-                    'correo' => $request->persona_email,
-                    'telefono' => $request->persona_telefono,
-                    'estado' => 1
-                ]);
-            } else {
-                // Actualizar datos de la persona existente
-                $persona->update([
-                    'nombre' => $request->persona_nombre,
-                    'apellido' => $request->persona_apellido,
-                    'correo' => $request->persona_email,
-                    'telefono' => $request->persona_telefono
-                ]);
-            }
-
-            // Buscar la rendición existente o crear una nueva
-            $subvencion = Subvencion::findOrFail($request->subvencion_id);
-            $rendicion = $subvencion->rendiciones()->where('estado', 1)->first();
-            
-            if (!$rendicion) {
-                $rendicion = Rendicion::create([
-                    'subvencion_id' => $request->subvencion_id,
-                    'estado_rendicion_id' => $request->estado_rendicion_id,
-                    'estado' => 1
-                ]);
-            } else {
-                // Actualizar estado de rendición existente
-                $rendicion->update([
-                    'estado_rendicion_id' => $request->estado_rendicion_id
-                ]);
-            }
-
-            // Crear acción de rendición
-            Accion::create([
-                'fecha' => now(),
-                'comentario' => $request->comentario,
-                'km_rut' => $persona->rut,
-                'km_nombre' => $persona->nombre . ' ' . $persona->apellido,
-                'rendicion_id' => $rendicion->id,
-                'persona_id' => $persona->id,
-                'cargo_id' => $request->persona_cargo_id,
-                'estado' => 1
-            ]);
-
-            // No se actualiza el destino de la subvención ya que es información original
-
-            return response()->json([
-                'success' => true,
-                'message' => 'Rendición guardada correctamente',
-                'data' => [
-                    'persona_id' => $persona->id,
-                    'rendicion_id' => $rendicion->id
-                ]
-            ]);
-
-        } catch (Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Error al guardar la rendición: ' . $e->getMessage()
-            ]);
-        }
-    }
 }

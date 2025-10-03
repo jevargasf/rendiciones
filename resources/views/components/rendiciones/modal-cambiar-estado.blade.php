@@ -1,9 +1,9 @@
 <!-- Modal: Rendir Subvención -->
-<div class="modal fade" id="modalRendirsubvencion" tabindex="-1" aria-labelledby="rendirLabel"   data-bs-backdrop="static">
+<div class="modal fade" id="modalCambiarEstado" tabindex="-1" aria-labelledby="modalCambiarEstadoLabel">
   <div class="modal-dialog modal-dialog-scrollable modal-lg">
     <form class="modal-content needs-validation" method="POST" novalidate>
       <div class="modal-header" style="background: linear-gradient(135deg, var(--app-color), var(--app-color)); color: white;">
-        <h5 id="modalRendirSubvencionLabel" class="modal-title">Rendir Subvención</h5>
+        <h5 id="modalCambiarEstadoLabel" class="modal-title">Rendir Subvención</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
       </div>
 
@@ -75,12 +75,21 @@
               </select>
               <div class="invalid-feedback">Seleccione un cargo.</div>
             </div>
-            <div class="col-12">
+            <div class="col-6">
               <label for="persona_email" class="form-label fw-bold small mb-1">
                 <i class="fa-solid fa-envelope me-1 text-primary"></i>
                 E-mail</label>
               <input type="email" class="form-control" id="persona_email" name="persona_email" required>
               <div class="invalid-feedback">Ingrese un correo válido.</div>
+            </div>
+            <div class="col-6">
+              <label for="select_estados" class="form-label fw-bold small mb-1">
+                <i class="fa-solid fa-briefcase me-1 text-primary"></i>
+                Cambiar estado</label>
+              <select class="form-select" id="select_estados" name="select_estados" required>
+                <option value="">Seleccione...</option>
+              </select>
+              <div class="invalid-feedback">Seleccione un estado.</div>
             </div>
           </div>
         </div>
@@ -91,13 +100,13 @@
           <label for="comentario_detalle" class="form-label fw-bold small mb-1">
             <i class="fa-solid fa-comment me-1  text-primary"></i>
             Comentario</label>
-          <textarea class="form-control" id="comentario_detalle" name="comentario_detalle" rows="3" maxlength="1000"></textarea>
+          <textarea class="form-control" id="comentario_cambiar_estado" rows="3" maxlength="1000"></textarea>
         </div>
       </div>
       </div>
       <div class="modal-footer bg-light px-4 pb-4 border-top-0">
         <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
-        <button type="submit" class="btn btn-primary" id="btnFormRendir" style="background: linear-gradient(135deg, var(--app-color), var(--app-color)); color: white;">Iniciar rendición</button>
+        <button type="submit" class="btn btn-primary" id="btnCambiarEstado" style="background: linear-gradient(135deg, var(--app-color), var(--app-color)); color: white;">Cambiar estado rendición</button>
       </div>
     </form>
   </div>

@@ -824,7 +824,64 @@ button.btn.btn-app.btn-eliminar:focus {
   height: 10rem!important;
 }
 
+canvas {
+  width: 100% !important;
+  height: auto !important;
+}
                                             /* PAGINA SUBVENCIONES*/
+
+
+/* Ancho base del label */
+.form-horizontal-fixed { --label-w: 160px; }
+
+/* Fila sin gutter ni saltos de línea */
+.row.tight { --bs-gutter-x: 0; }
+.row.tight > * { padding-left: 0 !important; padding-right: 0 !important; }
+.flex-nowrap { flex-wrap: nowrap !important; }
+
+/* Label fijo y en negrita */
+.col-label{
+  flex: 0 0 var(--label-w);
+  width: var(--label-w);
+  margin-right: 8px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+/* Columna del campo sin crecer (para mantenerlo fijo) */
+.col-field{ flex: 0 0 auto; }
+
+/* Anchos fijos de los inputs */
+.input-compact-220{ width: 150px; }   
+.input-file-350{   width: 230px; }    
+
+.row.label-archivo-180 .col-field { 
+  flex: 1 1 auto;      
+  min-width: 0;      
+}
+
+
+/* Ancho del file input: mínimo 230, normal hasta 350 */
+.input-file-350 { 
+  width: clamp(230px, 100%, 350px);
+}
+
+@media (max-width: 540px) {          
+  .row.tight.responsive-break { 
+    flex-wrap: wrap !important; 
+  }
+  .row.tight.responsive-break .col-label {
+    flex: 0 0 100%;
+    width: 100%;
+    margin-right: 0;
+    margin-bottom: 4px;              
+  }
+  .row.tight.responsive-break .col-field {
+    flex: 0 0 100%;
+    width: 100%;
+    min-width: 0;
+  }
+}
 
 /* Modal Editar Subvención */
 #modalEditar .modal-dialog {
@@ -890,10 +947,8 @@ button.btn.btn-app.btn-eliminar:focus {
 }
 
 .modal-footer {
-  border: 1px solid #dfd9d9;
   border-radius: 8px;
   padding: 0.75rem 0.3rem;
-  margin-top: 1rem;
 }
 
 /* Overlay de “Ver detalles” en acciones realizadas */
@@ -964,6 +1019,10 @@ button.btn.btn-app.btn-eliminar:focus {
   background-color: #d9d9d9 !important;
   border-color: #d9d9d9 !important;
   color: #d9d9d9 !important;
+}
+
+#tab1, #tab1-rendicion, #detalle_destino{
+  cursor:default;
 }
 
 @media (min-width:576px){ .pull-left-sm { margin-left:-.5rem !important; } }

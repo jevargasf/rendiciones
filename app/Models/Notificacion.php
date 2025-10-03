@@ -14,33 +14,34 @@ class Notificacion extends Model
     public $timestamps = false;
     
     protected $fillable = [
-        'tipo_notificacion',
+        'destinatario',
+        'email_id',
         'fecha_envio',
         'fecha_lectura',
-        'estado_notificacion_id',
-        'rendicion_id',
+        'estado_notificacion',
+        'accion_id',
         'estado'
     ];
     
     protected $casts = [
         'fecha_envio' => 'datetime',
-        'fecha_lectura' => 'datetime',
-        'estado_notificacion_id' => 'boolean'
+        'fecha_lectura' => 'datetime'
     ];
     
+    
     /**
-     * Relación con tipo de notificación
+     * Relación con acción
      */
-    public function tipoNotificacion()
+    public function accion()
     {
-        return $this->belongsTo(TipoNotificacion::class, 'tipo_notificacion');
+        return $this->belongsTo(Accion::class, 'accion_id');
     }
     
     /**
-     * Relación con rendición
+     * Relación con rendición a través de acción
      */
     public function rendicion()
     {
-        return $this->belongsTo(Rendicion::class, 'rendicion_id');
+        return $this->accion->rendicion();
     }
 }

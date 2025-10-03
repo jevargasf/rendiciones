@@ -16,6 +16,7 @@ class Accion extends Model
     protected $fillable = [
         'fecha',
         'comentario',
+        'estado_rendicion',
         'km_rut',
         'km_nombre',
         'rendicion_id',
@@ -50,5 +51,10 @@ class Accion extends Model
     public function cargo()
     {
         return $this->belongsTo(Cargo::class, 'cargo_id');
+    }
+
+    public function notificaciones()
+    {
+        return $this->hasMany(Notificacion::class, 'accion_id');
     }
 }

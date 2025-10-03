@@ -18,7 +18,7 @@ class SubirXlsTest extends TestCase
         $xls = new UploadedFile($path, $name, 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', null, true);
         $response = $this->post('/subvenciones/crear', [
             'fecha_decreto'=>'2024-05-05',
-            'numero_decreto'=>'444-2025',
+            'decreto'=>'444-2025',
             'seleccionar_archivo'=>$xls
         ]);
 

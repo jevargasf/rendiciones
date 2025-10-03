@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\EstadisticasController;
 use App\Http\Controllers\InicioController;
 use App\Http\Controllers\SubvencionController;
 use App\Http\Controllers\RendicionController;
@@ -19,42 +20,36 @@ Route::get('/logout', [AuthController::class, 'logout'])->name('logout');
 
 Route::prefix('estadisticas')->group(function () {
 
-    Route::get('/', [InicioController::class, 'index'])->name('estadisticas');
-
-    Route::get('/{year}', [InicioController::class, 'getStatistics'])->name('estadisticas.statistics');
+    Route::get('/', [EstadisticasController::class, 'index'])->name('estadisticas');
+    Route::post('/cambiar-anio', [EstadisticasController::class, 'cambiarAnio'])->name('estadisticas.cambiarAnio');
+    //Route::get('/{year}', [InicioController::class, 'getStatistics'])->name('estadisticas.statistics');
 });
 
 Route::prefix('subvenciones')->group(function () {
 
     Route::get('/', [SubvencionController::class, 'index'])->name('subvenciones');
-
     Route::post('crear', [SubvencionController::class, 'crear'])->name('subvenciones.crear');
-
     Route::post('obtener', [SubvencionController::class, 'obtener'])->name('subvenciones.obtener');
-
     Route::post('actualizar', [SubvencionController::class, 'actualizar'])->name('subvenciones.actualizar');
-
     Route::post('eliminar', [SubvencionController::class, 'eliminar'])->name('subvenciones.eliminar');
-
     Route::post('obtener-datos-rendir', [SubvencionController::class, 'obtenerDatosRendir'])->name('subvenciones.obtener-datos-rendir');
-    Route::post('guardar-rendicion', [SubvencionController::class, 'guardarRendicion'])->name('subvenciones.guardar-rendicion');
-
 });
 
 
 Route::prefix('rendiciones')->group(function () {
 
     Route::get('/', [RendicionController::class, 'index'])->name('rendiciones');
-
-    Route::post('/detalleRendicion',[RendicionController::class, 'detalleRendicion'])->name('rendiciones.detalleRendicion'); 
+    Route::post('crear', [RendicionController::class, 'crear'])->name('rendiciones.crear');
+    Route::post('/obtener',[RendicionController::class, 'obtener'])->name('rendiciones.obtener'); 
+    Route::post('obtener-datos-cambiar-estado', [RendicionController::class, 'obtenerDatosCambiarEstado'])->name('subvenciones.obtener-datos-cambiar-estado');
+    Route::post('/cambiar-estado',[RendicionController::class, 'cambiarEstado'])->name('rendiciones.cambiarEstado'); 
+    Route::post('/actualizar',[RendicionController::class, 'actualizar'])->name('rendiciones.actualizar'); 
+    Route::post('/eliminar', [RendicionController::class, 'eliminar'])->name('rendiciones.eliminar');
 
 });
 
 Route::prefix('personas')->group(function () {
 
-    Route::post('obtener', [PersonaController::class, 'obtener'])->name('personas.obtener');
-    Route::post('buscar', [PersonaController::class, 'buscar'])->name('personas.buscar');
+    Route::post('/obtener',[PersonaController::class, 'obtener'])->name('personas.obtener'); 
 
 });
-
-//});  
