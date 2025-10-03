@@ -28,7 +28,7 @@
               <dl class="row mb-0">
                 <dt class="col-sm-6 fw-bold small">Estado actual:</dt>
                 <dd class="col-sm-6">
-                  <span id="estado_actual_rendir" class="col-sm-6 badge bg-primary bg-opacity-75 text-white py-2 rounded-pill shadow-sm">
+                  <span id="estado_actual_rendir" class="col-sm-12 badge bg-primary bg-opacity-75 text-white py-2 rounded-pill shadow-sm">
                   </span>
                 </dd>
                 <dt class="col-sm-6 fw-bold small ">N° Decreto:</dt>

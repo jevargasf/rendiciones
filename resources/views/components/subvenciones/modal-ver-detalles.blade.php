@@ -58,7 +58,7 @@
                       <dl class="row mb-0">
                         <dt class="col-sm-6 fw-bold small">Estado actual:</dt>
                         <dd class="col-sm-6">
-                          <span id="detalle_estado" class="col-sm-6 badge bg-primary bg-opacity-75 text-white py-2 rounded-pill shadow-sm">
+                          <span id="detalle_estado" class="col-sm-12 badge bg-primary bg-opacity-75 text-white py-2 rounded-pill shadow-sm">
                           </span>
                         </dd>
                         <dt class="col-sm-6 fw-bold small ">Fecha asignación:</dt>
@@ -130,9 +130,9 @@
 
       <div class="modal-footer">
         <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cerrar</button>
-        <button class="btn text-white shadow-sm" style="background: linear-gradient(135deg, var(--app-color), var(--app-color));" id="btnNavegacionCambiarEstado" data-bs-target="#modalCambiarEstado" data-bs-toggle="modal" data-bs-dismiss="modal">
+        <!-- <button class="btn text-white shadow-sm" style="background: linear-gradient(135deg, var(--app-color), var(--app-color));" id="btnNavegacionCambiarEstado" data-bs-target="#modalRendirsubvencion" data-bs-toggle="modal" data-bs-dismiss="modal">
             <i class="bi bi-arrow-right-circle"></i>Ir a cambiar estado
-        </button>
+        </button> -->
       </div>
     </div>
   </div>

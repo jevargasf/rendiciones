@@ -25,12 +25,12 @@
           </li>
           <li class="nav-item" role="presentation">
             <button class="nav-link" id="tab3-rendicion-tab" data-bs-toggle="tab" data-bs-target="#tab3-rendicion" type="button" role="tab" aria-controls="otras" aria-selected="false">
-              Otras subvenciones
+              Notificaciones
             </button>
           </li>
           <li class="nav-item" role="presentation">
             <button class="nav-link" id="tab4-rendicion-tab" data-bs-toggle="tab" data-bs-target="#tab4-rendicion" type="button" role="tab" aria-controls="organizacion" aria-selected="false">
-              Datos de la organización
+              Otras subvenciones
             </button>
           </li>
          </ul>
@@ -59,7 +59,7 @@
                       <dl class="row mb-0">
                         <dt class="col-sm-6 fw-bold small">Estado actual:</dt>
                         <dd class="col-sm-6">
-                          <span id="detalle_estado_actual" class="col-sm-6 badge bg-primary bg-opacity-75 text-white py-2 rounded-pill shadow-sm">
+                          <span id="detalle_estado_actual" class="col-sm-12 badge bg-primary bg-opacity-75 text-white py-2 rounded-pill shadow-sm">
                           </span>
                         </dd>
                         <dt class="col-sm-6 fw-bold small ">Fecha asignación:</dt>

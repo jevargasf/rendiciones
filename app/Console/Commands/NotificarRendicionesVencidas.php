@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
 use App\Services\NotificacionesService;
 
-class CheckRendicionesVencidas extends Command
+class NotificarRendicionesVencidas extends Command
 {
     /**
      * The name and signature of the console command.

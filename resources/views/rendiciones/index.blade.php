@@ -582,7 +582,7 @@
                 .css({
                     'font-size': '0.875rem',
                     'margin-left': '0'
-                }).attr('placeholder', 'Buscar en subvenciones (RUT, organización, decreto, destino, monto...)');
+                }).attr('placeholder', 'Buscar...');
             $('.dataTables_filter label').addClass('w-100').css('margin-bottom', '0');
                 console.log(localStorage)
             // if (localStorage.getItem('abrir_modal_detalles') === 'true'){                

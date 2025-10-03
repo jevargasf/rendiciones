@@ -146,6 +146,8 @@ class SubvencionController extends BaseController
             for ($row = 2; $row <= $highestRow; $row++) {
                 try {
                     // Detectar filas vacías
+
+
                     $rut     = trim((string) $worksheet->getCell("A$row")->getValue());
                     $monto   = trim((string) $worksheet->getCell("B$row")->getValue());
                     $destino = trim((string) $worksheet->getCell("C$row")->getValue());

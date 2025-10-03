@@ -371,6 +371,8 @@ class RendicionController extends BaseController
 
             // capturar estado actual
             $estado_actual_nombre = $rendicion->estadoRendicion->nombre;
+                //dd($estado_actual_nombre);
+
             $estado_nuevo_nombre = EstadoRendicion::where('id', $data_validada['nuevo_estado_id'])->first()->nombre;
             // actualizar el estado de la rendición
             $rendicion->update([
@@ -435,6 +437,7 @@ class RendicionController extends BaseController
                     $mailmanAPI = new Mailman($data, 'send');
 
                     $resultado = $mailmanAPI->enviarEmail();
+
                     if($resultado['http_code'] === 200){
                         Notificacion::create([
                             'destinatario' => $correo_organizacion,
@@ -499,7 +502,7 @@ class RendicionController extends BaseController
                 }else{
                     return response()->json([
                         'success' => true,
-                        'message' => 'Rendición actualizada exitosamente de estado:' . $estado_actual_nombre . ' a estado: ' . $estado_nuevo_nombre . '.' . 'Ocurrió un error al notificar al(los) siguiente(s) correos:' . $errores . '.'
+                        'message' => 'Rendición actualizada exitosamente de estado:' . $estado_actual_nombre . ' a estado: ' . $estado_nuevo_nombre . '.'
                     ]);
                 } 
             }else{
@@ -557,7 +560,7 @@ class RendicionController extends BaseController
         }catch(Exception $e){
             return response()->json([
                 'success' => false,
-                'message' => 'Error al actualizar la subvención: ' . $e->getMessage()
+                'message' => 'Error al actualizar la subvención: ' . $e->getLine()
             ]);
         }
     }
